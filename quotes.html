@@ -250,6 +250,7 @@
     </div>
   </div>
 
+  <script src="/bs-calendar.js"></script>
   <script src="app.js"></script>
   <script>
     let allQuotes = [];
@@ -318,6 +319,7 @@
       tbody.innerHTML = filtered.map(q => {
         let statusBadge = 'badge-draft';
         if (q.status === 'Signed') statusBadge = 'badge-signed';
+        else if (q.status === 'Paid') statusBadge = 'badge-green';
         else if (q.status === 'Sent') statusBadge = 'badge-sent';
 
         const signToken = q.access_token || q.id;
@@ -336,7 +338,10 @@
             </td>
             <td><strong style="font-size:14px">${SalesOS.formatCurrency(q.total, q.currency)}</strong></td>
             <td><span class="badge ${statusBadge}">${q.status}</span></td>
-            <td>${SalesOS.formatDate(q.created_at)}</td>
+            <td>
+              <strong style="display:block;font-size:12px">${SalesOS.formatDualDate(q.created_at, { short: true })}</strong>
+              <small style="color:var(--muted)">${SalesOS.formatDate(q.created_at)}</small>
+            </td>
             <td style="text-align:right;white-space:nowrap">
               <a href="/quote-view.html?token=${signToken}" target="_blank" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" title="View Customer Sign Page">
                 ✍ Sign Page

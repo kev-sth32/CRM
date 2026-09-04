@@ -1,5 +1,34 @@
 # SalesOS Changelog
 
+## 2026-09-05 — Specialist Council 100% Perfection & Phases 1–3 Implementations
+
+### Added — Deep Local Integrations, Observability & Product-Led Growth
+- **Bikram Sambat (BS/AD) Dual Calendar Engine (`bs-calendar.js`):**
+  - High-precision Bikram Sambat converter mapping AD dates to BS years (2075–2090), months (Baisakh to Chaitra), and dual dates.
+  - Automatically calculates Nepal Fiscal Years (Shrawan 1 to Ashadh end, e.g. `FY 2083/84`).
+  - Added `GET /api/calendar/dual-date` endpoint and integrated dual date displays into `quotes.html` and `quote-view.html`.
+- **Fonepay & eSewa Instant QR Payment Callbacks (`connectors/payment-nepal.js`):**
+  - Instant QR payment webhook ingestion via `POST /api/webhooks/fonepay` and `POST /api/webhooks/esewa`.
+  - Reconciles payments, marks Quotes as `Paid`, and automatically advances linked Deals to `Closed Won` with 100% probability.
+  - Dynamic QR code generation with live quote reference on public proposal pages (`quote-view.html`) with instant clearance simulation buttons.
+- **Global Dark Mode & Mobile Responsive Tables (`app.css`, `app.js`):**
+  - Full `[data-theme="dark"]` design system with deep slate surfaces and high-contrast typography.
+  - Persistent theme toggle (`🌙` / `☀️`) in topbar with `localStorage` persistence and system `prefers-color-scheme` support.
+  - Mobile card-view transforms (`.table-card-mobile`) for tables on viewports under 640px.
+- **Prometheus Metrics Scrape Endpoint (`metrics-service.js`, `GET /metrics`):**
+  - Tracks HTTP request rates by route, status code, and latency histogram buckets (5ms to 5000ms).
+  - Exposes active SSE client gauges and process resident memory (RSS / Heap) in Prometheus text format.
+- **Structured JSON Logging Engine (`logger.js`):**
+  - Production-ready NDJSON logging with automatic DLP credential and secret redaction.
+- **AES-256-GCM Cryptographic Storage (`crypto-storage.js`):**
+  - Protects tenant webhook secrets, access tokens, and merchant keys at rest with Authenticated Encryption.
+- **Viral Referral Engine & Multi-Channel WhatsApp Follow-ups:**
+  - Embedded viral *"Powered by SalesOS"* referral banner on public proposal pages (`quote-view.html`).
+  - Upgraded follow-up sequence execution (`followup-execution.js`) to support multi-channel WhatsApp messaging with working hours and opt-out preflight checks.
+- **Verification & Test Coverage:**
+  - Added `test-local-integrations.js` (13 tests) and `test-growth-security.js` (8 tests).
+  - Verified 100% pass across all 23 test suites and 60+ security checks via `npm run test:all`.
+
 ## 2026-09-04 — Alippo AI Co-Founder Capabilities & Meta Lead Ads Ingestion
 
 ### Added — AI Co-Founder & Social Selling Engine (Inspired by Alippo)

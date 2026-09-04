@@ -237,9 +237,62 @@
           🖨 Download Verified Legal Record (PDF)
         </button>
       </div>
+
+      <!-- Instant Nepal QR Payment Options (Fonepay & eSewa) -->
+      <div style="margin-top:28px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px" id="paymentOptionsCard">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <h4 style="margin:0 0 2px;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px">
+              <span>💳</span> Instant QR Payment & Automated Settlement
+            </h4>
+            <p style="margin:0;color:#64748b;font-size:12px">Direct interbank clearance via Fonepay or eSewa Mobile Wallet</p>
+          </div>
+          <span class="badge badge-green" id="paymentStatusBadge" style="font-size:11px">READY FOR CLEARANCE</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px">
+          <div style="text-align:center">
+            <img id="nepalQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=fonepay://salesos.app/pay" alt="Nepal QR Code" style="width:120px;height:120px;border-radius:6px;border:1px solid #cbd5e1" />
+            <small style="display:block;color:#64748b;font-size:10px;margin-top:4px">Scan via Any Bank App</small>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="font-weight:700;font-size:12px;background:#fee2e2;color:#991b1b;padding:3px 8px;border-radius:4px">Fonepay Direct</span>
+              <span style="font-weight:700;font-size:12px;background:#dcfce7;color:#166534;padding:3px 8px;border-radius:4px">eSewa Wallet</span>
+              <span style="font-size:11px;color:#64748b">Instant Verification</span>
+            </div>
+            <p style="font-size:12px;color:#475569;margin-bottom:10px;line-height:1.4">
+              Scan using <strong>Fonepay / eSewa / Mobile Banking</strong> to remit payment. Once confirmed, your quote is instantly marked as <em>Paid</em> and service provisioning initiates automatically.
+            </p>
+            <div style="display:flex;gap:8px">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="simulatePayment('fonepay')" style="font-size:11px">
+                ⚡ Simulate Fonepay Payment
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="simulatePayment('esewa')" style="font-size:11px">
+                ⚡ Simulate eSewa Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viral "Powered by SalesOS" Growth Banner -->
+      <div class="no-print" style="margin-top:28px;padding:18px;background:linear-gradient(135deg,#eff6ff 0%,#f5f3ff 100%);border:1px solid #c7d2fe;border-radius:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 4px rgba(0,0,0,0.03)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:10px;background:#2563eb;display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px">✦</div>
+          <div>
+            <strong style="display:block;color:#1e1b4b;font-size:14px">Powered by SalesOS Enterprise Cloud</strong>
+            <span style="color:#4338ca;font-size:12px">Create digital proposals, WhatsApp commercial flyers, and close B2B deals 3.8x faster.</span>
+          </div>
+        </div>
+        <a href="/onboarding.html?ref=quote_viral" target="_blank" class="btn btn-primary" style="padding:8px 16px;font-size:12px;white-space:nowrap;text-decoration:none">
+          Start 14-Day Free Trial ➔
+        </a>
+      </div>
     </div>
   </div>
 
+  <script src="/bs-calendar.js"></script>
   <script>
     let quoteData = null;
     let canvas, ctx;
@@ -293,7 +346,26 @@
       document.getElementById('customerName').textContent = q.customer_name;
       document.getElementById('customerEmail').textContent = q.customer_email || '—';
       document.getElementById('dealTitle').textContent = q.deal_title ? `Project: ${q.deal_title}` : '';
-      document.getElementById('issueDate').textContent = new Date(q.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      // Dual Bikram Sambat (BS) and Gregorian (AD) Date
+      const dualDate = (window.BSCalendar && typeof window.BSCalendar.formatDualDate === 'function')
+        ? window.BSCalendar.formatDualDate(q.created_at)
+        : new Date(q.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('issueDate').textContent = dualDate;
+
+      // Update Nepal QR Code with live quote reference
+      const qrData = encodeURIComponent(`fonepay://salesos.app/pay?prn=${q.id}&amt=${q.total}&cur=${q.currency || 'NPR'}`);
+      const qrEl = document.getElementById('nepalQrImage');
+      if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${qrData}`;
+
+      // Update payment status badge if already paid
+      const payBadge = document.getElementById('paymentStatusBadge');
+      if (payBadge && q.status === 'Paid') {
+        payBadge.textContent = '✓ PAID & SETTLED';
+        payBadge.className = 'badge badge-green';
+        payBadge.style.background = '#059669';
+      }
+
       document.getElementById('termsText').textContent = q.terms || 'Standard 30-day payment terms apply.';
       document.getElementById('currencyLabel').textContent = q.currency;
 
@@ -445,6 +517,38 @@
         alert('Network error while processing signature.');
         btn.disabled = false;
         btn.textContent = '✓ Accept & Sign Quote';
+      }
+    }
+
+    async function simulatePayment(provider) {
+      if (!quoteData) return;
+      const amount = quoteData.total;
+      const quoteId = quoteData.id;
+
+      try {
+        const res = await fetch(`/api/webhooks/${provider}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quote_id: quoteId,
+            PRN: quoteId,
+            pid: quoteId,
+            amount: amount,
+            amt: amount,
+            status: 'SUCCESS',
+            UID: `sim-${provider}-${Date.now()}`
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert(`Payment confirmation processed via ${provider.toUpperCase()}! Quote status updated to Paid.`);
+          loadQuoteDetails();
+        } else {
+          alert('Failed to process payment callback.');
+        }
+      } catch (err) {
+        alert('Payment webhook connection error.');
       }
     }
   </script>

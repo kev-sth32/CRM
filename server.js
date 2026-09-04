@@ -37,6 +37,11 @@ const { initiateCall, updateCallState, endCall, activeCalls } = require('./telep
 const { findDuplicates, mergeRecords } = require('./dedupe-service');
 const metaLeadGenConnector = require('./connectors/meta-leadgen');
 const pitchStudioService = require('./pitch-studio-service');
+const paymentNepalConnector = require('./connectors/payment-nepal');
+const logger = require('./logger');
+const metricsService = require('./metrics-service');
+const cryptoStorage = require('./crypto-storage');
+const bsCalendar = require('./bs-calendar');
 
 const PORT = process.env.PORT || 3000;
 const DB = path.join(__dirname, 'data.json');
@@ -373,6 +378,11 @@ function send(res, status, data, type = 'application/json') {
     headers['Access-Control-Allow-Origin'] = '*';
   }
 
+  if (res._startTime) {
+    const elapsed = Date.now() - res._startTime;
+    metricsService.recordRequest(res._method || 'GET', res._pathname || '/', status, elapsed);
+  }
+
   res.writeHead(status, headers);
   res.end(type === 'application/json' ? JSON.stringify(data) : data);
 }
@@ -585,6 +595,10 @@ const server = http.createServer(async (req, res) => {
     const pathname = urlObj.pathname;
     const searchParams = urlObj.searchParams;
 
+    res._startTime = Date.now();
+    res._method = req.method;
+    res._pathname = pathname;
+
     // Secure Client IP Resolution (Prevent header spoofing unless behind trusted reverse proxy or in verified test mode)
     const trustProxy = process.env.TRUST_PROXY === 'true' || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' || req.headers['x-test-bypass'] === 'salesos-internal-test';
     const clientIp = (trustProxy && req.headers['x-forwarded-for'])
@@ -678,6 +692,8 @@ const server = http.createServer(async (req, res) => {
       (pathname.startsWith('/api/quotes/sign/') && req.method === 'POST');
 
     const isPublicRoute = 
+      pathname === '/metrics' ||
+      pathname === '/api/calendar/dual-date' ||
       pathname === '/api/health' ||
       pathname === '/api/auth/login' ||
       pathname === '/api/auth/register' ||
@@ -3422,6 +3438,108 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
+    // Prometheus Metrics Scrape Endpoint
+    if (pathname === '/metrics' && req.method === 'GET') {
+      metricsService.setSseClients(sseClients.size);
+      res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8' });
+      return res.end(metricsService.getPrometheusFormat());
+    }
+
+    // Dual Bikram Sambat (BS) / Gregorian (AD) Date Endpoint
+    if (pathname === '/api/calendar/dual-date' && req.method === 'GET') {
+      const targetDate = searchParams.get('date') || new Date().toISOString();
+      const bs = bsCalendar.toBS(targetDate);
+      const dual = bsCalendar.formatDualDate(targetDate);
+      const fiscal = bsCalendar.getNepaliFiscalYear(targetDate);
+      return send(res, 200, { ok: true, ad_date: targetDate, bs, formatted_dual: dual, fiscal_year: fiscal });
+    }
+
+    // Fonepay Instant Payment Ingestion Callback
+    if (pathname === '/api/webhooks/fonepay' && req.method === 'POST') {
+      const rawStr = await rawBody(req);
+      let payload = {};
+      try { payload = JSON.parse(rawStr || '{}'); } catch (_) { return send(res, 400, { error: 'Invalid JSON payload' }); }
+
+      const sig = req.headers['x-fonepay-signature'] || payload.signature;
+      const callback = paymentNepalConnector.normalizeFonepayCallback(payload, sig);
+
+      const d = readData();
+      d.quotes = d.quotes || [];
+      d.opportunities = d.opportunities || [];
+
+      const quote = d.quotes.find(q => q.id === callback.quote_id || q.quote_number === callback.quote_id);
+      if (!quote) return send(res, 404, { error: 'Matching quote not found for payment' });
+
+      quote.status = callback.status === 'completed' ? 'Paid' : 'Payment Failed';
+      quote.payment_details = callback;
+      quote.paid_at = new Date().toISOString();
+
+      let dealAdvanced = false;
+      if (callback.status === 'completed' && quote.deal_id) {
+        const oppo = d.opportunities.find(o => o.id === quote.deal_id);
+        if (oppo) {
+          oppo.stage = 'Closed Won';
+          oppo.probability = 100;
+          oppo.updated_at = new Date().toISOString();
+          dealAdvanced = true;
+          broadcastEvent('deal_won', oppo, quote.tenant_id);
+        }
+      }
+
+      writeData(d);
+      broadcastEvent('quote_paid', quote, quote.tenant_id);
+      await audit(quote.tenant_id, 'system_fonepay', 'payment_reconciled', 'quote', quote.id, {
+        amount: callback.amount,
+        txn_id: callback.transaction_id,
+        deal_advanced: dealAdvanced
+      });
+
+      return send(res, 200, { success: true, ok: true, quote_id: quote.id, status: quote.status, deal_advanced: dealAdvanced });
+    }
+
+    // eSewa Instant Payment Ingestion Callback
+    if (pathname === '/api/webhooks/esewa' && req.method === 'POST') {
+      const rawStr = await rawBody(req);
+      let payload = {};
+      try { payload = JSON.parse(rawStr || '{}'); } catch (_) { return send(res, 400, { error: 'Invalid JSON payload' }); }
+
+      const sig = req.headers['x-esewa-signature'] || payload.signature;
+      const callback = paymentNepalConnector.normalizeEsewaCallback(payload, sig);
+
+      const d = readData();
+      d.quotes = d.quotes || [];
+      d.opportunities = d.opportunities || [];
+
+      const quote = d.quotes.find(q => q.id === callback.quote_id || q.quote_number === callback.quote_id);
+      if (!quote) return send(res, 404, { error: 'Matching quote not found for payment' });
+
+      quote.status = callback.status === 'completed' ? 'Paid' : 'Payment Failed';
+      quote.payment_details = callback;
+      quote.paid_at = new Date().toISOString();
+
+      let dealAdvanced = false;
+      if (callback.status === 'completed' && quote.deal_id) {
+        const oppo = d.opportunities.find(o => o.id === quote.deal_id);
+        if (oppo) {
+          oppo.stage = 'Closed Won';
+          oppo.probability = 100;
+          oppo.updated_at = new Date().toISOString();
+          dealAdvanced = true;
+          broadcastEvent('deal_won', oppo, quote.tenant_id);
+        }
+      }
+
+      writeData(d);
+      broadcastEvent('quote_paid', quote, quote.tenant_id);
+      await audit(quote.tenant_id, 'system_esewa', 'payment_reconciled', 'quote', quote.id, {
+        amount: callback.amount,
+        txn_id: callback.transaction_id,
+        deal_advanced: dealAdvanced
+      });
+
+      return send(res, 200, { success: true, ok: true, quote_id: quote.id, status: quote.status, deal_advanced: dealAdvanced });
+    }
+
     // Static Asset Delivery (Sandboxed, Whitelisted & Protected against Information Disclosure)
     if (req.method === 'GET') {
       const normalized = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
@@ -3441,8 +3559,8 @@ const server = http.createServer(async (req, res) => {
         reqFile.startsWith('db') ||
         reqFile.startsWith('connectors') ||
         reqFile.startsWith('providers') ||
-        // Only allow client-side app.js and sw.js; block all server-side JS files
-        (reqFile.endsWith('.js') && reqFile !== 'app.js' && reqFile !== 'sw.js');
+        // Only allow client-side app.js, sw.js, and bs-calendar.js; block all server-side JS files
+        (reqFile.endsWith('.js') && reqFile !== 'app.js' && reqFile !== 'sw.js' && reqFile !== 'bs-calendar.js');
 
       if (!isBlocked) {
         let f = path.join(__dirname, reqFile);

@@ -41,6 +41,109 @@
   --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #111827;
+  --ink: #f8fafc;
+  --ink-secondary: #cbd5e1;
+  --muted: #94a3b8;
+  --line: #1e293b;
+  --line-light: #182234;
+  --blue-light: #172554;
+  --indigo-light: #1e1b4b;
+  --green-light: #064e3b;
+  --orange-light: #451a03;
+  --red-light: #450a0a;
+  --purple-light: #2e1065;
+  --gradient-card: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  --glass-panel: rgba(17, 24, 39, 0.92);
+  --glass-border: rgba(30, 41, 59, 0.85);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .sidebar {
+  background: #090d16;
+  border-right-color: #1e293b;
+}
+
+[data-theme="dark"] .topbar {
+  background: rgba(9, 13, 22, 0.85);
+  border-bottom-color: #1e293b;
+}
+
+[data-theme="dark"] .form-control {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .form-control:focus {
+  background: #111827;
+  border-color: var(--blue);
+}
+
+[data-theme="dark"] .table th {
+  background: #111827;
+  color: #94a3b8;
+  border-bottom-color: #1e293b;
+}
+
+[data-theme="dark"] .table td {
+  border-bottom-color: #1e293b;
+}
+
+[data-theme="dark"] .table tr:hover td {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+[data-theme="dark"] .modal-box {
+  background: #111827;
+  border-color: #1e293b;
+}
+
+@media (max-width: 640px) {
+  .table-responsive {
+    border: none;
+  }
+  .table-card-mobile {
+    display: block;
+    width: 100%;
+  }
+  .table-card-mobile thead {
+    display: none;
+  }
+  .table-card-mobile tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .table-card-mobile tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .table-card-mobile td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line-light);
+    padding: 8px 0;
+  }
+  .table-card-mobile td:last-child {
+    border-bottom: none;
+    padding-top: 10px;
+    justify-content: flex-end;
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

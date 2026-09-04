@@ -84,6 +84,15 @@ Platform-wide telemetry, tenant directory, tenant creation/update, cross-tenant 
 - **AI Pitch & Social Ad Creative Studio (`pitch-studio-service.js`, `/api/ai/pitch-studio/generate`):** 1-click generation of personalized WhatsApp pitches in Nepglish, Nepali, and English, plus platform-optimized Facebook/Instagram ad copy with hashtags and value hooks.
 - **1-Click WhatsApp Commercial Product Flyer (`/api/products/:id/flyer-data`):** Generates branded commercial product proposals with exact 13% Nepal VAT calculations, instant QR codes, and 1-click WhatsApp web/mobile sharing links (`https://wa.me/?text=...`).
 
+### Deep Local Integrations & Observability (Phases 1–3)
+- **Bikram Sambat (BS/AD) Dual Calendar Engine (`bs-calendar.js`, `/api/calendar/dual-date`):** Universal client/server dual calendar supporting BS years (2075–2090), Nepali month names, and automatic Shrawan–Ashadh fiscal year calculations.
+- **Fonepay & eSewa Instant QR Payment Callbacks (`connectors/payment-nepal.js`):** Merchant signature validation, automated quote clearance, and automatic progression of linked opportunities to `Closed Won`.
+- **Prometheus Metrics Engine (`metrics-service.js`, `/metrics`):** Request latency histogram buckets, route and status counters, active SSE subscriber gauges, and memory usage exposition.
+- **Structured JSON Logging Engine (`logger.js`):** High-throughput NDJSON output with integrated DLP secret redaction.
+- **AES-256-GCM Cryptographic Storage (`crypto-storage.js`):** Envelope encryption protecting sensitive tenant credentials, webhook secrets, and tokens at rest.
+- **Multi-Channel Follow-up Sequences (`followup-execution.js`):** Multi-channel message preparation for WhatsApp, Email, and SMS with working hours preflight and customer opt-out enforcement.
+- **Modular HTTP Router (`router.js`):** Lightweight, zero-dependency parameterized route multiplexer.
+
 ## 5. Data model
 Every tenant-owned record contains `tenant_id`, timestamps, and where relevant `deleted_at`. Key relationships:
 

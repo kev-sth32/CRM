@@ -21,6 +21,7 @@ const SalesOS = {
   ],
 
   init(activeRouteName, breadcrumbs = []) {
+    this.initTheme();
     this.checkSession();
     this.renderSidebar(activeRouteName);
     this.renderTopbar(breadcrumbs);
@@ -147,6 +148,10 @@ const SalesOS = {
 
         <button class="btn-icon" title="WebRTC Softphone Dialer" id="btnToggleSoftphone" onclick="SalesOS.toggleSoftphone()" style="position:relative">
           <span>📞</span>
+        </button>
+
+        <button class="btn-icon" title="Toggle Light / Dark Theme" id="btnThemeToggle" onclick="SalesOS.toggleTheme()" style="position:relative;font-size:14px">
+          <span id="themeToggleIcon">🌙</span>
         </button>
 
         <button class="btn-icon" title="Notifications" onclick="SalesOS.showToast('All systems operational. 3 AI actions pending review.', 'info')">
@@ -666,6 +671,47 @@ const SalesOS = {
       timerEl.style.display = 'none';
       timerEl.textContent = '00:00';
     }
+  },
+
+  initTheme() {
+    if (typeof window === 'undefined') return;
+    const saved = localStorage.getItem('salesos_theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('themeToggleIcon');
+    if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  },
+
+  toggleTheme() {
+    if (typeof window === 'undefined') return;
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('salesos_theme', next);
+    const icon = document.getElementById('themeToggleIcon');
+    if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+    this.showToast(`Switched to ${next === 'dark' ? 'Dark' : 'Light'} mode`, 'info', 1500);
+  },
+
+  formatDualDate(date, options = {}) {
+    if (typeof window !== 'undefined' && window.BSCalendar) {
+      return window.BSCalendar.formatDualDate(date, options);
+    }
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? 'Invalid Date' : d.toISOString().split('T')[0];
+  },
+
+  currentNepaliFiscalYear(date) {
+    if (typeof window !== 'undefined' && window.BSCalendar) {
+      return window.BSCalendar.getNepaliFiscalYear(date);
+    }
+    return 'FY 2083/84';
+  },
+
+  formatCurrency(amount, currency = 'NPR') {
+    const num = Number(amount) || 0;
+    return `${currency} ${num.toLocaleString()}`;
   }
 };
 

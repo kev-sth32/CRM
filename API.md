@@ -285,3 +285,15 @@ GET  /api/products/:id/flyer-data
 - `POST /api/ai/pitch-studio/generate`: 1-click generation of personalized WhatsApp pitches (Nepglish/Nepali/English) and social ad creatives with platform-targeted hooks and hashtags.
 - `GET /api/products/:id/flyer-data`: Generates commercial product proposal specifications with exact 13% Nepal VAT calculations, instant QR codes, and pre-formatted WhatsApp share text.
 
+### Deep Local Integrations & Observability (Phases 1–3)
+```http
+GET  /metrics
+GET  /api/calendar/dual-date
+POST /api/webhooks/fonepay
+POST /api/webhooks/esewa
+```
+- `GET /metrics`: High-throughput Prometheus metrics scrape endpoint exposing request counts, P95/P99 latency histograms, active SSE clients, and memory gauges.
+- `GET /api/calendar/dual-date`: Converts any Gregorian (AD) date to Bikram Sambat (BS) with month names, dual formatted strings, and Nepal fiscal year (`FY YYYY/YY`).
+- `POST /api/webhooks/fonepay`: Inbound Fonepay payment verification webhook; reconciles matching quotes to `Paid` and advances linked opportunities to `Closed Won`.
+- `POST /api/webhooks/esewa`: Inbound eSewa mobile wallet payment verification webhook; clears quotes and marks deals `Closed Won`.
+

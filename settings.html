@@ -57,6 +57,8 @@
           <button class="settings-tab" onclick="switchTab('billing', this)">💳 Subscription & Billing</button>
           <button class="settings-tab" onclick="switchTab('custom_fields', this)">🧩 Custom Fields</button>
           <button class="settings-tab" onclick="switchTab('webhooks', this)">⚡ Webhooks & Zapier</button>
+          <button class="settings-tab" onclick="switchTab('fls', this)">🛡️ Field Security (FLS)</button>
+          <button class="settings-tab" onclick="switchTab('sso', this)">🔑 Enterprise SSO & SCIM</button>
           <button class="settings-tab" onclick="switchTab('team', this)">Users & Access Roles</button>
           <button class="settings-tab" onclick="switchTab('audit', this)">Audit Log Viewer</button>
         </div>
@@ -447,6 +449,123 @@
             </div>
           </div>
         </div>
+
+        <!-- Section: Field-Level Security (FLS) -->
+        <div class="settings-section" id="sec-fls">
+          <div class="card" style="padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0 0 4px">Granular Field-Level Security (FLS)</h3>
+                <p style="font-size:12px;color:var(--muted);margin:0">Enforce enterprise role-based field masking, read-only constraints, and confidential data protection across CRM entities.</p>
+              </div>
+              <button class="btn btn-primary" onclick="saveFlsSettings()">Save FLS Rules</button>
+            </div>
+
+            <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center">
+              <label style="font-size:13px;font-weight:600">Select Role to Configure:</label>
+              <select id="flsRoleSelect" class="form-control" style="width:200px" onchange="renderFlsTable()">
+                <option value="rep">Sales Representative (Rep)</option>
+                <option value="manager">Sales Manager</option>
+                <option value="guest">Guest / External Partner</option>
+                <option value="admin">Administrator (Full Access)</option>
+              </select>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Module / Entity</th>
+                    <th>Field Name</th>
+                    <th>Sensitivity</th>
+                    <th>Access Permission</th>
+                    <th>Preview Masking</th>
+                  </tr>
+                </thead>
+                <tbody id="flsTableBody">
+                  <tr><td colspan="5" style="text-align:center;padding:24px">Loading FLS policies...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Enterprise SSO & SCIM Directory Sync -->
+        <div class="settings-section" id="sec-sso">
+          <div class="card" style="padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0 0 4px">Enterprise SAML 2.0 Single Sign-On (SSO)</h3>
+                <p style="font-size:12px;color:var(--muted);margin:0">Integrate with Okta, Microsoft Entra ID (Azure AD), Google Workspace, or PingFederate.</p>
+              </div>
+              <button class="btn btn-primary" onclick="saveSsoSettings()">Save SSO Configuration</button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;background:var(--surface);border-radius:var(--radius-sm)">
+              <input type="checkbox" id="ssoEnabledToggle" style="width:18px;height:18px;cursor:pointer">
+              <label for="ssoEnabledToggle" style="font-size:13.5px;font-weight:700;cursor:pointer">
+                Enforce SAML 2.0 Authentication for Workspace Members
+              </label>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+              <div class="form-group">
+                <label class="form-label">Identity Provider Entity ID (Issuer)</label>
+                <input type="text" id="ssoIdpEntityId" class="form-control" placeholder="https://dev-123456.okta.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">SAML 2.0 Single Sign-On Endpoint URL</label>
+                <input type="url" id="ssoIdpUrl" class="form-control" placeholder="https://dev-123456.okta.com/app/sso/saml">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">X.509 Public Certificate (Base64 PEM)</label>
+              <textarea id="ssoX509Cert" class="form-control" rows="4" style="font-family:monospace;font-size:12px" placeholder="-----BEGIN CERTIFICATE-----&#10;MIIDpDCCAoygAwIBAgIGAX12345...&#10;-----END CERTIFICATE-----"></textarea>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
+              <input type="checkbox" id="ssoJitProvisioning" checked>
+              <label for="ssoJitProvisioning" style="font-size:13px;cursor:pointer">
+                Enable Just-In-Time (JIT) Automatic User Account Provisioning
+              </label>
+            </div>
+
+            <!-- Service Provider Metadata -->
+            <div style="background:#f8fafc;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:28px">
+              <h4 style="font-size:13.5px;font-weight:700;margin:0 0 8px">SalesOS SP (Service Provider) Metadata</h4>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Provide these URLs when configuring your enterprise Identity Provider (IdP) application:</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+                <div>
+                  <strong style="display:block;margin-bottom:4px;color:var(--ink)">Single Sign-On ACS URL:</strong>
+                  <code style="background:#fff;padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/api/auth/saml/callback</code>
+                </div>
+                <div>
+                  <strong style="display:block;margin-bottom:4px;color:var(--ink)">Entity ID / Audience URI:</strong>
+                  <code style="background:#fff;padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/saml/metadata</code>
+                </div>
+              </div>
+            </div>
+
+            <!-- SCIM 2.0 Directory Sync -->
+            <div style="border-top:1px solid var(--line);padding-top:20px">
+              <h4 style="font-size:14px;font-weight:750;margin:0 0 6px">SCIM 2.0 Automated User Lifecycle Provisioning</h4>
+              <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Automatically provision and deprovision employee seats from Azure Active Directory or Okta SCIM connectors.</p>
+              
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+                <div>
+                  <label class="form-label">SCIM 2.0 Base URL</label>
+                  <code style="background:#fff;padding:8px 12px;border:1px solid var(--line);border-radius:6px;display:block;font-size:12px">https://salesos.app/scim/v2</code>
+                </div>
+                <div>
+                  <label class="form-label">SCIM Bearer Authentication Token</label>
+                  <input type="text" id="ssoScimToken" class="form-control" style="font-family:monospace" readonly value="scim_sec_token_98fa7210e">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -558,6 +677,8 @@
         loadWebhooks();
         loadWebhookDeliveries();
       }
+      if (tabId === 'fls') loadFlsSettings();
+      if (tabId === 'sso') loadSsoSettings();
     }
 
     async function loadSettings() {
@@ -953,6 +1074,140 @@
         }
       } catch (_) {
         SalesOS.showToast('Error applying template', 'error');
+      }
+    }
+
+    // Field-Level Security (FLS) Logic
+    let flsPolicyData = {
+      roles: {
+        rep: {
+          leads: { budget: 'masked', annual_revenue: 'read_only' },
+          contacts: { ssn: 'masked', salary: 'masked' },
+          opportunities: { internal_cost: 'masked', margin_percent: 'read_only' }
+        },
+        manager: {
+          leads: { budget: 'read_write', annual_revenue: 'read_write' },
+          contacts: { ssn: 'masked', salary: 'read_only' },
+          opportunities: { internal_cost: 'read_only', margin_percent: 'read_write' }
+        },
+        guest: {
+          leads: { budget: 'masked', annual_revenue: 'masked' },
+          contacts: { ssn: 'masked', salary: 'masked' },
+          opportunities: { internal_cost: 'masked', margin_percent: 'masked' }
+        }
+      }
+    };
+
+    const standardFlsFields = [
+      { module: 'leads', field: 'budget', label: 'Lead Budget (NPR)', sensitivity: 'Confidential' },
+      { module: 'leads', field: 'annual_revenue', label: 'Annual Revenue', sensitivity: 'Sensitive' },
+      { module: 'contacts', field: 'ssn', label: 'Tax ID / PAN / SSN', sensitivity: 'Critical PII' },
+      { module: 'contacts', field: 'salary', label: 'Annual Compensation', sensitivity: 'Confidential' },
+      { module: 'opportunities', field: 'internal_cost', label: 'Internal Cost of Goods (COGS)', sensitivity: 'Restricted' },
+      { module: 'opportunities', field: 'margin_percent', label: 'Gross Margin %', sensitivity: 'Sensitive' }
+    ];
+
+    async function loadFlsSettings() {
+      try {
+        const res = await fetch('/api/settings/fls');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.roles) flsPolicyData.roles = { ...flsPolicyData.roles, ...data.roles };
+        }
+      } catch (e) {}
+      renderFlsTable();
+    }
+
+    function renderFlsTable() {
+      const role = document.getElementById('flsRoleSelect').value;
+      const rolePolicy = flsPolicyData.roles[role] || {};
+      const tbody = document.getElementById('flsTableBody');
+
+      tbody.innerHTML = standardFlsFields.map(item => {
+        const currentPerm = (rolePolicy[item.module] && rolePolicy[item.module][item.field]) || (role === 'admin' ? 'read_write' : 'read_write');
+        const badgeColor = item.sensitivity === 'Critical PII' ? 'badge-red' : item.sensitivity === 'Confidential' ? 'badge-orange' : 'badge-blue';
+        const preview = currentPerm === 'masked' ? '••••••••' : currentPerm === 'read_only' ? '<span style="color:var(--muted)">Lock (Read-only)</span>' : '<span style="color:var(--green)">Editable</span>';
+
+        return `
+          <tr>
+            <td><strong style="text-transform:capitalize">${item.module}</strong></td>
+            <td><code>${item.field}</code> <small style="color:var(--muted);display:block">${item.label}</small></td>
+            <td><span class="badge ${badgeColor}">${item.sensitivity}</span></td>
+            <td>
+              <select class="form-control" style="font-size:12px;padding:4px 8px;width:140px" onchange="updateFlsRule('${role}', '${item.module}', '${item.field}', this.value)">
+                <option value="read_write" ${currentPerm === 'read_write' ? 'selected' : ''}>Read / Write</option>
+                <option value="read_only" ${currentPerm === 'read_only' ? 'selected' : ''}>Read Only</option>
+                <option value="masked" ${currentPerm === 'masked' ? 'selected' : ''}>Masked (••••)</option>
+              </select>
+            </td>
+            <td><small>${preview}</small></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateFlsRule(role, mod, field, val) {
+      if (!flsPolicyData.roles[role]) flsPolicyData.roles[role] = {};
+      if (!flsPolicyData.roles[role][mod]) flsPolicyData.roles[role][mod] = {};
+      flsPolicyData.roles[role][mod][field] = val;
+      renderFlsTable();
+    }
+
+    async function saveFlsSettings() {
+      SalesOS.showToast('Saving Field-Level Security rules...');
+      try {
+        const res = await fetch('/api/settings/fls', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(flsPolicyData)
+        });
+        if (res.ok) {
+          SalesOS.showToast('Field-Level Security policy updated successfully!', 'success');
+        } else {
+          SalesOS.showToast('Failed to save FLS policy', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error saving FLS', 'error');
+      }
+    }
+
+    // Enterprise SAML 2.0 & SCIM Logic
+    async function loadSsoSettings() {
+      try {
+        const res = await fetch('/api/settings/sso');
+        if (res.ok) {
+          const s = await res.json();
+          document.getElementById('ssoEnabledToggle').checked = !!s.enabled;
+          if (s.idp_entity_id) document.getElementById('ssoIdpEntityId').value = s.idp_entity_id;
+          if (s.idp_sso_url) document.getElementById('ssoIdpUrl').value = s.idp_sso_url;
+          if (s.x509_cert) document.getElementById('ssoX509Cert').value = s.x509_cert;
+          document.getElementById('ssoJitProvisioning').checked = s.jit_provisioning !== false;
+          if (s.scim_token) document.getElementById('ssoScimToken').value = s.scim_token;
+        }
+      } catch (e) {}
+    }
+
+    async function saveSsoSettings() {
+      const enabled = document.getElementById('ssoEnabledToggle').checked;
+      const idp_entity_id = document.getElementById('ssoIdpEntityId').value.trim();
+      const idp_sso_url = document.getElementById('ssoIdpUrl').value.trim();
+      const x509_cert = document.getElementById('ssoX509Cert').value.trim();
+      const jit_provisioning = document.getElementById('ssoJitProvisioning').checked;
+
+      SalesOS.showToast('Saving SAML SSO configuration...');
+      try {
+        const res = await fetch('/api/settings/sso', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled, idp_entity_id, idp_sso_url, x509_cert, jit_provisioning })
+        });
+        if (res.ok) {
+          SalesOS.showToast('Enterprise SSO & SCIM configuration saved!', 'success');
+        } else {
+          SalesOS.showToast('Failed to save SSO configuration', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error saving SSO', 'error');
       }
     }
 

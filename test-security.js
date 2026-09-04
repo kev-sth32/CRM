@@ -451,10 +451,17 @@ const assert = require('assert');
     created_at: new Date().toISOString()
   });
   const writeDbSync = (obj) => {
-    fs.writeFileSync('data.json', JSON.stringify(obj, null, 2), 'utf8');
+    const tmp = `data.json.tmp.${Date.now()}.${Math.floor(Math.random() * 10000)}`;
+    try {
+      fs.writeFileSync(tmp, JSON.stringify(obj, null, 2), 'utf8');
+      fs.renameSync(tmp, 'data.json');
+    } catch (err) {
+      try { fs.unlinkSync(tmp); } catch (_) {}
+      fs.writeFileSync('data.json', JSON.stringify(obj, null, 2), 'utf8');
+    }
   };
   writeDbSync(dObj);
-  await new Promise(r => setTimeout(r, 60));
+  await new Promise(r => setTimeout(r, 120));
 
   // Tenant 1 attempts to execute Tenant 2 approval (must be rejected)
   const rCrossExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
@@ -469,7 +476,7 @@ const assert = require('assert');
   appItem.tenant_id = 'tenant-1';
   appItem.status = 'pending';
   writeDbSync(dObj2);
-  await new Promise(r => setTimeout(r, 60));
+  await new Promise(r => setTimeout(r, 120));
 
   const rUnapprovedExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
     method: 'POST',
@@ -482,7 +489,7 @@ const assert = require('assert');
   const appItem3 = dObj3.ai_approvals.find(a => a.id === testApprovalId);
   appItem3.status = 'approved';
   writeDbSync(dObj3);
-  await new Promise(r => setTimeout(r, 60));
+  await new Promise(r => setTimeout(r, 120));
   const rValidExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
     method: 'POST',
     headers: { 'Cookie': sessionCookie }

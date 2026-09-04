@@ -20,6 +20,7 @@
             <p>Unified customer profiles, contact associations, interaction history, and relationship tracking.</p>
           </div>
           <div class="page-actions">
+            <button class="btn btn-secondary" onclick="scanContactDuplicates()">🔍 Scan Duplicates</button>
             <button class="btn btn-secondary" onclick="loadContacts()">↻ Refresh</button>
             <button class="btn btn-primary" onclick="openCreateContactModal()">＋ New Contact</button>
           </div>
@@ -215,6 +216,44 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="SalesOS.closeModal('editContactModal')">Cancel</button>
         <button class="btn btn-primary" onclick="submitEditContact()">Update Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: 3-Column Deduplication & Contact Merge -->
+  <div class="modal-overlay" id="contactMergeModal">
+    <div class="modal-box" style="max-width:760px">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">🧬</span>
+          <h3 style="margin:0">3-Column Contact Deduplication & Merge</h3>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('contactMergeModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f8fafc;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="font-size:12px;color:var(--muted)">Similarity Score:</span>
+            <strong id="contactMatchScore" class="badge badge-green" style="margin-left:6px">96% Match</strong>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllContactColumn('a')">Pick All From A</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllContactColumn('b')">Pick All From B</button>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff">
+          <div class="merge-grid" style="background:#f1f5f9;font-weight:700;font-size:12px">
+            <div>Field</div>
+            <div id="contactColHeaderA">Record A (Primary)</div>
+            <div id="contactColHeaderB">Record B (Duplicate)</div>
+          </div>
+          <div id="contactMergeRowsContainer"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('contactMergeModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="executeContactMerge()">Merge & Consolidate</button>
       </div>
     </div>
   </div>
@@ -418,6 +457,121 @@
         }
       } catch (e) {
         SalesOS.showToast('Error deleting contact', 'error');
+      }
+    }
+
+    // Contact Deduplication & Merge Handlers
+    let currentContactMergePair = null;
+    let selectedContactSurvivorValues = {};
+
+    async function scanContactDuplicates() {
+      SalesOS.showToast('Scanning contacts for fuzzy duplicates...');
+      try {
+        const res = await fetch('/api/contacts/duplicates');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!data.duplicates || !data.duplicates.length) {
+          SalesOS.showToast('No duplicate contacts detected!', 'success');
+          return;
+        }
+
+        SalesOS.showToast(`Found ${data.duplicates.length} duplicate contact pair(s)! Opening merge review...`, 'info');
+        openContactMergeModal(data.duplicates[0]);
+      } catch (e) {
+        SalesOS.showToast('Error scanning duplicate contacts', 'error');
+      }
+    }
+
+    function openContactMergeModal(pair) {
+      currentContactMergePair = pair;
+      selectedContactSurvivorValues = {};
+
+      const recA = pair.record_a || {};
+      const recB = pair.record_b || {};
+
+      document.getElementById('contactMatchScore').textContent = `${Math.round((pair.similarity_score || 0.9) * 100)}% Match (${pair.match_rule || 'Fuzzy Similarity'})`;
+      document.getElementById('contactColHeaderA').textContent = `${recA.name || 'Record A'} (#${recA.id || 'A'})`;
+      document.getElementById('contactColHeaderB').textContent = `${recB.name || 'Record B'} (#${recB.id || 'B'})`;
+
+      const fields = [
+        { key: 'name', label: 'Contact Name' },
+        { key: 'title', label: 'Job Title' },
+        { key: 'company_name', label: 'Company Account' },
+        { key: 'email', label: 'Email Address' },
+        { key: 'phone', label: 'Phone Number' }
+      ];
+
+      const container = document.getElementById('contactMergeRowsContainer');
+      container.innerHTML = fields.map(f => {
+        const valA = recA[f.key] !== undefined ? String(recA[f.key]) : '—';
+        const valB = recB[f.key] !== undefined ? String(recB[f.key]) : '—';
+        selectedContactSurvivorValues[f.key] = recA[f.key] !== undefined ? recA[f.key] : recB[f.key];
+
+        return `
+          <div class="merge-grid" id="contactMergeRow-${f.key}">
+            <div class="merge-field-label">${escapeHtml(f.label)}</div>
+            <div class="merge-val-card selected" id="contactCard-${f.key}-a" onclick="selectContactSurvivorVal('${f.key}', 'a')">
+              <input type="radio" name="contactRadio-${f.key}" checked>
+              <span>${escapeHtml(valA)}</span>
+            </div>
+            <div class="merge-val-card" id="contactCard-${f.key}-b" onclick="selectContactSurvivorVal('${f.key}', 'b')">
+              <input type="radio" name="contactRadio-${f.key}">
+              <span>${escapeHtml(valB)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      SalesOS.showModal('contactMergeModal');
+    }
+
+    function selectContactSurvivorVal(field, choice) {
+      const rec = choice === 'a' ? currentContactMergePair.record_a : currentContactMergePair.record_b;
+      selectedContactSurvivorValues[field] = rec[field];
+
+      const cardA = document.getElementById(`contactCard-${field}-a`);
+      const cardB = document.getElementById(`contactCard-${field}-b`);
+      if (cardA && cardB) {
+        cardA.classList.toggle('selected', choice === 'a');
+        cardA.querySelector('input').checked = (choice === 'a');
+        cardB.classList.toggle('selected', choice === 'b');
+        cardB.querySelector('input').checked = (choice === 'b');
+      }
+    }
+
+    function selectAllContactColumn(choice) {
+      if (!currentContactMergePair) return;
+      const rec = choice === 'a' ? currentContactMergePair.record_a : currentContactMergePair.record_b;
+      Object.keys(rec).forEach(k => {
+        selectContactSurvivorVal(k, choice);
+      });
+    }
+
+    async function executeContactMerge() {
+      if (!currentContactMergePair) return;
+      SalesOS.showToast('Merging contacts and consolidating associations...');
+
+      try {
+        const res = await fetch('/api/contacts/merge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            survivor_id: currentContactMergePair.record_a.id,
+            victim_id: currentContactMergePair.record_b.id,
+            survivor_fields: selectedContactSurvivorValues
+          })
+        });
+
+        if (res.ok) {
+          SalesOS.closeModal('contactMergeModal');
+          SalesOS.showToast('Contacts successfully merged and consolidated!', 'success');
+          loadContacts();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to merge contacts', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error during merge', 'error');
       }
     }
 

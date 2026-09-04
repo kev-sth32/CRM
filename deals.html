@@ -259,6 +259,34 @@
           </div>
         </div>
 
+        <!-- Collaborative Revenue Forecast Ribbon -->
+        <div class="forecast-ribbon" id="collaborativeForecastRibbon">
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Team Quota</span>
+            <span class="forecast-tile-val" id="fcQuota">NPR 1,00,00,000</span>
+          </div>
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Closed Won</span>
+            <span class="forecast-tile-val" style="color:var(--green)" id="fcClosedWon">NPR 0</span>
+          </div>
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Commit</span>
+            <span class="forecast-tile-val" style="color:var(--blue)" id="fcCommit">NPR 0</span>
+          </div>
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Best Case</span>
+            <span class="forecast-tile-val" style="color:var(--purple)" id="fcBestCase">NPR 0</span>
+          </div>
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Pipeline</span>
+            <span class="forecast-tile-val" id="fcPipeline">NPR 0</span>
+          </div>
+          <div class="forecast-tile">
+            <span class="forecast-tile-label">Quota Attainment</span>
+            <span class="forecast-tile-val" id="fcAttainment">0%</span>
+          </div>
+        </div>
+
         <!-- Kanban Board View -->
         <div id="kanbanViewWrapper">
           <div id="kanbanAriaLive" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></div>
@@ -462,6 +490,33 @@
     </div>
   </div>
 
+  <!-- Modal: Opportunity Splits -->
+  <div class="modal-overlay" id="dealSplitsModal">
+    <div class="modal-box" style="max-width:540px">
+      <div class="modal-header">
+        <h3 style="margin:0">⚑ Opportunity Revenue Splits</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('dealSplitsModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">
+          Split revenue quota attribution among co-owners. All active percentage allocations must sum exactly to <strong>100%</strong>.
+        </p>
+        <div id="splitsContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
+        
+        <button type="button" class="btn btn-secondary btn-sm" onclick="addSplitRow()">＋ Add Split Owner</button>
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+          <span style="font-weight:700">Total Allocation:</span>
+          <strong id="splitTotalDisplay" style="font-size:15px;color:var(--ink)">100%</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('dealSplitsModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveDealSplits()">Save Splits</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
   <script>
     SalesOS.init('Deals', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Deals' }]);
@@ -553,6 +608,7 @@
         allDeals = await res.json();
         renderKanban();
         renderTable();
+        loadForecastSummary();
       } catch (e) {
         SalesOS.showToast('Unable to load opportunities', 'error');
       }
@@ -623,6 +679,7 @@
                 <div class="deal-amount">${SalesOS.formatCurrency(d.amount)}</div>
                 <div class="deal-meta">
                   <span class="badge ${d.risk === 'At Risk' ? 'badge-red' : 'badge-green'}">${escapeHtml(d.risk || 'Healthy')}</span>
+                  <button type="button" class="btn btn-secondary" style="padding:1px 6px;font-size:10px" onclick="openDealSplitsModal(event, '${escapeHtml(d.id)}')">⚑ Splits</button>
                   <span>${escapeHtml(String(d.probability || 50))}% prob.</span>
                 </div>
                 <div class="mobile-card-actions" onclick="event.stopPropagation()">
@@ -1057,6 +1114,113 @@
         }
       } catch (e) {
         SalesOS.showToast('Error deleting opportunity', 'error');
+      }
+    }
+
+    // Collaborative Forecast & Splits Handlers
+    let currentSplitsDealId = null;
+    let currentSplitsList = [];
+
+    async function loadForecastSummary() {
+      try {
+        const res = await fetch('/api/forecasts/summary');
+        if (res.ok) {
+          const fc = await res.json();
+          document.getElementById('fcQuota').textContent = SalesOS.formatCurrency(fc.quota);
+          document.getElementById('fcClosedWon').textContent = SalesOS.formatCurrency(fc.closed_won);
+          document.getElementById('fcCommit').textContent = SalesOS.formatCurrency(fc.commit);
+          document.getElementById('fcBestCase').textContent = SalesOS.formatCurrency(fc.best_case);
+          document.getElementById('fcPipeline').textContent = SalesOS.formatCurrency(fc.pipeline);
+          document.getElementById('fcAttainment').textContent = `${fc.attainment_percent || 0}%`;
+        }
+      } catch (e) {}
+    }
+
+    async function openDealSplitsModal(event, dealId) {
+      if (event) event.stopPropagation();
+      currentSplitsDealId = dealId;
+      const targetDeal = allDeals.find(d => String(d.id) === String(dealId)) || {};
+      
+      currentSplitsList = (targetDeal.splits && targetDeal.splits.length > 0) ? [...targetDeal.splits] : [
+        { user_id: 'usr-1', user_name: 'Arjun Sharma', split_percent: 100 }
+      ];
+
+      renderSplitRows();
+      SalesOS.showModal('dealSplitsModal');
+    }
+
+    function renderSplitRows() {
+      const container = document.getElementById('splitsContainer');
+      let total = 0;
+      container.innerHTML = currentSplitsList.map((s, idx) => {
+        total += Number(s.split_percent || 0);
+        return `
+          <div style="display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:center">
+            <input type="text" class="form-control" value="${escapeHtml(s.user_name || '')}" placeholder="Owner Name" oninput="currentSplitsList[${idx}].user_name = this.value">
+            <div style="display:flex;align-items:center;gap:4px">
+              <input type="number" class="form-control" min="1" max="100" value="${s.split_percent || 0}" oninput="updateSplitVal(${idx}, this.value)">
+              <span style="font-weight:700">%</span>
+            </div>
+            <button type="button" class="btn btn-secondary" style="padding:4px 8px;color:var(--red)" onclick="removeSplitRow(${idx})">×</button>
+          </div>
+        `;
+      }).join('');
+
+      const totalDisplay = document.getElementById('splitTotalDisplay');
+      if (totalDisplay) {
+        totalDisplay.textContent = `${total}%`;
+        totalDisplay.style.color = total === 100 ? 'var(--green)' : 'var(--red)';
+      }
+    }
+
+    function updateSplitVal(idx, val) {
+      currentSplitsList[idx].split_percent = Number(val);
+      const total = currentSplitsList.reduce((sum, s) => sum + Number(s.split_percent || 0), 0);
+      const totalDisplay = document.getElementById('splitTotalDisplay');
+      if (totalDisplay) {
+        totalDisplay.textContent = `${total}%`;
+        totalDisplay.style.color = total === 100 ? 'var(--green)' : 'var(--red)';
+      }
+    }
+
+    function addSplitRow() {
+      currentSplitsList.push({ user_id: `usr-${Date.now()}`, user_name: 'Co-Owner', split_percent: 0 });
+      renderSplitRows();
+    }
+
+    function removeSplitRow(idx) {
+      if (currentSplitsList.length <= 1) {
+        SalesOS.showToast('Must have at least one split owner', 'warning');
+        return;
+      }
+      currentSplitsList.splice(idx, 1);
+      renderSplitRows();
+    }
+
+    async function saveDealSplits() {
+      const total = currentSplitsList.reduce((sum, s) => sum + Number(s.split_percent || 0), 0);
+      if (total !== 100) {
+        SalesOS.showToast(`Splits must total exactly 100% (currently ${total}%)`, 'error');
+        return;
+      }
+
+      SalesOS.showToast('Saving opportunity splits...');
+      try {
+        const res = await fetch(`/api/opportunities/${currentSplitsDealId}/splits`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ splits: currentSplitsList })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('dealSplitsModal');
+          SalesOS.showToast('Opportunity revenue splits updated successfully!', 'success');
+          loadDeals();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to update splits', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error saving splits', 'error');
       }
     }
 

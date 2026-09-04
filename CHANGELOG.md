@@ -1,5 +1,41 @@
 # SalesOS Changelog
 
+## 2026-09-04 — Enterprise Parity with Salesforce & Zoho CRM (7 Pillars)
+
+### Added — Enterprise Core Capabilities
+- **Pillar 1: Visual Blueprint & State Machine Gates (Salesforce Flow / Zoho Blueprint):**
+  - Implemented `blueprint-service.js` with API validation gate enforcement (`validateStageTransition`) on opportunity stage progression (`PATCH /api/opportunities/:id`).
+  - Required fields, checklists, and minimum value constraints must be satisfied before deals can advance stages; unauthorized transitions return HTTP 422 with gate failure reason.
+  - Interactive UI in `automations.html` with Visual Pipeline State Machine Flow and Stage Transition Gate builder.
+- **Pillar 2: Collaborative Revenue Forecasting & Opportunity Splits:**
+  - Implemented `forecast-service.js` supporting Collaborative Forecast category rollups (Closed Won, Commit, Best Case, Pipeline) and quota attainment analytics.
+  - Added Manager Overrides (`/api/forecasts/adjust`) with audit logging.
+  - Added Multi-Owner Opportunity Splits (`/api/opportunities/:id/splits`) strictly enforcing a 100% total allocation sum with collaborative owner attribution.
+  - Interactive ribbon in `deals.html` and Opportunity Splits modal for co-owner revenue sharing.
+- **Pillar 3: Advanced CPQ, Volume Slabs & Subscription Amendments (CLM):**
+  - Implemented `clm-service.js` featuring volume pricing slabs with tiered quantity discounts (`applyVolumePricing`).
+  - Added Product Bundle validation (`validateProductBundle`) enforcing required dependency items and mutual exclusion conflict rules.
+  - Added Contract Lifecycle Management (CLM) mid-term co-terming subscription amendment proration (`calculateSubscriptionAmendment`).
+- **Pillar 4: Granular Field-Level Security (FLS) & Enterprise SSO / SCIM:**
+  - Implemented `fls-service.js` providing role-based field masking (`••••••••`), read-only lockouts, and confidential data filtering across Leads, Contacts, Opportunities, and Quotes.
+  - Integrated into generic CRM GET/PATCH route pipelines.
+  - Implemented `sso-service.js` supporting SAML 2.0 Identity Provider configurations, Just-In-Time (JIT) provisioning, Service Provider metadata, and SCIM 2.0 User resource formatting (`/scim/v2/Users`).
+  - New FLS permissions matrix and Enterprise SSO & SCIM tabs in `settings.html`.
+- **Pillar 5: Live In-App WebRTC Softphone Dialer & Telephony CTI:**
+  - Implemented `telephony-dialer-service.js` managing softphone sessions (`/api/telephony/dial`, `/api/telephony/call-state`, `/api/telephony/call-end`).
+  - Automatically logs completed call duration, timestamps, and agent notes directly into customer timeline activities.
+  - Floating WebRTC Softphone Dialer widget in `app.js` with dial pad, call timer, and topbar trigger button.
+- **Pillar 6: Data Hygiene — Fuzzy Deduplication & 3-Column Record Merge:**
+  - Implemented `dedupe-service.js` with Levenshtein distance string similarity and duplicate detection across Leads and Contacts.
+  - Added 3-column field-by-field survivor selection and atomic merge engine (`/api/leads/merge`, `/api/contacts/merge`) with activity log consolidation and victim record archival.
+  - Deduplication modal and "Scan Duplicates" buttons in `leads.html` and `contacts.html`.
+- **Pillar 7: PWA Mobile Shell & Offline Cache:**
+  - Created standalone web app manifest (`manifest.json`) and Service Worker (`sw.js`).
+  - Implemented cache-first offline asset strategy with network-first fallback for CRM API endpoints.
+  - Registered service worker across all application views via `SalesOS.init()`.
+- **Verification & Test Coverage:**
+  - Added `test-enterprise-parity.js` validating all 7 pillars end-to-end; verified 100% pass across 20 test suites and 52 security checks (`npm run test:all`).
+
 ## 2026-09-04 — Full UI/UX Elevation Across All Pages & Documentation Sync
 
 ### Added — UI/UX Overhaul Across All 16 Pages

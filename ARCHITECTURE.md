@@ -69,6 +69,15 @@ Stripe checkout session integration. SaaS subscription management. Billing porta
 ### Superadmin
 Platform-wide telemetry, tenant directory, tenant creation/update, cross-tenant switching, global SSE event monitoring.
 
+### Enterprise Parity Subsystems (Salesforce / Zoho Parity)
+- **Blueprints & State Machine Gates (`blueprint-service.js`):** Intercepts CRM pipeline mutations at the API gateway (`PATCH /api/opportunities/:id`), enforcing required fields, checklists, and minimum value criteria before allowing deals to advance.
+- **Collaborative Revenue Forecasting & Splits (`forecast-service.js`):** Aggregates category rollups (Commit, Best Case, Pipeline, Closed Won), supports manager overrides with audit trails, and enforces strict 100% sum multi-owner opportunity split allocations.
+- **Advanced CPQ, Volume Slabs & CLM (`clm-service.js`):** Tiered quantity discounts, product bundling dependency/conflict constraints, and co-terminating mid-term subscription contract amendment proration.
+- **Field-Level Security & Enterprise SSO / SCIM (`fls-service.js`, `sso-service.js`):** Role-based field masking (`••••••••`) and read-only locks on CRM records; SAML 2.0 Identity Provider integration with JIT provisioning and RFC 7643/7644 SCIM 2.0 user directory synchronization.
+- **In-App WebRTC Softphone & Telephony CTI (`telephony-dialer-service.js`):** In-browser click-to-call dialer with real-time call states and automatic customer activity timeline logging.
+- **Data Hygiene & Deduplication (`dedupe-service.js`):** Levenshtein distance string similarity duplicate detection and atomic 3-column field survivor merge engine for Leads and Contacts.
+- **PWA Mobile Shell & Offline Cache (`manifest.json`, `sw.js`):** Standalone web app manifest and Service Worker implementing cache-first static asset delivery and network-first CRM API fallback.
+
 ## 5. Data model
 Every tenant-owned record contains `tenant_id`, timestamps, and where relevant `deleted_at`. Key relationships:
 

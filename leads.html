@@ -70,6 +70,7 @@
             <p>Capture, prioritize, AI-qualify, and convert prospective accounts into revenue opportunities.</p>
           </div>
           <div class="page-actions">
+            <button class="btn btn-secondary" onclick="scanLeadDuplicates()">🔍 Scan Duplicates</button>
             <button class="btn btn-secondary" onclick="loadLeads()">↻ Refresh</button>
             <button class="btn btn-primary" onclick="openCreateLeadModal()">＋ New Lead</button>
           </div>
@@ -374,6 +375,44 @@
             <button type="submit" class="btn btn-primary" id="emailSendBtn">Send Email & Log Timeline</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: 3-Column Deduplication & Record Merge -->
+  <div class="modal-overlay" id="leadMergeModal">
+    <div class="modal-box" style="max-width:760px">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">🧬</span>
+          <h3 style="margin:0">3-Column Lead Deduplication & Merge</h3>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('leadMergeModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f8fafc;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="font-size:12px;color:var(--muted)">Similarity Score:</span>
+            <strong id="mergeMatchScore" class="badge badge-green" style="margin-left:6px">94% Fuzzy Match</strong>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllMergeColumn('a')">Pick All From A</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllMergeColumn('b')">Pick All From B</button>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff">
+          <div class="merge-grid" style="background:#f1f5f9;font-weight:700;font-size:12px">
+            <div>Field</div>
+            <div id="colHeaderA">Record A (Primary)</div>
+            <div id="colHeaderB">Record B (Duplicate)</div>
+          </div>
+          <div id="mergeRowsContainer"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('leadMergeModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="executeLeadMerge()">Merge & Consolidate</button>
       </div>
     </div>
   </div>
@@ -744,6 +783,123 @@
         btn.disabled = false;
         btn.textContent = 'Send Email & Log Timeline';
         SalesOS.showToast('Network error while dispatching email');
+      }
+    }
+
+    // 3-Column Deduplication & Merge Handlers
+    let currentMergePair = null;
+    let selectedSurvivorValues = {};
+
+    async function scanLeadDuplicates() {
+      SalesOS.showToast('Scanning pipeline for fuzzy duplicates...');
+      try {
+        const res = await fetch('/api/leads/duplicates');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!data.duplicates || !data.duplicates.length) {
+          SalesOS.showToast('Clean pipeline! No duplicate leads detected.', 'success');
+          return;
+        }
+
+        SalesOS.showToast(`Found ${data.duplicates.length} duplicate lead pair(s)! Opening merge review...`, 'info');
+        openLeadMergeModal(data.duplicates[0]);
+      } catch (e) {
+        SalesOS.showToast('Error scanning duplicates', 'error');
+      }
+    }
+
+    function openLeadMergeModal(pair) {
+      currentMergePair = pair;
+      selectedSurvivorValues = {};
+
+      const recA = pair.record_a || {};
+      const recB = pair.record_b || {};
+
+      document.getElementById('mergeMatchScore').textContent = `${Math.round((pair.similarity_score || 0.9) * 100)}% Match (${pair.match_rule || 'Fuzzy Similarity'})`;
+      document.getElementById('colHeaderA').textContent = `${recA.name || 'Record A'} (#${recA.id || 'A'})`;
+      document.getElementById('colHeaderB').textContent = `${recB.name || 'Record B'} (#${recB.id || 'B'})`;
+
+      const fields = [
+        { key: 'name', label: 'Contact / Lead Name' },
+        { key: 'company', label: 'Company / Organization' },
+        { key: 'email', label: 'Email Address' },
+        { key: 'phone', label: 'Phone Number' },
+        { key: 'stage', label: 'Lead Stage' },
+        { key: 'owner_name', label: 'Account Owner' }
+      ];
+
+      const container = document.getElementById('mergeRowsContainer');
+      container.innerHTML = fields.map(f => {
+        const valA = recA[f.key] !== undefined ? String(recA[f.key]) : '—';
+        const valB = recB[f.key] !== undefined ? String(recB[f.key]) : '—';
+        // default survivor is recA
+        selectedSurvivorValues[f.key] = recA[f.key] !== undefined ? recA[f.key] : recB[f.key];
+
+        return `
+          <div class="merge-grid" id="mergeRow-${f.key}">
+            <div class="merge-field-label">${escapeHtml(f.label)}</div>
+            <div class="merge-val-card selected" id="card-${f.key}-a" onclick="selectSurvivorVal('${f.key}', 'a')">
+              <input type="radio" name="radio-${f.key}" checked>
+              <span>${escapeHtml(valA)}</span>
+            </div>
+            <div class="merge-val-card" id="card-${f.key}-b" onclick="selectSurvivorVal('${f.key}', 'b')">
+              <input type="radio" name="radio-${f.key}">
+              <span>${escapeHtml(valB)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      SalesOS.showModal('leadMergeModal');
+    }
+
+    function selectSurvivorVal(field, choice) {
+      const rec = choice === 'a' ? currentMergePair.record_a : currentMergePair.record_b;
+      selectedSurvivorValues[field] = rec[field];
+
+      const cardA = document.getElementById(`card-${field}-a`);
+      const cardB = document.getElementById(`card-${field}-b`);
+      if (cardA && cardB) {
+        cardA.classList.toggle('selected', choice === 'a');
+        cardA.querySelector('input').checked = (choice === 'a');
+        cardB.classList.toggle('selected', choice === 'b');
+        cardB.querySelector('input').checked = (choice === 'b');
+      }
+    }
+
+    function selectAllMergeColumn(choice) {
+      if (!currentMergePair) return;
+      const rec = choice === 'a' ? currentMergePair.record_a : currentMergePair.record_b;
+      Object.keys(rec).forEach(k => {
+        selectSurvivorVal(k, choice);
+      });
+    }
+
+    async function executeLeadMerge() {
+      if (!currentMergePair) return;
+      SalesOS.showToast('Merging records and consolidating timeline activities...');
+
+      try {
+        const res = await fetch('/api/leads/merge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            survivor_id: currentMergePair.record_a.id,
+            victim_id: currentMergePair.record_b.id,
+            survivor_fields: selectedSurvivorValues
+          })
+        });
+
+        if (res.ok) {
+          SalesOS.closeModal('leadMergeModal');
+          SalesOS.showToast('Records merged and duplicates consolidated!', 'success');
+          loadLeads();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to merge records', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error during merge', 'error');
       }
     }
 

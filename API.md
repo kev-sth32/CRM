@@ -215,3 +215,59 @@ Status codes: `200` success, `201` created, `400` validation, `401` unauthentica
 
 ## Security Headers
 All responses include: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Content-Security-Policy`, `Permissions-Policy`.
+
+## Enterprise Parity Endpoints (Salesforce / Zoho Parity)
+
+### Blueprints & State Machine Gates
+```http
+GET  /api/blueprints
+POST /api/blueprints
+```
+Manage and enforce stage transition validation rules (`from_stage`, `to_stage`, `required_fields`, `min_amount`). Evaluated on `PATCH /api/opportunities/:id`.
+
+### Collaborative Forecasting & Opportunity Splits
+```http
+GET  /api/forecasts/summary
+GET  /api/forecasts/quotas
+POST /api/forecasts/adjust
+PUT  /api/opportunities/:id/splits
+```
+Rolls up Closed Won, Commit, Best Case, and Pipeline categories with manager overrides and strict 100% sum multi-owner opportunity split allocations.
+
+### Advanced CPQ, Volume Slabs & Subscription Amendments (CLM)
+```http
+POST /api/quotes/volume-price
+POST /api/quotes/validate-bundle
+POST /api/quotes/amend
+```
+Calculates tiered slab volume discounts, validates product bundle dependencies and conflict exclusions, and prorates mid-term co-terming contract amendments.
+
+### Field-Level Security (FLS) & Enterprise SSO / SCIM
+```http
+GET  /api/settings/fls
+PUT  /api/settings/fls
+GET  /api/settings/sso
+PUT  /api/settings/sso
+POST /api/auth/saml/callback
+GET  /scim/v2/Users
+POST /scim/v2/Users
+```
+Enforces role-based masking (`••••••••`) and read-only field restrictions across CRM objects. Configures SAML 2.0 Identity Providers, JIT provisioning, and standard RFC 7643/7644 SCIM 2.0 user directory synchronization.
+
+### WebRTC Softphone Dialer & Telephony CTI
+```http
+POST  /api/telephony/dial
+PATCH /api/telephony/call-state
+POST  /api/telephony/call-end
+```
+Manages active softphone sessions and automatically commits completed call duration and notes into customer timeline activities.
+
+### Data Deduplication & 3-Column Record Merge
+```http
+GET  /api/leads/duplicates
+POST /api/leads/merge
+GET  /api/contacts/duplicates
+POST /api/contacts/merge
+```
+Runs Levenshtein string similarity matching and performs atomic 3-column field survivor merge, consolidating timeline activities and archiving merged records.
+

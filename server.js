@@ -27,6 +27,15 @@ const whatsAppConnector = new WhatsAppConnector();
 const smsConnector = new SmsConnector();
 const telephonyConnector = new TelephonyConnector();
 
+// Enterprise Parity Services (Closing gap with Salesforce & Zoho CRM)
+const { getTenantBlueprints, saveBlueprint, deleteBlueprint, validateStageTransition } = require('./blueprint-service');
+const { getTenantQuotas, setQuota, getOpportunitySplits, saveOpportunitySplits, recordForecastAdjustment, calculateForecastSummary } = require('./forecast-service');
+const { applyVolumePricing, validateProductBundle, calculateSubscriptionAmendment } = require('./clm-service');
+const { getTenantFlsRules, setFlsRule, filterRecordByFls, validateFlsUpdate } = require('./fls-service');
+const { getTenantSsoConfig, updateTenantSsoConfig, verifyScrimToken, toScimUser } = require('./sso-service');
+const { initiateCall, updateCallState, endCall, activeCalls } = require('./telephony-dialer-service');
+const { findDuplicates, mergeRecords } = require('./dedupe-service');
+
 const PORT = process.env.PORT || 3000;
 const DB = path.join(__dirname, 'data.json');
 let pgPool = null;
@@ -2138,6 +2147,26 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    // Advanced CPQ Volume Slabs, Bundling & CLM Amendments
+    if (pathname === '/api/quotes/volume-price' && req.method === 'POST') {
+      const b = await body(req);
+      const pricing = applyVolumePricing(b.unit_price, b.quantity, b.custom_tiers);
+      return send(res, 200, pricing);
+    }
+    if (pathname === '/api/quotes/validate-bundle' && req.method === 'POST') {
+      const b = await body(req);
+      const validation = validateProductBundle(activeTenantId, b.selected_skus || []);
+      return send(res, 200, validation);
+    }
+    if (pathname === '/api/quotes/amend' && req.method === 'POST') {
+      const b = await body(req);
+      if (!b.contract || !b.additional_items) {
+        return send(res, 400, { error: 'contract and additional_items are required' });
+      }
+      const amendment = calculateSubscriptionAmendment(b.contract, b.additional_items);
+      return send(res, 200, amendment);
+    }
+
     if (pathname.startsWith('/api/quotes/')) {
       const parts = pathname.split('/');
       // Match variants:
@@ -2598,7 +2627,7 @@ const server = http.createServer(async (req, res) => {
             const q = search.toLowerCase();
             items = items.filter(it => Object.values(it).some(v => typeof v === 'string' && v.toLowerCase().includes(q)));
           }
-          return send(res, 200, items);
+          return send(res, 200, filterRecordByFls(activeTenantId, entity.slice(0, -1), items, req.user.role));
         }
       }
 
@@ -2607,12 +2636,12 @@ const server = http.createServer(async (req, res) => {
         if (pgPool) {
           const r = await pgPool.query(`SELECT * FROM ${entity} WHERE id=$1 AND tenant_id=$2 AND deleted_at IS NULL`, [entityId, activeTenantId]);
           if (!r.rows[0]) return send(res, 404, { error: 'Record not found' });
-          return send(res, 200, r.rows[0]);
+          return send(res, 200, filterRecordByFls(activeTenantId, entity.slice(0, -1), r.rows[0], req.user.role));
         } else {
           const d = readData();
           const item = (d[entity] || []).find(x => x.id === entityId && (req.user.role === 'superadmin' || !x.tenant_id || x.tenant_id === activeTenantId));
           if (!item) return send(res, 404, { error: 'Record not found' });
-          return send(res, 200, item);
+          return send(res, 200, filterRecordByFls(activeTenantId, entity.slice(0, -1), item, req.user.role));
         }
       }
 
@@ -2652,6 +2681,29 @@ const server = http.createServer(async (req, res) => {
       // PATCH Update
       if (req.method === 'PATCH' && entityId) {
         const b = await body(req);
+
+        // Granular Field-Level Security (FLS) Validation
+        const flsCheck = validateFlsUpdate(activeTenantId, entity.slice(0, -1), b, req.user.role);
+        if (!flsCheck.valid) {
+          return send(res, 403, { error: 'Field-Level Security Violation', details: flsCheck.errors });
+        }
+
+        // Blueprint State Machine Gate Validation for Opportunities
+        if (entity === 'opportunities' && b.stage) {
+          const d = readData();
+          const currentOpp = (d.opportunities || []).find(o => o.id === entityId);
+          if (currentOpp && currentOpp.stage !== b.stage) {
+            const bpCheck = validateStageTransition(activeTenantId, currentOpp, b.stage, req.user, b.checklist || [], b);
+            if (!bpCheck.allowed) {
+              return send(res, 422, {
+                error: 'Blueprint Stage Gate Violation',
+                details: bpCheck.errors,
+                missing_fields: bpCheck.missing_fields,
+                uncompleted_checklist: bpCheck.uncompleted_checklist
+              });
+            }
+          }
+        }
         if (pgPool) {
           const cols = Object.keys(b).filter(k => /^[a-z_][a-z0-9_]*$/i.test(k) && k !== 'id' && k !== 'tenant_id');
           if (!cols.length) return send(res, 400, { error: 'No editable fields' });
@@ -2877,6 +2929,285 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    // ==========================================
+    // ENTERPRISE PARITY EXTENSION ROUTES
+    // ==========================================
+
+    // 1. Blueprint & Transition Gates API (Salesforce Flow / Zoho Blueprint)
+    if (pathname === '/api/blueprints' && req.method === 'GET') {
+      const blueprints = getTenantBlueprints(activeTenantId);
+      return send(res, 200, blueprints);
+    }
+    if (pathname === '/api/blueprints' && req.method === 'POST') {
+      if (req.user.role !== 'owner' && req.user.role !== 'admin') {
+        return send(res, 403, { error: 'Admin or Owner role required to configure blueprints' });
+      }
+      const b = await body(req);
+      if (!b.from_stage || !b.to_stage) {
+        return send(res, 400, { error: 'from_stage and to_stage are required' });
+      }
+      const saved = saveBlueprint(activeTenantId, b);
+      await audit(activeTenantId, req.user.id, 'configure', 'blueprint', saved.id, { from_stage: b.from_stage, to_stage: b.to_stage });
+      return send(res, 201, saved);
+    }
+    if (pathname.startsWith('/api/blueprints/') && req.method === 'DELETE') {
+      const bpId = pathname.split('/')[3];
+      deleteBlueprint(activeTenantId, bpId);
+      return send(res, 200, { ok: true, deleted: bpId });
+    }
+
+    // 2. Collaborative Revenue Forecasting & Opportunity Splits
+    if (pathname === '/api/forecasts/summary' && req.method === 'GET') {
+      const d = readData();
+      const opps = (d.opportunities || []).filter(o => !o.tenant_id || o.tenant_id === activeTenantId);
+      const period = searchParams.get('period') || '2026-Q3';
+      const summary = calculateForecastSummary(activeTenantId, opps, period);
+      return send(res, 200, summary);
+    }
+    if (pathname === '/api/forecasts/quotas') {
+      if (req.method === 'GET') {
+        return send(res, 200, getTenantQuotas(activeTenantId));
+      }
+      if (req.method === 'POST') {
+        if (req.user.role !== 'owner' && req.user.role !== 'admin' && req.user.role !== 'manager') {
+          return send(res, 403, { error: 'Manager, Admin or Owner role required to set quotas' });
+        }
+        const b = await body(req);
+        if (!b.user_id || !b.target_amount) {
+          return send(res, 400, { error: 'user_id and target_amount are required' });
+        }
+        const quota = setQuota(activeTenantId, b);
+        await audit(activeTenantId, req.user.id, 'set_quota', 'forecast_quota', quota.id, { user_id: b.user_id, target: b.target_amount });
+        return send(res, 201, quota);
+      }
+    }
+    if (pathname === '/api/forecasts/adjust' && req.method === 'POST') {
+      if (req.user.role !== 'owner' && req.user.role !== 'admin' && req.user.role !== 'manager') {
+        return send(res, 403, { error: 'Manager, Admin or Owner role required to adjust commit forecast' });
+      }
+      const b = await body(req);
+      const period = b.period || '2026-Q3';
+      const adj = recordForecastAdjustment(activeTenantId, period, b, req.user);
+      await audit(activeTenantId, req.user.id, 'adjust_forecast', 'forecast_adjustment', adj.id, { period, adjusted_commit: b.adjusted_commit });
+      return send(res, 201, adj);
+    }
+    if (pathname.match(/^\/api\/opportunities\/[^/]+\/splits$/)) {
+      const oppId = pathname.split('/')[3];
+      if (req.method === 'GET') {
+        const splits = getOpportunitySplits(activeTenantId, oppId);
+        return send(res, 200, splits);
+      }
+      if (req.method === 'POST') {
+        const b = await body(req);
+        const d = readData();
+        const opp = (d.opportunities || []).find(o => o.id === oppId);
+        if (!opp) return send(res, 404, { error: 'Opportunity not found' });
+        try {
+          const splits = saveOpportunitySplits(activeTenantId, oppId, b.splits, opp.amount || 0);
+          await audit(activeTenantId, req.user.id, 'save_splits', 'opportunity_split', oppId, { count: splits.length });
+          return send(res, 200, { ok: true, splits });
+        } catch (err) {
+          return send(res, 400, { error: err.message });
+        }
+      }
+    }
+
+    // 4. Granular Field-Level Security & Enterprise SSO / SCIM
+    if (pathname === '/api/settings/fls') {
+      if (req.method === 'GET') {
+        return send(res, 200, getTenantFlsRules(activeTenantId));
+      }
+      if (req.method === 'POST') {
+        if (req.user.role !== 'owner' && req.user.role !== 'admin') {
+          return send(res, 403, { error: 'Admin or Owner role required to configure Field-Level Security' });
+        }
+        const b = await body(req);
+        if (!b.entity || !b.field || !b.role || !b.permission) {
+          return send(res, 400, { error: 'entity, field, role, and permission are required' });
+        }
+        const saved = setFlsRule(activeTenantId, b);
+        await audit(activeTenantId, req.user.id, 'configure_fls', 'fls_rule', saved.id, b);
+        return send(res, 201, saved);
+      }
+    }
+    if (pathname === '/api/settings/sso') {
+      if (req.method === 'GET') {
+        return send(res, 200, getTenantSsoConfig(activeTenantId));
+      }
+      if (req.method === 'PATCH') {
+        if (req.user.role !== 'owner' && req.user.role !== 'admin') {
+          return send(res, 403, { error: 'Admin or Owner role required to configure Enterprise SSO' });
+        }
+        const b = await body(req);
+        const updated = updateTenantSsoConfig(activeTenantId, b);
+        await audit(activeTenantId, req.user.id, 'configure_sso', 'tenant_sso', activeTenantId, { enabled: updated.enabled, provider: updated.provider });
+        return send(res, 200, updated);
+      }
+    }
+    // SAML Callback
+    if (pathname.startsWith('/api/auth/saml/callback') && req.method === 'POST') {
+      const b = await body(req);
+      const email = b.email || b.NameID || 'sso-user@enterprise.com';
+      const d = readData();
+      let u = (d.users || []).find(x => x.email.toLowerCase() === email.toLowerCase());
+      if (!u) {
+        u = {
+          id: `usr-sso-${Date.now()}`,
+          name: b.name || email.split('@')[0],
+          email,
+          role: 'salesperson',
+          tenant_id: activeTenantId,
+          is_active: true,
+          created_at: new Date().toISOString()
+        };
+        d.users.push(u);
+        writeData(d);
+      }
+      const raw = token();
+      memorySessions.set(raw, { user: u, tenant: { id: u.tenant_id, name: 'Enterprise SAML Tenant' }, expiresAt: Date.now() + 7 * 24 * 3600 * 1000 });
+      res.setHeader('Set-Cookie', sessionCookie(raw, 604800, req));
+      return send(res, 200, { ok: true, user: u, token: raw });
+    }
+    // SCIM 2.0 Users API
+    if (pathname === '/scim/v2/Users') {
+      if (req.method === 'GET') {
+        const d = readData();
+        const users = (d.users || []).filter(u => u.tenant_id === activeTenantId && u.is_active !== false);
+        return send(res, 200, {
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+          totalResults: users.length,
+          Resources: users.map(toScimUser)
+        });
+      }
+      if (req.method === 'POST') {
+        const b = await body(req);
+        const email = b.userName || (b.emails && b.emails[0] && b.emails[0].value);
+        if (!email) return send(res, 400, { error: 'userName or email is required for SCIM provisioning' });
+        const d = readData();
+        const newUser = {
+          id: `usr-${Date.now()}`,
+          name: (b.name && b.name.formatted) || b.displayName || email.split('@')[0],
+          email,
+          role: (b.roles && b.roles[0] && b.roles[0].value) || 'salesperson',
+          tenant_id: activeTenantId,
+          is_active: b.active !== false,
+          created_at: new Date().toISOString()
+        };
+        d.users.push(newUser);
+        writeData(d);
+        await audit(activeTenantId, req.user.id, 'scim_provision', 'user', newUser.id, { email });
+        return send(res, 201, toScimUser(newUser));
+      }
+    }
+
+    // 5. In-App WebRTC Softphone & Telephony Dialer
+    if (pathname === '/api/telephony/dial' && req.method === 'POST') {
+      const b = await body(req);
+      try {
+        const call = initiateCall(activeTenantId, req.user, b);
+        await audit(activeTenantId, req.user.id, 'outbound_call_initiated', 'telephony_call', call.id, { to_number: b.to_number });
+        return send(res, 201, call);
+      } catch (err) {
+        return send(res, 400, { error: err.message });
+      }
+    }
+    if (pathname === '/api/telephony/call-state' && req.method === 'POST') {
+      const b = await body(req);
+      try {
+        const updated = updateCallState(b.call_id, b.status);
+        return send(res, 200, updated);
+      } catch (err) {
+        return send(res, 400, { error: err.message });
+      }
+    }
+    if (pathname === '/api/telephony/call-end' && req.method === 'POST') {
+      const b = await body(req);
+      try {
+        const result = endCall(b.call_id, b);
+        const d = readData();
+        d.activities = d.activities || [];
+        d.activities.unshift(result.activity);
+        writeData(d);
+        await audit(activeTenantId, req.user.id, 'outbound_call_completed', 'telephony_call', b.call_id, {
+          duration: result.activity.duration_seconds,
+          disposition: result.activity.disposition
+        });
+        return send(res, 200, result);
+      } catch (err) {
+        return send(res, 400, { error: err.message });
+      }
+    }
+
+    // 6. Fuzzy Deduplication & 3-Column Record Merge
+    if (pathname === '/api/leads/duplicates' && req.method === 'GET') {
+      const d = readData();
+      const leads = (d.leads || []).filter(l => (!l.tenant_id || l.tenant_id === activeTenantId) && !l.is_deleted);
+      const duplicates = findDuplicates(leads);
+      return send(res, 200, { total_pairs: duplicates.length, duplicates });
+    }
+    if (pathname === '/api/leads/merge' && req.method === 'POST') {
+      const b = await body(req);
+      if (!b.master_id || !b.duplicate_id) {
+        return send(res, 400, { error: 'master_id and duplicate_id are required' });
+      }
+      const d = readData();
+      const master = (d.leads || []).find(l => l.id === b.master_id);
+      const duplicate = (d.leads || []).find(l => l.id === b.duplicate_id);
+      if (!master || !duplicate) return send(res, 404, { error: 'One or both leads not found' });
+      
+      const mergeResult = mergeRecords(master, duplicate, b.field_selections || {}, {
+        activities: d.activities || [],
+        tasks: d.tasks || [],
+        opportunities: d.opportunities || []
+      });
+
+      const mIdx = d.leads.findIndex(l => l.id === b.master_id);
+      const dIdx = d.leads.findIndex(l => l.id === b.duplicate_id);
+      d.leads[mIdx] = mergeResult.master;
+      d.leads[dIdx] = mergeResult.duplicate;
+      writeData(d);
+
+      await audit(activeTenantId, req.user.id, 'merge', 'lead', master.id, {
+        duplicate_id: duplicate.id,
+        reparented_count: mergeResult.reparented_count
+      });
+      return send(res, 200, mergeResult);
+    }
+    if (pathname === '/api/contacts/duplicates' && req.method === 'GET') {
+      const d = readData();
+      const contacts = (d.contacts || []).filter(c => (!c.tenant_id || c.tenant_id === activeTenantId) && !c.is_deleted);
+      const duplicates = findDuplicates(contacts);
+      return send(res, 200, { total_pairs: duplicates.length, duplicates });
+    }
+    if (pathname === '/api/contacts/merge' && req.method === 'POST') {
+      const b = await body(req);
+      if (!b.master_id || !b.duplicate_id) {
+        return send(res, 400, { error: 'master_id and duplicate_id are required' });
+      }
+      const d = readData();
+      const master = (d.contacts || []).find(c => c.id === b.master_id);
+      const duplicate = (d.contacts || []).find(c => c.id === b.duplicate_id);
+      if (!master || !duplicate) return send(res, 404, { error: 'One or both contacts not found' });
+
+      const mergeResult = mergeRecords(master, duplicate, b.field_selections || {}, {
+        activities: d.activities || [],
+        tasks: d.tasks || [],
+        opportunities: d.opportunities || []
+      });
+
+      const mIdx = d.contacts.findIndex(c => c.id === b.master_id);
+      const dIdx = d.contacts.findIndex(c => c.id === b.duplicate_id);
+      d.contacts[mIdx] = mergeResult.master;
+      d.contacts[dIdx] = mergeResult.duplicate;
+      writeData(d);
+
+      await audit(activeTenantId, req.user.id, 'merge', 'contact', master.id, {
+        duplicate_id: duplicate.id,
+        reparented_count: mergeResult.reparented_count
+      });
+      return send(res, 200, mergeResult);
+    }
+
     // Static Asset Delivery (Sandboxed, Whitelisted & Protected against Information Disclosure)
     if (req.method === 'GET') {
       const normalized = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
@@ -2896,18 +3227,18 @@ const server = http.createServer(async (req, res) => {
         reqFile.startsWith('db') ||
         reqFile.startsWith('connectors') ||
         reqFile.startsWith('providers') ||
-        // Only allow client-side app.js; block all server-side JS files
-        (reqFile.endsWith('.js') && reqFile !== 'app.js');
+        // Only allow client-side app.js and sw.js; block all server-side JS files
+        (reqFile.endsWith('.js') && reqFile !== 'app.js' && reqFile !== 'sw.js');
 
       if (!isBlocked) {
         let f = path.join(__dirname, reqFile);
-        // Ensure path remains strictly within __dirname
         if (f.startsWith(__dirname) && fs.existsSync(f) && fs.statSync(f).isFile()) {
           const ext = path.extname(f).toLowerCase();
           const allowedTypes = {
             '.html': 'text/html; charset=UTF-8',
             '.js': 'application/javascript; charset=UTF-8',
             '.css': 'text/css; charset=UTF-8',
+            '.json': 'application/json; charset=UTF-8',
             '.png': 'image/png',
             '.jpg': 'image/jpeg',
             '.jpeg': 'image/jpeg',

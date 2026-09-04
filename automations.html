@@ -59,19 +59,56 @@
       <main class="page-content">
         <div class="page-header">
           <div>
-            <h1>Sales Automations</h1>
-            <p>Construct event-driven triggers, qualification rules, deal alert sequences, and autonomous execution logic.</p>
+            <h1>Sales Automations & Blueprints</h1>
+            <p>Construct event triggers, autonomous deal workflows, and Salesforce/Zoho-grade stage transition validation gates.</p>
           </div>
           <div class="page-actions">
-            <button class="btn btn-secondary" onclick="loadAutomations()">↻ Refresh</button>
-            <button class="btn btn-primary" onclick="openCreateAutomationModal()">＋ Build Workflow</button>
+            <button class="btn btn-secondary" onclick="refreshCurrentView()">↻ Refresh</button>
+            <button class="btn btn-primary" id="btnCreateAction" onclick="handleCreateAction()">＋ Build Workflow</button>
           </div>
         </div>
 
-        <div id="automationsListContainer">
-          <div class="card" style="padding:32px;text-align:center">
-            <div class="spinner"></div>
-            <p style="color:var(--muted)">Loading automated workflows...</p>
+        <!-- View Switcher -->
+        <div style="display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:20px">
+          <button class="settings-tab active" id="tabWorkflows" onclick="switchAutomationView('workflows')">⚡ Event Triggers & Workflows</button>
+          <button class="settings-tab" id="tabBlueprints" onclick="switchAutomationView('blueprints')">🗺️ Blueprints & State Machine Gates</button>
+        </div>
+
+        <!-- Section 1: Event Automations -->
+        <div id="workflowsSection">
+          <div id="automationsListContainer">
+            <div class="card" style="padding:32px;text-align:center">
+              <div class="spinner"></div>
+              <p style="color:var(--muted)">Loading automated workflows...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Blueprints & Transition Gates -->
+        <div id="blueprintsSection" style="display:none">
+          <div style="background:#f8fafc;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <strong style="font-size:14px;color:var(--ink)">Pipeline State Machine Flow</strong>
+              <span class="badge badge-green">Enforced at API Gateway</span>
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Deals cannot advance to subsequent stages without fulfilling configured qualification fields and gate criteria.</p>
+            
+            <div style="display:flex;align-items:center;gap:12px;overflow-x:auto;padding-bottom:8px">
+              <div class="badge badge-blue" style="padding:8px 14px;font-size:12px">1. Discovery</div>
+              <span style="color:#94a3b8">➔</span>
+              <div class="badge badge-purple" style="padding:8px 14px;font-size:12px">2. Proposal</div>
+              <span style="color:#94a3b8">➔</span>
+              <div class="badge badge-orange" style="padding:8px 14px;font-size:12px">3. Negotiation</div>
+              <span style="color:#94a3b8">➔</span>
+              <div class="badge badge-green" style="padding:8px 14px;font-size:12px">4. Closed Won</div>
+            </div>
+          </div>
+
+          <div id="blueprintsListContainer">
+            <div class="card" style="padding:32px;text-align:center">
+              <div class="spinner"></div>
+              <p style="color:var(--muted)">Loading blueprint gates...</p>
+            </div>
           </div>
         </div>
       </main>
@@ -111,6 +148,53 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="SalesOS.closeModal('createAutomationModal')">Cancel</button>
         <button class="btn btn-primary" onclick="submitCreateAutomation()">Activate Workflow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Blueprint Gate Modal -->
+  <div class="modal-overlay" id="createBlueprintModal">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-header">
+        <h3>＋ Add Stage Transition Gate</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createBlueprintModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Blueprint / Rule Name *</label>
+          <input type="text" id="bpName" class="form-control" placeholder="e.g. Mandatory Discovery Qualification" required />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">From Stage *</label>
+            <select id="bpFromStage" class="form-control">
+              <option value="Discovery">Discovery</option>
+              <option value="Demo">Demo</option>
+              <option value="Proposal">Proposal</option>
+              <option value="Negotiation">Negotiation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">To Target Stage *</label>
+            <select id="bpToStage" class="form-control">
+              <option value="Proposal">Proposal</option>
+              <option value="Negotiation">Negotiation</option>
+              <option value="Closed Won">Closed Won</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mandatory Required Fields (Comma-separated)</label>
+          <input type="text" id="bpFields" class="form-control" placeholder="e.g. decision_maker, pain_points, budget" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Minimum Deal Value (Optional)</label>
+          <input type="number" id="bpMinAmount" class="form-control" placeholder="e.g. 50000" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createBlueprintModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateBlueprint()">Save Transition Gate</button>
       </div>
     </div>
   </div>
@@ -263,6 +347,118 @@
         }
       } catch (e) {
         SalesOS.showToast('Error deleting workflow', 'error');
+      }
+    }
+
+    let currentView = 'workflows';
+    let allBlueprints = [];
+
+    function switchAutomationView(view) {
+      currentView = view;
+      document.getElementById('tabWorkflows').classList.toggle('active', view === 'workflows');
+      document.getElementById('tabBlueprints').classList.toggle('active', view === 'blueprints');
+      document.getElementById('workflowsSection').style.display = view === 'workflows' ? 'block' : 'none';
+      document.getElementById('blueprintsSection').style.display = view === 'blueprints' ? 'block' : 'none';
+
+      const btn = document.getElementById('btnCreateAction');
+      if (btn) {
+        btn.textContent = view === 'workflows' ? '＋ Build Workflow' : '＋ Add Stage Gate';
+      }
+
+      if (view === 'blueprints') loadBlueprints();
+      else loadAutomations();
+    }
+
+    function refreshCurrentView() {
+      if (currentView === 'blueprints') loadBlueprints();
+      else loadAutomations();
+    }
+
+    function handleCreateAction() {
+      if (currentView === 'blueprints') {
+        SalesOS.showModal('createBlueprintModal');
+      } else {
+        openCreateAutomationModal();
+      }
+    }
+
+    async function loadBlueprints() {
+      try {
+        const res = await fetch('/api/blueprints');
+        if (!res.ok) throw new Error();
+        allBlueprints = await res.json();
+        renderBlueprints();
+      } catch (e) {
+        SalesOS.showToast('Unable to load blueprint gates', 'error');
+      }
+    }
+
+    function renderBlueprints() {
+      const container = document.getElementById('blueprintsListContainer');
+      if (!allBlueprints.length) {
+        container.innerHTML = `
+          <div class="card" style="padding:48px 24px;text-align:center">
+            <div class="state-icon">🗺️</div>
+            <h3>No stage transition gates configured</h3>
+            <p style="color:var(--muted);margin-bottom:16px">Add validation criteria to prevent premature progression to subsequent deal stages.</p>
+            <button class="btn btn-primary btn-sm" onclick="SalesOS.showModal('createBlueprintModal')">＋ Add Stage Gate</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = allBlueprints.map(bp => {
+        const reqFields = (bp.required_fields || []).map(f => `<code>${escapeHtml(f)}</code>`).join(' ');
+        const minAmt = bp.min_amount ? `<span class="badge badge-blue">Min Amount: ${SalesOS.formatCurrency(bp.min_amount)}</span>` : '';
+        return `
+          <div class="blueprint-gate-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span class="badge badge-purple" style="font-weight:700">${escapeHtml(bp.from_stage)} ➔ ${escapeHtml(bp.to_stage)}</span>
+                <strong style="font-size:14px;color:var(--ink)">${escapeHtml(bp.name || 'Transition Gate')}</strong>
+              </div>
+              <span class="badge badge-green">Enforced</span>
+            </div>
+
+            <div style="font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px">
+              <div><strong>Required Checklist / Fields:</strong> ${reqFields || '<em>None (Open transition)</em>'}</div>
+              ${minAmt ? `<div>${minAmt}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function submitCreateBlueprint() {
+      const name = document.getElementById('bpName').value.trim();
+      const from_stage = document.getElementById('bpFromStage').value;
+      const to_stage = document.getElementById('bpToStage').value;
+      const fieldsRaw = document.getElementById('bpFields').value.trim();
+      const min_amount = Number(document.getElementById('bpMinAmount').value) || undefined;
+
+      if (!name) {
+        SalesOS.showToast('Blueprint name is required', 'error');
+        return;
+      }
+
+      const required_fields = fieldsRaw ? fieldsRaw.split(',').map(s => s.trim().toLowerCase().replace(/\s+/g, '_')).filter(Boolean) : [];
+
+      SalesOS.showToast('Saving transition gate...');
+      try {
+        const res = await fetch('/api/blueprints', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, from_stage, to_stage, required_fields, min_amount })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createBlueprintModal');
+          SalesOS.showToast('Stage transition gate created successfully!', 'success');
+          loadBlueprints();
+        } else {
+          SalesOS.showToast('Failed to create transition gate', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error saving gate', 'error');
       }
     }
 

@@ -26,6 +26,9 @@ const SalesOS = {
     this.renderTopbar(breadcrumbs);
     this.renderModals();
     this.setupGlobalEvents();
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
   },
 
   renderSidebar(activeRouteName) {
@@ -142,6 +145,10 @@ const SalesOS = {
           </div>
         </div>
 
+        <button class="btn-icon" title="WebRTC Softphone Dialer" id="btnToggleSoftphone" onclick="SalesOS.toggleSoftphone()" style="position:relative">
+          <span>📞</span>
+        </button>
+
         <button class="btn-icon" title="Notifications" onclick="SalesOS.showToast('All systems operational. 3 AI actions pending review.', 'info')">
           <span>🔔</span>
           <span class="dot-badge"></span>
@@ -200,6 +207,49 @@ const SalesOS = {
             </div>
             <div id="loginError" style="color:var(--red);font-size:12px;min-height:18px;margin-bottom:8px"></div>
             <button class="btn btn-primary" style="width:100%" onclick="SalesOS.submitLogin()">Sign In</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- In-App WebRTC Softphone Dialer Widget -->
+      <div class="softphone-widget" id="softphoneWidget">
+        <div class="softphone-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px">📞</span>
+            <strong style="font-size:13px;letter-spacing:0.3px">WebRTC Softphone</strong>
+            <span class="badge badge-green" id="softphoneStatusBadge" style="font-size:9px">READY</span>
+          </div>
+          <button onclick="SalesOS.toggleSoftphone()" style="background:none;border:none;color:#94a3b8;font-size:16px;cursor:pointer">&times;</button>
+        </div>
+        <div class="softphone-body">
+          <div class="softphone-screen">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:10px;color:#94a3b8;text-transform:uppercase" id="softphoneCallerLabel">Direct Outbound</span>
+              <span class="call-timer" id="softphoneTimer" style="display:none">00:00</span>
+            </div>
+            <input type="text" id="softphoneInput" placeholder="+977 9800000000" />
+          </div>
+
+          <div class="softphone-dialpad">
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('1')">1 <span>&nbsp;</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('2')">2 <span>ABC</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('3')">3 <span>DEF</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('4')">4 <span>GHI</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('5')">5 <span>JKL</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('6')">6 <span>MNO</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('7')">7 <span>PQRS</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('8')">8 <span>TUV</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('9')">9 <span>WXYZ</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('*')">* <span>&nbsp;</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('0')">0 <span>+</span></button>
+            <button class="dial-btn" onclick="SalesOS.appendDialDigit('#')"># <span>&nbsp;</span></button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button class="btn btn-secondary" style="flex:1;background:#1e293b;border-color:rgba(255,255,255,0.1);color:#94a3b8" onclick="SalesOS.clearDialDigit()">⌫</button>
+            <button class="btn btn-primary" id="softphoneActionBtn" style="flex:3;background:#10b981;border-color:#10b981" onclick="SalesOS.handleSoftphoneAction()">
+              📞 Call Now
+            </button>
           </div>
         </div>
       </div>
@@ -461,6 +511,161 @@ const SalesOS = {
 
   showToast(message, type = 'info', duration = 3500) {
     return this.toast.show(message, type, duration);
+  },
+
+  // In-App WebRTC Softphone Controller
+  softphoneState: {
+    isOpen: false,
+    callId: null,
+    status: 'idle', // idle, connecting, in_progress, ended
+    startTime: null,
+    timerInterval: null
+  },
+
+  toggleSoftphone() {
+    const el = document.getElementById('softphoneWidget');
+    if (!el) return;
+    this.softphoneState.isOpen = !this.softphoneState.isOpen;
+    if (this.softphoneState.isOpen) {
+      el.classList.add('active');
+      const inp = document.getElementById('softphoneInput');
+      if (inp) inp.focus();
+    } else {
+      el.classList.remove('active');
+    }
+  },
+
+  appendDialDigit(digit) {
+    const inp = document.getElementById('softphoneInput');
+    if (inp) {
+      inp.value += digit;
+    }
+  },
+
+  clearDialDigit() {
+    const inp = document.getElementById('softphoneInput');
+    if (inp && inp.value.length > 0) {
+      inp.value = inp.value.slice(0, -1);
+    }
+  },
+
+  async handleSoftphoneAction() {
+    if (this.softphoneState.status === 'in_progress' || this.softphoneState.status === 'connecting') {
+      await this.endSoftphoneCall();
+    } else {
+      const inp = document.getElementById('softphoneInput');
+      const number = inp ? inp.value.trim() : '';
+      if (!number) {
+        this.showToast('Please enter a phone number to dial', 'warning');
+        return;
+      }
+      await this.startSoftphoneCall(number);
+    }
+  },
+
+  async startSoftphoneCall(phoneNumber) {
+    const statusBadge = document.getElementById('softphoneStatusBadge');
+    const actionBtn = document.getElementById('softphoneActionBtn');
+    const timerEl = document.getElementById('softphoneTimer');
+
+    if (statusBadge) {
+      statusBadge.textContent = 'CONNECTING...';
+      statusBadge.className = 'badge badge-orange';
+    }
+    if (actionBtn) {
+      actionBtn.textContent = 'Connecting...';
+      actionBtn.style.background = '#f59e0b';
+      actionBtn.style.borderColor = '#f59e0b';
+    }
+
+    try {
+      const res = await fetch('/api/telephony/dial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to_number: phoneNumber })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to dial');
+
+      this.softphoneState.callId = data.session_id;
+      this.softphoneState.status = 'in_progress';
+      this.softphoneState.startTime = Date.now();
+
+      if (statusBadge) {
+        statusBadge.textContent = 'CONNECTED';
+        statusBadge.className = 'badge badge-green';
+      }
+      if (actionBtn) {
+        actionBtn.textContent = '🛑 End Call';
+        actionBtn.style.background = '#ef4444';
+        actionBtn.style.borderColor = '#ef4444';
+      }
+      if (timerEl) {
+        timerEl.style.display = 'inline-block';
+        timerEl.textContent = '00:00';
+      }
+
+      this.softphoneState.timerInterval = setInterval(() => {
+        const elapsedSec = Math.floor((Date.now() - this.softphoneState.startTime) / 1000);
+        const mins = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+        const secs = String(elapsedSec % 60).padStart(2, '0');
+        if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+      }, 1000);
+
+      this.showToast(`Call connected to ${phoneNumber}`, 'success');
+    } catch (e) {
+      this.showToast(e.message || 'Call failed', 'error');
+      this.resetSoftphoneUI();
+    }
+  },
+
+  async endSoftphoneCall() {
+    if (this.softphoneState.timerInterval) {
+      clearInterval(this.softphoneState.timerInterval);
+    }
+    const elapsedSec = this.softphoneState.startTime ? Math.max(1, Math.floor((Date.now() - this.softphoneState.startTime) / 1000)) : 1;
+
+    try {
+      if (this.softphoneState.callId) {
+        await fetch('/api/telephony/call-end', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: this.softphoneState.callId,
+            duration_seconds: elapsedSec,
+            notes: 'Completed in-app WebRTC softphone call.'
+          })
+        });
+      }
+      this.showToast(`Call ended. Logged ${elapsedSec}s to activity timeline.`, 'info');
+    } catch (e) {}
+
+    this.resetSoftphoneUI();
+  },
+
+  resetSoftphoneUI() {
+    if (this.softphoneState.timerInterval) clearInterval(this.softphoneState.timerInterval);
+    this.softphoneState.callId = null;
+    this.softphoneState.status = 'idle';
+    this.softphoneState.startTime = null;
+
+    const statusBadge = document.getElementById('softphoneStatusBadge');
+    const actionBtn = document.getElementById('softphoneActionBtn');
+    const timerEl = document.getElementById('softphoneTimer');
+
+    if (statusBadge) {
+      statusBadge.textContent = 'READY';
+      statusBadge.className = 'badge badge-green';
+    }
+    if (actionBtn) {
+      actionBtn.textContent = '📞 Call Now';
+      actionBtn.style.background = '#10b981';
+      actionBtn.style.borderColor = '#10b981';
+    }
+    if (timerEl) {
+      timerEl.style.display = 'none';
+      timerEl.textContent = '00:00';
+    }
   }
 };
 

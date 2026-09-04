@@ -20,6 +20,7 @@
             <p>Track omnichannel lead acquisition sources, campaign spending, closed revenue, and true sales ROI.</p>
           </div>
           <div class="page-actions">
+            <button class="btn btn-secondary" onclick="openAdStudioModal()">✦ AI Ad Studio</button>
             <button class="btn btn-secondary" onclick="loadCampaigns()">↻ Refresh</button>
             <button class="btn btn-primary" onclick="openCreateCampaignModal()">＋ Launch Campaign</button>
           </div>
@@ -121,6 +122,63 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="SalesOS.closeModal('createCampaignModal')">Cancel</button>
         <button class="btn btn-primary" onclick="submitCreateCampaign()">Launch Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: AI Ad Creative Studio -->
+  <div class="modal-overlay" id="aiAdStudioModal">
+    <div class="modal-box" style="max-width:580px">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">✦</span>
+          <h3 style="margin:0">AI Social Ad Creative Studio</h3>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('aiAdStudioModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">
+          Generate high-converting Facebook and Instagram ad creatives with localized copy, price hooks, and hashtags for the Nepali market.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="form-group">
+            <label class="form-label">Platform</label>
+            <select id="adPlatformSelect" class="form-control">
+              <option value="facebook">Facebook Feed & Lead Ads</option>
+              <option value="instagram">Instagram Feed & Stories</option>
+              <option value="linkedin">LinkedIn B2B Sponsored</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Campaign Goal</label>
+            <select id="adGoalSelect" class="form-control">
+              <option value="lead_generation">Inbound Lead Generation</option>
+              <option value="demo_booking">Direct Demo Booking</option>
+              <option value="discount_offer">Limited Time Seasonal Offer</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width:100%;margin-bottom:16px" onclick="generateAdCopy()">
+          ✨ Generate High-Converting Ad Creative
+        </button>
+
+        <!-- Preview Box -->
+        <div id="adPreviewContainer" style="display:none">
+          <div class="ad-creative-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span class="badge badge-blue" id="adPlatformBadge">Facebook Lead Ad</span>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="copyAdText()">📋 Copy All Text</button>
+            </div>
+            <div class="ad-headline" id="adHeadlinePreview">Headline Preview</div>
+            <div class="ad-body-text" id="adBodyPreview">Body Preview</div>
+            <div style="margin-top:10px;font-size:12px;color:var(--blue);font-weight:600" id="adHashtagsPreview">#Hashtags</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('aiAdStudioModal')">Close</button>
       </div>
     </div>
   </div>
@@ -247,6 +305,49 @@
         }
       } catch (e) {
         SalesOS.showToast('Error deleting campaign', 'error');
+      }
+    // AI Ad Creative Studio Handlers
+    function openAdStudioModal() {
+      SalesOS.showModal('aiAdStudioModal');
+    }
+
+    async function generateAdCopy() {
+      const platform = document.getElementById('adPlatformSelect').value;
+      const goal = document.getElementById('adGoalSelect').value;
+
+      SalesOS.showToast('Generating AI social ad copy...');
+      try {
+        const res = await fetch('/api/ai/pitch-studio/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'social_ad', platform, goal })
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        document.getElementById('adPlatformBadge').textContent = `${platform.toUpperCase()} · ${goal.replace('_', ' ').toUpperCase()}`;
+        document.getElementById('adHeadlinePreview').textContent = data.headline || '';
+        document.getElementById('adBodyPreview').textContent = `${data.primary_text || ''}\n\n${(data.bullets || []).join('\n')}\n\n👉 ${data.call_to_action || 'Learn More'}`;
+        document.getElementById('adHashtagsPreview').textContent = (data.hashtags || []).join(' ');
+
+        document.getElementById('adPreviewContainer').style.display = 'block';
+        SalesOS.showToast('Ad creative generated!', 'success');
+      } catch (e) {
+        SalesOS.showToast('Failed to generate ad copy', 'error');
+      }
+    }
+
+    function copyAdText() {
+      const headline = document.getElementById('adHeadlinePreview').textContent;
+      const body = document.getElementById('adBodyPreview').textContent;
+      const tags = document.getElementById('adHashtagsPreview').textContent;
+      const fullText = `${headline}\n\n${body}\n\n${tags}`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(fullText);
+        SalesOS.showToast('Ad copy copied to clipboard!', 'success');
+      } else {
+        SalesOS.showToast('Clipboard access unavailable', 'info');
       }
     }
 

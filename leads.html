@@ -164,9 +164,10 @@
 
     <div class="drawer-body">
       <!-- Quick Action Buttons -->
-      <div style="display:flex;gap:8px;margin-bottom:20px">
-        <button class="btn btn-primary btn-sm" style="flex:1" onclick="runAIQualification()">✦ AI Re-Qualify</button>
-        <button class="btn btn-secondary btn-sm" style="flex:1" onclick="openDirectEmailModal()">✉ Send Email</button>
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="runAIQualification()">✦ AI Re-Qualify</button>
+        <button class="btn btn-secondary btn-sm" style="color:#059669;border-color:#a7f3d0" onclick="openWhatsAppPitchModal()">💬 AI WhatsApp Pitch</button>
+        <button class="btn btn-secondary btn-sm" onclick="openDirectEmailModal()">✉ Send Email</button>
         <button class="btn btn-secondary btn-sm" onclick="openEditLeadModal()">✎ Edit</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDeleteLead()" title="Archive / Soft Delete Lead">🗑</button>
         <button class="btn btn-secondary btn-sm" style="color:#b91c1c;border-color:#fca5a5" onclick="confirmGdprPurgeLead()" title="GDPR Article 17 Right to Erasure (Permanently Purge PII)">🛡️ Purge PII</button>
@@ -413,6 +414,50 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="SalesOS.closeModal('leadMergeModal')">Cancel</button>
         <button class="btn btn-primary" onclick="executeLeadMerge()">Merge & Consolidate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: AI WhatsApp Pitch Generator -->
+  <div class="modal-overlay" id="aiPitchModal">
+    <div class="modal-box" style="max-width:540px">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">💬</span>
+          <h3 style="margin:0">AI WhatsApp Pitch Generator</h3>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('aiPitchModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="form-group">
+            <label class="form-label">Pitch Language</label>
+            <select id="pitchLangSelect" class="form-control" onchange="generatePitchText()">
+              <option value="nepglish">Nepglish (Romanized Nepali - Recommended)</option>
+              <option value="nepali">Nepali (Devanagari)</option>
+              <option value="english">Professional English</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Conversation Tone</label>
+            <select id="pitchToneSelect" class="form-control" onchange="generatePitchText()">
+              <option value="consultative">Consultative & Helpful</option>
+              <option value="urgent">Urgent / Limited Promo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Generated WhatsApp Pitch Message</label>
+          <textarea id="pitchMessageText" class="form-control" rows="6" style="font-size:13px;line-height:1.5"></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button type="button" class="btn btn-secondary" style="flex:1" onclick="copyPitchMessage()">📋 Copy Pitch</button>
+          <button type="button" class="btn btn-primary" id="openWhatsAppDirectBtn" style="flex:2;background:#10b981;border-color:#10b981" onclick="openWhatsAppWithPitch()">
+            💬 Open in WhatsApp Web / App
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -901,6 +946,58 @@
       } catch (e) {
         SalesOS.showToast('Network error during merge', 'error');
       }
+    // AI WhatsApp Pitch Handlers
+    function openWhatsAppPitchModal() {
+      if (!selectedLead) {
+        SalesOS.showToast('Please select a lead first', 'warning');
+        return;
+      }
+      SalesOS.showModal('aiPitchModal');
+      generatePitchText();
+    }
+
+    async function generatePitchText() {
+      if (!selectedLead) return;
+      const language = document.getElementById('pitchLangSelect').value;
+      const tone = document.getElementById('pitchToneSelect').value;
+
+      try {
+        const res = await fetch('/api/ai/pitch-studio/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'whatsapp_pitch',
+            lead: selectedLead,
+            language,
+            tone
+          })
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        document.getElementById('pitchMessageText').value = data.message || '';
+      } catch (e) {
+        SalesOS.showToast('Failed to generate pitch', 'error');
+      }
+    }
+
+    function copyPitchMessage() {
+      const txt = document.getElementById('pitchMessageText').value;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt);
+        SalesOS.showToast('Pitch copied to clipboard!', 'success');
+      }
+    }
+
+    function openWhatsAppWithPitch() {
+      if (!selectedLead) return;
+      const txt = document.getElementById('pitchMessageText').value;
+      let phone = (selectedLead.phone || '').replace(/[^0-9]/g, '');
+      if (phone.startsWith('98') || phone.startsWith('97')) {
+        phone = `977${phone}`; // Auto prefix Nepal country code
+      }
+      const targetUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(txt)}` : `https://wa.me/?text=${encodeURIComponent(txt)}`;
+      window.open(targetUrl, '_blank');
+      SalesOS.showToast('Opening WhatsApp with AI pitch...', 'info');
     }
 
     loadLeads();

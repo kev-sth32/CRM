@@ -248,32 +248,51 @@
             </div>
           </div>
 
-          <!-- AI Daily Brief -->
-          <div class="card">
-            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
-              <h3 style="font-size:15px;font-weight:700">✦ Autonomous AI Daily Brief</h3>
-              <a href="/approvals.html" style="font-size:12.5px;color:var(--purple);text-decoration:none;font-weight:600">Pending Actions →</a>
+          <!-- AI Co-Founder Ops Room -->
+          <div class="card" style="border:1px solid var(--line)">
+            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#f8fafc">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:16px">✦</span>
+                <h3 style="font-size:15px;font-weight:750;margin:0">AI Co-Founder Ops Room</h3>
+                <span class="badge badge-green" style="font-size:9.5px">AUTOPILOT ON</span>
+              </div>
+              <a href="/approvals.html" style="font-size:12px;color:var(--blue);text-decoration:none;font-weight:600">Pending Actions →</a>
             </div>
-            <div class="ai-brief-list" id="aiBriefContainer">
-              <div class="ai-brief-item">
-                <span class="badge badge-red">URGENT</span>
-                <div>
-                  <strong style="font-size:13px;display:block">3 high-value deals are at risk</strong>
-                  <span style="color:var(--muted);font-size:12px">Himalayan Retail and 2 others had no customer activity in over 7 days.</span>
+            
+            <div style="padding:18px 22px">
+              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:10px">
+                🌙 Overnight Autonomous Actions (While You Slept)
+              </div>
+              
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">
+                <div style="background:#f8fafc;padding:10px 12px;border-radius:6px;border:1px solid var(--line);text-align:center">
+                  <div style="font-size:17px;font-weight:800;color:var(--blue)" id="opsLeadsCount">14</div>
+                  <small style="font-size:10px;color:var(--muted)">Leads Qualified</small>
+                </div>
+                <div style="background:#f8fafc;padding:10px 12px;border-radius:6px;border:1px solid var(--line);text-align:center">
+                  <div style="font-size:17px;font-weight:800;color:var(--green)" id="opsSlaCount">3</div>
+                  <small style="font-size:10px;color:var(--muted)">SLAs Rescued</small>
+                </div>
+                <div style="background:#f8fafc;padding:10px 12px;border-radius:6px;border:1px solid var(--line);text-align:center">
+                  <div style="font-size:17px;font-weight:800;color:var(--purple)" id="opsQuotesCount">2</div>
+                  <small style="font-size:10px;color:var(--muted)">Quotes Staged</small>
+                </div>
+                <div style="background:#f8fafc;padding:10px 12px;border-radius:6px;border:1px solid var(--line);text-align:center">
+                  <div style="font-size:17px;font-weight:800;color:var(--ink)" id="opsPipelineCount">NPR 15L</div>
+                  <small style="font-size:10px;color:var(--muted)">Deals Audited</small>
                 </div>
               </div>
-              <div class="ai-brief-item">
-                <span class="badge badge-orange">ACTION</span>
-                <div>
-                  <strong style="font-size:13px;display:block">8 high-intent leads need contact</strong>
-                  <span style="color:var(--muted);font-size:12px">Prospects engaged with your pricing calculator and downloaded enterprise whitepapers.</span>
-                </div>
+
+              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:10px">
+                🎯 Today's 3 Co-Founder Priorities
               </div>
-              <div class="ai-brief-item">
-                <span class="badge badge-blue">INSIGHT</span>
-                <div>
-                  <strong style="font-size:13px;display:block">Website Chat is your top converting channel</strong>
-                  <span style="color:var(--muted);font-size:12px">32% qualified lead conversion rate this week with average response time under 45s.</span>
+              <div class="ai-brief-list" id="aiBriefContainer">
+                <div class="ai-brief-item">
+                  <span class="badge badge-red">HIGH</span>
+                  <div>
+                    <strong style="font-size:13px;display:block">Engage VIP Inbound Inquiry on WhatsApp</strong>
+                    <span style="color:var(--muted);font-size:12px">AI detected high buying intent from recent ad campaign.</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -427,35 +446,41 @@
             </tr>
           `).join('');
         }
-        // Fetch and render live AI Daily Sales Manager Briefing (PRD §24)
+        // Fetch and render AI Co-Founder Ops Room Digest
         try {
-          const rBrief = await fetch('/api/ai/daily-brief');
-          if (rBrief.ok) {
-            const brief = await rBrief.json();
+          const rDigest = await fetch('/api/ai/cofounder/ops-digest');
+          if (rDigest.ok) {
+            const digest = await rDigest.json();
+            if (digest.overnight_autonomous_actions) {
+              const o = digest.overnight_autonomous_actions;
+              const elL = document.getElementById('opsLeadsCount');
+              const elS = document.getElementById('opsSlaCount');
+              const elQ = document.getElementById('opsQuotesCount');
+              const elP = document.getElementById('opsPipelineCount');
+              if (elL) elL.textContent = o.leads_qualified_count;
+              if (elS) elS.textContent = o.sla_breaches_prevented;
+              if (elQ) elQ.textContent = o.quotes_staged;
+              if (elP) elP.textContent = SalesOS.formatCurrency(o.deals_monitored_amount);
+            }
+
             const container = document.getElementById('aiBriefContainer');
-            if (container && brief) {
-              let itemsHtml = '';
-              if (brief.narrative) {
-                itemsHtml += `
-                  <div style="padding:10px 12px;background:rgba(99,102,241,0.06);border-left:3px solid var(--blue);border-radius:4px;font-size:12.5px;color:var(--ink);margin-bottom:10px;line-height:1.5">
-                    <strong>Daily Executive Narrative:</strong> ${SalesOS.escapeHtml(brief.narrative)}
-                  </div>
-                `;
-              }
-              (brief.recommendations || []).forEach(rec => {
-                const badgeClass = rec.priority === 'urgent' ? 'badge-red' : (rec.priority === 'high' ? 'badge-orange' : 'badge-blue');
-                itemsHtml += `
+            if (container && digest.top_priorities && digest.top_priorities.length) {
+              container.innerHTML = digest.top_priorities.map(p => {
+                const badgeClass = p.urgency === 'high' ? 'badge-red' : p.urgency === 'medium' ? 'badge-orange' : 'badge-blue';
+                const linkHref = p.lead_id ? `/leads.html?highlight=${p.lead_id}` : (p.deal_id ? `/deals.html` : `/approvals.html`);
+                return `
                   <div class="ai-brief-item">
-                    <span class="badge ${badgeClass}">${SalesOS.escapeHtml(rec.priority.toUpperCase())}</span>
-                    <div>
-                      <strong style="font-size:13px;display:block">${SalesOS.escapeHtml(rec.action)}</strong>
-                      <span style="color:var(--muted);font-size:12px">${SalesOS.escapeHtml(rec.reason)}</span>
-                      ${rec.suggested_message ? `<div style="font-size:11.5px;color:var(--blue);margin-top:4px">💡 ${SalesOS.escapeHtml(rec.suggested_message)}</div>` : ''}
+                    <span class="badge ${badgeClass}">${SalesOS.escapeHtml(p.urgency.toUpperCase())}</span>
+                    <div style="flex:1">
+                      <strong style="font-size:13px;display:block">${SalesOS.escapeHtml(p.title)}</strong>
+                      <span style="color:var(--muted);font-size:12px">${SalesOS.escapeHtml(p.description)}</span>
+                      <div style="margin-top:6px">
+                        <a href="${linkHref}" class="btn btn-secondary btn-sm" style="font-size:11px;padding:2px 8px">⚡ ${SalesOS.escapeHtml(p.action_label)} →</a>
+                      </div>
                     </div>
                   </div>
                 `;
-              });
-              if (itemsHtml) container.innerHTML = itemsHtml;
+              }).join('');
             }
           }
         } catch (_) {}

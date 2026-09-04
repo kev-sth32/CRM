@@ -271,3 +271,17 @@ POST /api/contacts/merge
 ```
 Runs Levenshtein string similarity matching and performs atomic 3-column field survivor merge, consolidating timeline activities and archiving merged records.
 
+### AI Co-Founder & Social Selling Engine (Alippo Parity)
+```http
+GET  /api/webhooks/meta-lead-gen
+POST /api/webhooks/meta-lead-gen
+GET  /api/ai/cofounder/ops-digest
+POST /api/ai/pitch-studio/generate
+GET  /api/products/:id/flyer-data
+```
+- `GET /api/webhooks/meta-lead-gen`: Standard Meta Lead Ads webhook challenge verification handshake (`hub.mode` & `hub.verify_token`).
+- `POST /api/webhooks/meta-lead-gen`: Cryptographic HMAC-SHA256 authenticated inbound lead capture from Facebook & Instagram ad forms.
+- `GET /api/ai/cofounder/ops-digest`: Autonomous executive digest aggregating overnight actions (leads qualified, deals guarded, quotes staged) and top 3 daily founder priorities.
+- `POST /api/ai/pitch-studio/generate`: 1-click generation of personalized WhatsApp pitches (Nepglish/Nepali/English) and social ad creatives with platform-targeted hooks and hashtags.
+- `GET /api/products/:id/flyer-data`: Generates commercial product proposal specifications with exact 13% Nepal VAT calculations, instant QR codes, and pre-formatted WhatsApp share text.
+

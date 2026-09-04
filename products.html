@@ -182,6 +182,28 @@
     </div>
   </div>
 
+  <!-- WhatsApp Commercial Flyer Modal -->
+  <div class="modal-backdrop" id="productFlyerModal">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="flyerModalTitle">✦ WhatsApp Commercial Flyer</h3>
+          <p class="modal-subtitle">Nepal VAT-compliant commercial proposal card with instant WhatsApp dispatch</p>
+        </div>
+        <button class="btn-close" onclick="SalesOS.closeModal('productFlyerModal')">×</button>
+      </div>
+      <div class="modal-body" id="flyerModalBody">
+        <div style="text-align:center;padding:24px;color:var(--muted)">Loading flyer specifications...</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('productFlyerModal')">Close</button>
+        <button class="btn btn-primary" id="btnShareFlyer" onclick="shareCurrentFlyerWhatsApp()">
+          <span style="color:#25d366">📱</span> Open WhatsApp Dispatch
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
   <script>
     SalesOS.init('Products', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Products' }]);
@@ -246,6 +268,7 @@
           <td><span>${p.stock !== undefined ? p.stock : 'Unlimited'} units</span></td>
           <td><span class="badge ${p.is_active !== false ? 'badge-green' : 'badge-gray'}">${p.is_active !== false ? 'Active' : 'Archived'}</span></td>
           <td style="text-align:right">
+            <button class="btn btn-secondary btn-sm" title="Generate WhatsApp Flyer" onclick="openProductFlyerModal('${escapeHtml(p.id)}')">✦ WhatsApp Flyer</button>
             <button class="btn btn-secondary btn-sm" onclick="openEditProductModalById('${escapeHtml(p.id)}')">✎ Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteProduct('${escapeHtml(p.id)}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">🗑</button>
           </td>
@@ -341,6 +364,83 @@
       } catch (e) {
         SalesOS.showToast('Error deleting product', 'error');
       }
+    }
+
+    let activeFlyerWhatsAppText = '';
+
+    async function openProductFlyerModal(prodId) {
+      const body = document.getElementById('flyerModalBody');
+      body.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">Preparing digital proposal flyer & Nepal 13% VAT calculation...</div>';
+      SalesOS.showModal('productFlyerModal');
+
+      try {
+        const res = await fetch(`/api/products/${prodId}/flyer-data`);
+        if (!res.ok) throw new Error('Failed to load flyer');
+        const data = await res.json();
+        activeFlyerWhatsAppText = data.whatsapp_text || '';
+
+        const p = data.product;
+        const f = data.flyer;
+
+        body.innerHTML = `
+          <div class="flyer-preview-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px">
+              <div>
+                <span class="badge badge-purple" style="font-size:11px">${escapeHtml(p.category || 'Product Package')}</span>
+                <h3 style="margin:4px 0 2px;font-size:16px;color:#0f172a;font-weight:700">${escapeHtml(p.name)}</h3>
+                <code style="font-size:11px;color:#64748b">SKU: ${escapeHtml(p.sku || 'N/A')}</code>
+              </div>
+              <div style="text-align:right">
+                <span style="font-size:11px;color:#64748b;display:block">Nepal Tax Authority</span>
+                <strong style="color:#059669;font-size:11px">13% VAT Included</strong>
+              </div>
+            </div>
+
+            <p style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.4">${escapeHtml(p.description || 'Enterprise-grade sales automation and CRM solution tailored for the South Asian market.')}</p>
+
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px">
+                <span>Base Price:</span>
+                <strong>${f.formatted_net}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px">
+                <span>Nepal VAT (13%):</span>
+                <strong>${f.formatted_vat}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#0f172a;font-weight:700;border-top:1px dashed #cbd5e1;padding-top:6px;margin-top:4px">
+                <span>Gross Proposal Total:</span>
+                <span style="color:#2563eb">${f.formatted_total}</span>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:14px;background:#f1f5f9;border-radius:6px;padding:10px">
+              <img src="${f.qr_code_url}" alt="Proposal QR" style="width:72px;height:72px;border-radius:4px;border:1px solid #cbd5e1;background:#fff;padding:2px" />
+              <div style="font-size:11px;color:#475569;line-height:1.4">
+                <strong style="color:#0f172a;display:block;margin-bottom:2px">Instant Client Access QR</strong>
+                Scan with eSewa/PhonePay or smartphone camera to view formal digital quote.<br/>
+                <a href="${f.proposal_url}" target="_blank" style="color:#2563eb;word-break:break-all">${f.proposal_url}</a>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <label class="form-label" style="font-size:11px">WhatsApp Message Preview (Editable)</label>
+            <textarea id="flyerTextPreview" class="form-control" rows="4" style="font-size:12px;font-family:monospace" oninput="activeFlyerWhatsAppText=this.value">${escapeHtml(data.whatsapp_text)}</textarea>
+          </div>
+        `;
+      } catch (err) {
+        body.innerHTML = `<div class="state-empty"><p style="color:var(--red)">Failed to generate flyer: ${escapeHtml(err.message)}</p></div>`;
+      }
+    }
+
+    function shareCurrentFlyerWhatsApp() {
+      const text = document.getElementById('flyerTextPreview') ? document.getElementById('flyerTextPreview').value : activeFlyerWhatsAppText;
+      if (!text) {
+        SalesOS.showToast('No flyer text ready', 'error');
+        return;
+      }
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+      SalesOS.showToast('WhatsApp dispatch opened!');
     }
 
     loadProducts();

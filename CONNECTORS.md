@@ -32,6 +32,9 @@ Provider-neutral SMS connector. Implements opt-out keyword enforcement (STOP, UN
 ### Telephony (`connectors/telephony.js`)
 Telephony connector with AI Call Intelligence. Normalizes call events including caller ID, duration, recording URL, and transcript. AI transcript analysis extracts intent, sentiment, action items, and key topics from call recordings.
 
+### Meta Lead Ads (`connectors/meta-leadgen.js`)
+Dedicated connector for Facebook & Instagram Lead Ads webhooks. Features HMAC-SHA256 signature verification (`x-hub-signature-256`), challenge verification handshake (`hub.mode` & `hub.verify_token`), and field data normalization into standard SalesOS CRM Lead records with platform attribution and Nepal contact enrichment. Test suite: `test-alippo-inspired.js`.
+
 ## Requirements
 - Verify signatures.
 - Reject replayed events.

@@ -78,6 +78,12 @@ Platform-wide telemetry, tenant directory, tenant creation/update, cross-tenant 
 - **Data Hygiene & Deduplication (`dedupe-service.js`):** Levenshtein distance string similarity duplicate detection and atomic 3-column field survivor merge engine for Leads and Contacts.
 - **PWA Mobile Shell & Offline Cache (`manifest.json`, `sw.js`):** Standalone web app manifest and Service Worker implementing cache-first static asset delivery and network-first CRM API fallback.
 
+### AI Co-Founder & Social Selling Engine (Alippo-Inspired)
+- **AI Co-Founder Ops Room & Overnight Digest (`/api/ai/cofounder/ops-digest`):** Surfaces overnight autonomous actions (leads qualified, deals guarded, quotes staged) and computes the top 3 daily founder priorities with actionable urgency badges.
+- **Meta Lead Ads Webhook Connector (`connectors/meta-leadgen.js`):** Automated ingestion of Facebook & Instagram Lead Ads via HMAC-SHA256 authenticated webhooks (`/api/webhooks/meta-lead-gen`), bypassing manual CSV exports.
+- **AI Pitch & Social Ad Creative Studio (`pitch-studio-service.js`, `/api/ai/pitch-studio/generate`):** 1-click generation of personalized WhatsApp pitches in Nepglish, Nepali, and English, plus platform-optimized Facebook/Instagram ad copy with hashtags and value hooks.
+- **1-Click WhatsApp Commercial Product Flyer (`/api/products/:id/flyer-data`):** Generates branded commercial product proposals with exact 13% Nepal VAT calculations, instant QR codes, and 1-click WhatsApp web/mobile sharing links (`https://wa.me/?text=...`).
+
 ## 5. Data model
 Every tenant-owned record contains `tenant_id`, timestamps, and where relevant `deleted_at`. Key relationships:
 

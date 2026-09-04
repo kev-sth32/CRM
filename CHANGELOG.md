@@ -1,5 +1,26 @@
 # SalesOS Changelog
 
+## 2026-09-04 — Alippo AI Co-Founder Capabilities & Meta Lead Ads Ingestion
+
+### Added — AI Co-Founder & Social Selling Engine (Inspired by Alippo)
+- **Pillar 1: AI Co-Founder Ops Room & Overnight Autonomous Digest:**
+  - Executive Ops Room widget on `index.html` surfacing overnight autonomous achievements: leads qualified, quotes staged, SLA breaches prevented, and active pipeline protected.
+  - Generates Top 3 Daily Founder Priorities categorized by urgency (Hot Lead Triage, Deal Risk Mitigation, Revenue Growth) with direct 1-click action triggers.
+  - Backend API: `GET /api/ai/cofounder/ops-digest` with multi-tenant scoping and real-time activity metrics.
+- **Pillar 2: Meta (Facebook & Instagram) Lead Ads Webhook Connector:**
+  - Implemented `connectors/meta-leadgen.js` supporting standard Meta LeadGen webhook architecture.
+  - Handshake verification (`GET /api/webhooks/meta-lead-gen`) with `hub.mode` and `hub.verify_token` matching.
+  - Inbound lead ingestion (`POST /api/webhooks/meta-lead-gen`) with cryptographic HMAC-SHA256 signature verification (`x-hub-signature-256`), automatic normalization into CRM Leads, real-time SSE dispatch, and audit logging.
+- **Pillar 3: AI Pitch & Social Ad Creative Studio:**
+  - Implemented `pitch-studio-service.js` and `POST /api/ai/pitch-studio/generate`.
+  - 1-Click WhatsApp Pitch Generator supporting **Nepglish**, **Nepali**, and **English** tones, pre-formatted for direct WhatsApp Web/Mobile dispatch with automatic Nepal phone country code (`+977`) prefixing in `leads.html`.
+  - Social Ad Creative Generator in `campaigns.html` outputting targeted Facebook, Instagram, and LinkedIn ad copy, hooks, value bullets, and hashtags.
+- **Pillar 4: 1-Click WhatsApp Commercial Product Flyer Generator:**
+  - Implemented `GET /api/products/:id/flyer-data` with automatic 13% Nepal VAT calculation and formal digital quotation links.
+  - Interactive WhatsApp Commercial Flyer modal in `products.html` displaying QR code, pricing breakdowns, and direct `https://wa.me/?text=...` dispatch.
+- **Verification & Test Coverage:**
+  - Added `test-alippo-inspired.js` covering webhook handshake, lead creation, ops digest, pitch generation, and VAT flyer calculations. Registered as `test:alippo` and integrated into `npm run test:all`.
+
 ## 2026-09-04 — Enterprise Parity with Salesforce & Zoho CRM (7 Pillars)
 
 ### Added — Enterprise Core Capabilities

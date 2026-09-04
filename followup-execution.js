@@ -1,0 +1,1 @@
+const {canSendFollowup}=require('./followup-policy');function prepareFollowup(ctx){const check=canSendFollowup(ctx);return check.allowed?{ready:true}:{ready:false,reason:check.reason}}module.exports={prepareFollowup};

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacts Directory · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Contacts</h1>
+            <p>Unified customer profiles, contact associations, interaction history, and relationship tracking.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadContacts()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateContactModal()">＋ New Contact</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Filter & Search Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="contactSearchInput" placeholder="Search by name, email, company, title..." oninput="debounceSearch()" />
+              </div>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Total Contacts: <strong id="contactCount">0</strong>
+            </div>
+          </div>
+
+          <!-- Contacts Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Contact Profile</th>
+                  <th>Job Title</th>
+                  <th>Associated Company</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Added On</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTableBody">
+                <tr>
+                  <td colspan="7">
+                    <div class="state-loading">
+                      <div class="spinner"></div>
+                      <p>Loading contacts...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Contact Detail Drawer -->
+  <div class="drawer-overlay" id="contactDrawerOverlay" onclick="closeContactDrawer()"></div>
+  <aside class="drawer" id="contactDrawer">
+    <div class="drawer-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="user-avatar" id="drawerContactAvatar" style="width:42px;height:42px;font-size:16px">RK</div>
+        <div>
+          <h3 id="drawerContactName" style="font-size:17px;font-weight:750">Rajan Koirala</h3>
+          <small id="drawerContactTitle" style="color:var(--muted)">Managing Director · Koirala Industries</small>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeContactDrawer()">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <a href="/inbox.html" class="btn btn-primary btn-sm" style="flex:1">✉ Send Message</a>
+        <button class="btn btn-secondary btn-sm" onclick="openEditContactModal()">✎ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteContact()">🗑 Delete</button>
+      </div>
+
+      <!-- Quick Details -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Contact Information</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px">
+          <div>
+            <span style="color:var(--muted);display:block">Direct Email</span>
+            <strong id="drawerContactEmail">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Phone Line</span>
+            <strong id="drawerContactPhone">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Company Account</span>
+            <strong id="drawerContactCompany">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Relationship Status</span>
+            <span class="badge badge-green">Active Client</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Associated Opportunities & Deals -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Linked Opportunities</h4>
+          <a href="/deals.html" style="font-size:11.5px;color:var(--blue);font-weight:600">View Pipeline →</a>
+        </div>
+        <div id="contactDealsContainer">
+          <div style="padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:12.5px">
+            <strong style="display:block">Koirala Group 3-Branch CRM Rollout</strong>
+            <div style="display:flex;justify-content:space-between;color:var(--muted);margin-top:4px">
+              <span>Stage: Negotiation</span>
+              <strong style="color:var(--ink)">NPR 18,50,000</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interaction History -->
+      <div class="card" style="padding:16px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Interaction History</h4>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <p>• <strong>Sep 3, 2026:</strong> Inbound message received via Website Chat inquiring about multi-branch rollout.</p>
+          <p style="margin-top:8px">• <strong>Sep 2, 2026:</strong> AI Copilot qualified lead with 94/100 score.</p>
+          <p style="margin-top:8px">• <strong>Aug 15, 2026:</strong> Initial contact created and assigned to Arjun Sharma.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Create Contact Modal -->
+  <div class="modal-overlay" id="createContactModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Add New Contact</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createContactModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="contactName" class="form-control" placeholder="e.g. Ramesh Adhikari" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input type="text" id="contactTitle" class="form-control" placeholder="e.g. VP of Sales" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Account</label>
+          <input type="text" id="contactCompany" class="form-control" placeholder="e.g. Koirala Industries" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="contactEmail" class="form-control" placeholder="ramesh@company.com" onblur="checkDuplicateEmail(this.value)" />
+          <small id="duplicateWarning" style="color:var(--orange);font-size:11px;display:none">⚠️ A contact with this email already exists.</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="contactPhone" class="form-control" placeholder="+977-9800000000" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createContactModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateContact()">Save Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Contact Modal -->
+  <div class="modal-overlay" id="editContactModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Contact</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('editContactModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editContactId" />
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="editContactName" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input type="text" id="editContactTitle" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Account</label>
+          <input type="text" id="editContactCompany" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="editContactEmail" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="editContactPhone" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('editContactModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitEditContact()">Update Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Contacts', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Contacts' }]);
+
+    let allContacts = [];
+    let activeContact = null;
+    let searchTimeout = null;
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadContacts, 250);
+    }
+
+    async function loadContacts() {
+      const q = document.getElementById('contactSearchInput').value.trim();
+      const params = new URLSearchParams();
+      if (q) params.set('search', q);
+
+      try {
+        const res = await fetch(`/api/contacts?${params.toString()}`);
+        if (!res.ok) throw new Error();
+        allContacts = await res.json();
+        renderContacts();
+      } catch (e) {
+        document.getElementById('contactsTableBody').innerHTML = `
+          <tr><td colspan="7">
+            <div class="state-error">
+              <div class="state-icon">⚠️</div>
+              <h3>Unable to load contacts</h3>
+              <p>Please check your connection and retry.</p>
+              <button class="btn btn-secondary btn-sm" onclick="loadContacts()">Retry</button>
+            </div>
+          </td></tr>
+        `;
+      }
+    }
+
+    function renderContacts() {
+      const tbody = document.getElementById('contactsTableBody');
+      document.getElementById('contactCount').textContent = allContacts.length;
+
+      if (!allContacts.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="7">
+            <div class="state-empty">
+              <div class="state-icon">◉</div>
+              <h3>No contacts found</h3>
+              <p>Add customer contacts to track relationships and conversations.</p>
+              <button class="btn btn-primary btn-sm" onclick="openCreateContactModal()">＋ Add Contact</button>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allContacts.map(c => {
+        const initials = (c.name || 'C').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+        return `
+          <tr style="cursor:pointer" onclick="openContactDrawerById('${escapeHtml(c.id)}')">
+            <td>
+              <div style="display:flex;align-items:center;gap:11px">
+                <div class="tenant-avatar" style="background:#e0e7ff;color:#4338ca">
+                  ${escapeHtml(initials)}
+                </div>
+                <div>
+                  <strong style="color:var(--ink);display:block">${escapeHtml(c.name)}</strong>
+                  <small style="color:var(--muted)">ID: ${escapeHtml(c.id)}</small>
+                </div>
+              </div>
+            </td>
+            <td><span style="color:var(--ink-secondary)">${escapeHtml(c.title || 'Contact')}</span></td>
+            <td>
+              <a href="/companies.html?highlight=${encodeURIComponent(c.company_id || '')}" style="color:var(--blue);text-decoration:none;font-weight:600" onclick="event.stopPropagation()">
+                ${escapeHtml(c.company_name || 'Individual')}
+              </a>
+            </td>
+            <td><span>${escapeHtml(c.email || '—')}</span></td>
+            <td><span style="color:var(--muted)">${escapeHtml(c.phone || '—')}</span></td>
+            <td><span style="font-size:12px;color:var(--muted)">${SalesOS.formatDate(c.created_at)}</span></td>
+            <td style="text-align:right" onclick="event.stopPropagation()">
+              <button class="btn btn-secondary btn-sm" onclick="openContactDrawerById('${escapeHtml(c.id)}')">View</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openContactDrawerById(id) {
+      const c = allContacts.find(x => x.id === id);
+      if (!c) return;
+      activeContact = c;
+
+      document.getElementById('drawerContactName').textContent = c.name;
+      document.getElementById('drawerContactTitle').textContent = `${c.title || 'Contact'} · ${c.company_name || 'Individual'}`;
+      document.getElementById('drawerContactEmail').textContent = c.email || '—';
+      document.getElementById('drawerContactPhone').textContent = c.phone || '—';
+      document.getElementById('drawerContactCompany').textContent = c.company_name || 'Individual';
+      document.getElementById('drawerContactAvatar').textContent = (c.name || 'C').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+
+      document.getElementById('contactDrawerOverlay').classList.add('active');
+      document.getElementById('contactDrawer').classList.add('open');
+    }
+
+    function closeContactDrawer() {
+      document.getElementById('contactDrawerOverlay').classList.remove('active');
+      document.getElementById('contactDrawer').classList.remove('open');
+    }
+
+    function openCreateContactModal() {
+      SalesOS.showModal('createContactModal');
+      document.getElementById('contactName').focus();
+    }
+
+    function checkDuplicateEmail(val) {
+      const warning = document.getElementById('duplicateWarning');
+      if (!val) return;
+      const exists = allContacts.some(c => c.email && c.email.toLowerCase() === val.toLowerCase());
+      warning.style.display = exists ? 'block' : 'none';
+    }
+
+    async function submitCreateContact() {
+      const name = document.getElementById('contactName').value.trim();
+      const title = document.getElementById('contactTitle').value.trim();
+      const company_name = document.getElementById('contactCompany').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const phone = document.getElementById('contactPhone').value.trim();
+
+      if (!name) {
+        SalesOS.showToast('Please enter contact name', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, title, company_name, email, phone })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createContactModal');
+          SalesOS.showToast('Contact created successfully');
+          loadContacts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error creating contact', 'error');
+      }
+    }
+
+    function openEditContactModal() {
+      if (!activeContact) return;
+      document.getElementById('editContactId').value = activeContact.id;
+      document.getElementById('editContactName').value = activeContact.name;
+      document.getElementById('editContactTitle').value = activeContact.title || '';
+      document.getElementById('editContactCompany').value = activeContact.company_name || '';
+      document.getElementById('editContactEmail').value = activeContact.email || '';
+      document.getElementById('editContactPhone').value = activeContact.phone || '';
+
+      SalesOS.showModal('editContactModal');
+    }
+
+    async function submitEditContact() {
+      const id = document.getElementById('editContactId').value;
+      const name = document.getElementById('editContactName').value.trim();
+      const title = document.getElementById('editContactTitle').value.trim();
+      const company_name = document.getElementById('editContactCompany').value.trim();
+      const email = document.getElementById('editContactEmail').value.trim();
+      const phone = document.getElementById('editContactPhone').value.trim();
+
+      try {
+        const res = await fetch(`/api/contacts/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, title, company_name, email, phone })
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          SalesOS.closeModal('editContactModal');
+          SalesOS.showToast('Contact updated successfully');
+          openContactDrawerById(updated.id);
+          loadContacts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to update contact', 'error');
+      }
+    }
+
+    async function confirmDeleteContact() {
+      if (!activeContact) return;
+      if (!confirm(`Delete contact "${activeContact.name}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/contacts/${activeContact.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Contact deleted');
+          closeContactDrawer();
+          loadContacts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting contact', 'error');
+      }
+    }
+
+    loadContacts();
+  </script>
+</body>
+</html>

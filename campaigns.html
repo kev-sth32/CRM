@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing Campaigns & Attribution · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Campaigns & Attribution</h1>
+            <p>Track omnichannel lead acquisition sources, campaign spending, closed revenue, and true sales ROI.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadCampaigns()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateCampaignModal()">＋ Launch Campaign</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <select class="filter-select" id="channelFilter" onchange="loadCampaigns()">
+                <option value="all">All Channels</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Google Ads">Google Ads</option>
+                <option value="Meta">Meta (Instagram / FB)</option>
+                <option value="Email / Direct">Email / Direct</option>
+              </select>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Active Campaigns: <strong id="campaignCount">0</strong>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Campaign Name / Source</th>
+                  <th>Channel</th>
+                  <th>Budget vs Spent</th>
+                  <th>Leads Acquired</th>
+                  <th>Deals Won</th>
+                  <th>Generated Revenue</th>
+                  <th>Sales ROI</th>
+                  <th>Status</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="campaignsTableBody">
+                <tr>
+                  <td colspan="9">
+                    <div class="state-loading">
+                      <div class="spinner"></div>
+                      <p>Loading campaigns...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Campaign Modal -->
+  <div class="modal-overlay" id="createCampaignModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Launch New Marketing Campaign</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createCampaignModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Campaign Name *</label>
+          <input type="text" id="campName" class="form-control" placeholder="e.g. Q4 FinTech Growth Initiative" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Marketing Channel</label>
+          <select id="campChannel" class="form-control">
+            <option value="LinkedIn">LinkedIn Sponsored</option>
+            <option value="Google Ads">Google Ads Search</option>
+            <option value="Meta">Meta (Instagram / Facebook)</option>
+            <option value="Email / Direct">Email / Direct Newsletter</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Total Budget (NPR) *</label>
+            <input type="number" id="campBudget" class="form-control" placeholder="100000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">UTM Source</label>
+            <input type="text" id="campUtmSource" class="form-control" placeholder="linkedin" />
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">UTM Medium</label>
+            <input type="text" id="campUtmMedium" class="form-control" placeholder="cpc" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">UTM Campaign Tag</label>
+            <input type="text" id="campUtmCampaign" class="form-control" placeholder="q4_growth" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createCampaignModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateCampaign()">Launch Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Campaigns', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Campaigns' }]);
+
+    let allCampaigns = [];
+
+    async function loadCampaigns() {
+      try {
+        const res = await fetch('/api/campaigns');
+        if (!res.ok) throw new Error();
+        allCampaigns = await res.json();
+
+        const chFilter = document.getElementById('channelFilter').value;
+        let filtered = [...allCampaigns];
+        if (chFilter !== 'all') {
+          filtered = filtered.filter(c => c.channel === chFilter);
+        }
+
+        renderCampaigns(filtered);
+      } catch (e) {
+        SalesOS.showToast('Unable to load campaigns', 'error');
+      }
+    }
+
+    function renderCampaigns(campaigns) {
+      const tbody = document.getElementById('campaignsTableBody');
+      document.getElementById('campaignCount').textContent = campaigns.length;
+
+      if (!campaigns.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="9">
+            <div class="state-empty">
+              <div class="state-icon">◌</div>
+              <h3>No campaigns found</h3>
+              <p>Launch targeted marketing campaigns with UTM attribution tracking.</p>
+              <button class="btn btn-primary btn-sm" onclick="openCreateCampaignModal()">＋ Launch Campaign</button>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = campaigns.map(c => {
+        const spent = Number(c.spent || 0);
+        const revenue = Number(c.revenue || 0);
+        const roi = spent > 0 ? `${Math.round(((revenue - spent) / spent) * 100)}%` : '—';
+
+        return `
+          <tr>
+            <td>
+              <strong style="display:block;color:var(--ink)">${escapeHtml(c.name)}</strong>
+              <small style="font-family:monospace;color:var(--muted)">utm: ${escapeHtml(c.utm_source || 'direct')} / ${escapeHtml(c.utm_campaign || 'none')}</small>
+            </td>
+            <td><span class="badge badge-purple">${escapeHtml(c.channel)}</span></td>
+            <td>
+              <strong>${SalesOS.formatCurrency(spent)}</strong>
+              <small style="color:var(--muted);display:block">Budget: ${SalesOS.formatCurrency(c.budget)}</small>
+            </td>
+            <td><strong style="color:var(--blue)">${c.leads || 0}</strong></td>
+            <td><strong style="color:var(--green)">${c.deals_won || 0}</strong></td>
+            <td><strong>${SalesOS.formatCurrency(revenue)}</strong></td>
+            <td>
+              <span class="badge ${spent > 0 && revenue > spent ? 'badge-green' : 'badge-orange'}">
+                ${roi} ROI
+              </span>
+            </td>
+            <td><span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-gray'}">${escapeHtml(c.status || 'active')}</span></td>
+            <td style="text-align:right">
+              <button class="btn btn-danger btn-sm" onclick="deleteCampaign('${escapeHtml(c.id)}')">🗑</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openCreateCampaignModal() {
+      SalesOS.showModal('createCampaignModal');
+      document.getElementById('campName').focus();
+    }
+
+    async function submitCreateCampaign() {
+      const name = document.getElementById('campName').value.trim();
+      const channel = document.getElementById('campChannel').value;
+      const budget = Number(document.getElementById('campBudget').value);
+      const utm_source = document.getElementById('campUtmSource').value.trim();
+      const utm_medium = document.getElementById('campUtmMedium').value.trim();
+      const utm_campaign = document.getElementById('campUtmCampaign').value.trim();
+
+      if (!name || !budget) {
+        SalesOS.showToast('Name and budget are required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/campaigns', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name, channel, budget, spent: 0, leads: 0, deals_won: 0, revenue: 0,
+            utm_source, utm_medium, utm_campaign, status: 'active'
+          })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createCampaignModal');
+          SalesOS.showToast('Campaign launched successfully');
+          loadCampaigns();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error saving campaign', 'error');
+      }
+    }
+
+    async function deleteCampaign(id) {
+      if (!confirm('Delete this campaign?')) return;
+      try {
+        const res = await fetch(`/api/campaigns/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Campaign deleted');
+          loadCampaigns();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting campaign', 'error');
+      }
+    }
+
+    loadCampaigns();
+  </script>
+</body>
+</html>

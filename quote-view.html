@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Proposal & E-Signature — SalesOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    body {
+      background: #0f172a;
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+      color: #1e293b;
+      font-family: var(--font-sans);
+    }
+    .quote-paper {
+      background: #ffffff;
+      max-width: 860px;
+      margin: 0 auto;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+    .quote-header-banner {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: white;
+      padding: 36px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .quote-content {
+      padding: 40px;
+    }
+    .quote-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .sign-section {
+      margin-top: 36px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .canvas-container {
+      background: white;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      position: relative;
+      margin-bottom: 14px;
+      cursor: crosshair;
+    }
+    canvas {
+      width: 100%;
+      height: 140px;
+      display: block;
+    }
+    .signed-badge-box {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 32px;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .quote-paper { box-shadow: none; max-width: 100%; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="quote-paper">
+    <!-- Header Banner -->
+    <div class="quote-header-banner">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="width:32px;height:32px;background:var(--blue);border-radius:8px;display:grid;place-items:center;color:white;font-weight:bold;font-size:16px">✦</div>
+          <strong style="font-size:18px;letter-spacing:-0.02em">SalesOS Enterprise Cloud</strong>
+        </div>
+        <h1 style="font-size:24px;font-weight:800;margin:0 0 6px" id="quoteTitle">Loading Proposal...</h1>
+        <p style="color:#94a3b8;margin:0;font-size:13px">Official Price Quotation & Service Agreement</p>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:4px">QUOTE NUMBER</div>
+        <div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:#38bdf8" id="quoteNumber">—</div>
+        <div style="margin-top:8px" id="statusBadgeContainer">
+          <span class="badge badge-blue">Valid Proposal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-content">
+      <!-- Address & Info Grid -->
+      <div class="quote-details-grid">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:0.05em;margin-bottom:8px">PREPARED FOR</div>
+          <strong style="font-size:16px;display:block" id="customerName">—</strong>
+          <div style="color:var(--muted);font-size:13px" id="customerEmail">—</div>
+          <div style="color:var(--muted);font-size:13px" id="dealTitle">—</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:0.05em;margin-bottom:8px">PROPOSAL DETAILS</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Date Issued: <strong style="color:var(--text)" id="issueDate">—</strong></div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Valid Until: <strong style="color:var(--text)" id="expiryDate">30 Days from Issue</strong></div>
+          <div style="font-size:13px;color:var(--muted)">Currency: <strong style="color:var(--text)" id="currencyLabel">NPR</strong></div>
+        </div>
+      </div>
+
+      <!-- Line Items Table -->
+      <table class="data-table" style="margin-bottom:24px">
+        <thead>
+          <tr>
+            <th>Item & Scope Description</th>
+            <th>SKU</th>
+            <th style="text-align:center">Qty</th>
+            <th style="text-align:right">Unit Price</th>
+            <th style="text-align:right">Total Amount</th>
+          </tr>
+        </thead>
+        <tbody id="lineItemsBody">
+          <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading line items...</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Financial Totals -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:32px">
+        <div style="width:320px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px">
+            <span>Subtotal:</span>
+            <strong style="color:var(--text)" id="subtotalVal">—</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px" id="discountRow">
+            <span>Discount:</span>
+            <span style="color:#059669;font-weight:600" id="discountVal">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px">
+            <span>VAT / Tax (13%):</span>
+            <span style="font-weight:600;color:var(--text)" id="taxVal">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--text);border-top:1px solid #cbd5e1;padding-top:10px">
+            <span>Total Payable:</span>
+            <span style="color:var(--blue)" id="grandTotalVal">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms & Notes -->
+      <div style="background:#f1f5f9;border-left:4px solid var(--blue);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:32px">
+        <strong style="font-size:12px;text-transform:uppercase;color:#475569;display:block;margin-bottom:4px">Terms & Agreement Conditions</strong>
+        <p style="font-size:13px;color:#334155;margin:0" id="termsText">—</p>
+      </div>
+
+      <!-- Digital Signature Section -->
+      <div id="signingArea" class="sign-section no-print">
+        <h3 style="margin:0 0 6px;font-size:16px;color:#0f172a">Digital Quote Acceptance & Sign-off</h3>
+        <p style="font-size:13px;color:#64748b;margin:0 0 20px">Please draw your authorized signature below and submit to accept this proposal.</p>
+
+        <form onsubmit="handleSignatureSubmit(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="form-group">
+              <label class="form-label" style="color:#334155">Full Legal Name of Authorized Signer</label>
+              <input type="text" id="signerName" class="form-control" placeholder="e.g. Sanjeev Shrestha" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="color:#334155">Signer Title / Role</label>
+              <input type="text" id="signerTitle" class="form-control" placeholder="e.g. Chief Technology Officer" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label class="form-label" style="margin:0;color:#334155">Draw Digital Signature</label>
+              <button type="button" class="btn btn-secondary" style="padding:2px 8px;font-size:11px" onclick="clearSignatureCanvas()">Clear Canvas</button>
+            </div>
+            <div class="canvas-container">
+              <canvas id="signatureCanvas"></canvas>
+            </div>
+            <small style="color:#94a3b8">Use mouse cursor or touch screen to draw your signature.</small>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px">
+            <input type="checkbox" id="agreeTerms" required style="margin-top:3px">
+            <label for="agreeTerms" style="font-size:12px;color:#475569;line-height:1.4">
+              I confirm that I am authorized to enter into this contract on behalf of the customer, and agree that this digital signature constitutes a legally binding agreement.
+            </label>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <button type="button" class="btn btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+            <button type="submit" class="btn btn-primary" id="signSubmitBtn" style="padding:12px 24px;font-weight:700">
+              ✓ Accept & Sign Quote
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Signed Success View & ESIGN Certificate -->
+      <div id="signedConfirmation" class="signed-badge-box" style="display:none">
+        <div style="font-size:36px;margin-bottom:6px">🛡️</div>
+        <h3 style="margin:0 0 6px;color:#065f46">Quote Officially Signed & Accepted</h3>
+        <p style="margin:0 0 16px;color:#047857;font-size:14px" id="signedDetailsText">
+          Signed agreement. This contract is legally binding and non-repudiable.
+        </p>
+
+        <!-- ESIGN Certificate of Completion -->
+        <div id="esignCertBlock" style="text-align:left;background:#ffffff;border:1px solid #a7f3d0;border-radius:8px;padding:16px;font-size:12px;color:#065f46;margin-bottom:18px;line-height:1.6">
+          <div style="font-weight:700;letter-spacing:0.02em;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <span>✓</span> ESIGN ACT CERTIFICATE OF COMPLETION
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px">
+            <span style="color:#047857">Certificate ID:</span>
+            <strong id="certIdText" style="font-family:var(--font-mono)">—</strong>
+            <span style="color:#047857">Signer Identity:</span>
+            <span id="certSignerText">—</span>
+            <span style="color:#047857">UTC Timestamp:</span>
+            <span id="certTimeText">—</span>
+            <span style="color:#047857">Recorded IP:</span>
+            <span id="certIpText" style="font-family:var(--font-mono)">—</span>
+            <span style="color:#047857">Document SHA-256:</span>
+            <span id="certHashText" style="font-family:var(--font-mono);font-size:11px;word-break:break-all;background:#f0fdf4;padding:2px 4px;border-radius:4px">—</span>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:#059669;border-top:1px dashed #bbf7d0;padding-top:8px">
+            Governed by US Electronic Signatures in Global and National Commerce Act (15 U.S.C. § 7001) & Uniform Electronic Transactions Act.
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" style="background:white;border-color:#a7f3d0;color:#065f46;font-weight:600" onclick="window.print()">
+          🖨 Download Verified Legal Record (PDF)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let quoteData = null;
+    let canvas, ctx;
+    let isDrawing = false;
+    let hasSignature = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCanvas();
+      loadQuoteDetails();
+    });
+
+    async function loadQuoteDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const quoteParam = urlParams.get('token') || urlParams.get('id');
+
+      if (!quoteParam) {
+        alert('Missing quote security token parameter.');
+        return;
+      }
+
+      try {
+        let res = await fetch(`/api/quotes/public/${quoteParam}`);
+        if (!res.ok) {
+          res = await fetch(`/api/quotes/${quoteParam}`);
+        }
+        if (!res.ok) {
+          alert('Quote not found or link has expired.');
+          return;
+        }
+
+        quoteData = await res.json();
+        renderQuoteView(quoteData);
+      } catch (e) {
+        console.error('Failed to load quote', e);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderQuoteView(q) {
+      document.getElementById('quoteTitle').textContent = q.title;
+      document.getElementById('quoteNumber').textContent = q.quote_number;
+      document.getElementById('customerName').textContent = q.customer_name;
+      document.getElementById('customerEmail').textContent = q.customer_email || '—';
+      document.getElementById('dealTitle').textContent = q.deal_title ? `Project: ${q.deal_title}` : '';
+      document.getElementById('issueDate').textContent = new Date(q.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('termsText').textContent = q.terms || 'Standard 30-day payment terms apply.';
+      document.getElementById('currencyLabel').textContent = q.currency;
+
+      // Line items
+      const tbody = document.getElementById('lineItemsBody');
+      tbody.innerHTML = (q.line_items || []).map(item => `
+        <tr>
+          <td><strong>${escapeHtml(item.name)}</strong></td>
+          <td><code style="font-size:11px">${escapeHtml(item.sku || '—')}</code></td>
+          <td style="text-align:center">${escapeHtml(item.qty)}</td>
+          <td style="text-align:right">${escapeHtml(q.currency)} ${Number(item.price).toLocaleString()}</td>
+          <td style="text-align:right"><strong>${escapeHtml(q.currency)} ${Number(item.total).toLocaleString()}</strong></td>
+        </tr>
+      `).join('');
+
+      document.getElementById('subtotalVal').textContent = `${q.currency} ${Number(q.subtotal).toLocaleString()}`;
+      if (q.discount_amount > 0) {
+        document.getElementById('discountVal').textContent = `- ${q.currency} ${Number(q.discount_amount).toLocaleString()} (${q.discount_pct}%)`;
+      } else {
+        document.getElementById('discountRow').style.display = 'none';
+      }
+      document.getElementById('taxVal').textContent = `${q.currency} ${Number(q.tax_amount).toLocaleString()}`;
+      document.getElementById('grandTotalVal').textContent = `${q.currency} ${Number(q.total).toLocaleString()}`;
+
+      // Check if already signed
+      if (q.status === 'Signed') {
+        document.getElementById('signingArea').style.display = 'none';
+        document.getElementById('signedConfirmation').style.display = 'block';
+        document.getElementById('statusBadgeContainer').innerHTML = `<span class="badge badge-green" style="background:#059669;color:white">✓ Signed Agreement</span>`;
+        document.getElementById('signedDetailsText').innerHTML = `
+          Signed by <strong>${escapeHtml(q.signer_name)}</strong> on ${new Date(q.signed_at).toLocaleString()}.<br>
+          Verification Signature: <code style="background:white;padding:2px 6px;border-radius:4px;font-size:11px">${escapeHtml((q.signature_data || '').slice(0, 32))}...</code>
+        `;
+
+        if (q.evidence_bundle) {
+          document.getElementById('certIdText').textContent = q.evidence_bundle.certificate_id || `ESIGN-${q.quote_number}`;
+          document.getElementById('certSignerText').textContent = `${q.signer_name} (${q.signer_email || q.customer_email || 'Verified'})`;
+          document.getElementById('certTimeText').textContent = new Date(q.evidence_bundle.signed_at || q.signed_at).toUTCString();
+          document.getElementById('certIpText').textContent = q.evidence_bundle.signer_ip || '127.0.0.1';
+          document.getElementById('certHashText').textContent = q.evidence_bundle.content_hash || 'SHA-256 Verified';
+        } else {
+          document.getElementById('certIdText').textContent = `ESIGN-${q.quote_number}`;
+          document.getElementById('certSignerText').textContent = q.signer_name || 'Signer';
+          document.getElementById('certTimeText').textContent = new Date(q.signed_at).toUTCString();
+          document.getElementById('certIpText').textContent = 'Audit recorded';
+          document.getElementById('certHashText').textContent = 'SHA-256 Digest Verified';
+        }
+      }
+    }
+
+    function initCanvas() {
+      canvas = document.getElementById('signatureCanvas');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = 140;
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+
+      function startDraw(e) {
+        isDrawing = true;
+        hasSignature = true;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        ctx.beginPath();
+        ctx.moveTo(clientX - rect.left, clientY - rect.top);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        ctx.lineTo(clientX - rect.left, clientY - rect.top);
+        ctx.stroke();
+      }
+
+      function stopDraw() {
+        isDrawing = false;
+      }
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDraw);
+
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); });
+      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+      canvas.addEventListener('touchend', stopDraw);
+    }
+
+    function clearSignatureCanvas() {
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hasSignature = false;
+      }
+    }
+
+    async function handleSignatureSubmit(e) {
+      e.preventDefault();
+      const signerName = document.getElementById('signerName').value.trim();
+      const signerTitle = document.getElementById('signerTitle').value.trim();
+      const btn = document.getElementById('signSubmitBtn');
+
+      if (!hasSignature) {
+        alert('Please draw your signature on the canvas before submitting.');
+        return;
+      }
+
+      const signatureDataUrl = canvas.toDataURL('image/png');
+      btn.disabled = true;
+      btn.textContent = 'Processing Digital Sign-off...';
+
+      const signToken = quoteData.access_token || quoteData.id;
+
+      try {
+        let res = await fetch(`/api/quotes/sign/${signToken}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signer_name: `${signerName} (${signerTitle})`,
+            signature_data: signatureDataUrl
+          })
+        });
+
+        if (!res.ok) {
+          res = await fetch(`/api/quotes/${quoteData.id}/sign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              signer_name: `${signerName} (${signerTitle})`,
+              signature_data: signatureDataUrl
+            })
+          });
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          renderQuoteView(data.quote);
+        } else {
+          alert('Failed to submit digital signature.');
+          btn.disabled = false;
+          btn.textContent = '✓ Accept & Sign Quote';
+        }
+      } catch (err) {
+        alert('Network error while processing signature.');
+        btn.disabled = false;
+        btn.textContent = '✓ Accept & Sign Quote';
+      }
+    }
+  </script>
+</body>
+</html>

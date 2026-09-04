@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspace Settings · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .settings-nav {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 24px;
+    }
+    .settings-tab {
+      padding: 10px 16px;
+      border: none;
+      background: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .settings-tab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+    .settings-section {
+      display: none;
+    }
+    .settings-section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Workspace Settings</h1>
+            <p>Manage your company profile, currency, AI autonomous guardrails, team access, and audit trail.</p>
+          </div>
+        </div>
+
+        <!-- Settings Navigation Tabs -->
+        <div class="settings-nav">
+          <button class="settings-tab active" onclick="switchTab('general', this)">General & Localization</button>
+          <button class="settings-tab" onclick="switchTab('ai_policy', this)">✦ AI Policy & Guardrails</button>
+          <button class="settings-tab" onclick="switchTab('billing', this)">💳 Subscription & Billing</button>
+          <button class="settings-tab" onclick="switchTab('custom_fields', this)">🧩 Custom Fields</button>
+          <button class="settings-tab" onclick="switchTab('webhooks', this)">⚡ Webhooks & Zapier</button>
+          <button class="settings-tab" onclick="switchTab('team', this)">Users & Access Roles</button>
+          <button class="settings-tab" onclick="switchTab('audit', this)">Audit Log Viewer</button>
+        </div>
+
+        <!-- Section 1: General Settings -->
+        <div class="settings-section active" id="sec-general">
+          <div class="card" style="max-width:720px;padding:24px">
+            <h3 style="font-size:16px;font-weight:750;margin-bottom:18px">Company Profile</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <input type="text" id="setCompanyName" class="form-control" value="Acme Cloud Inc." />
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="form-group">
+                <label class="form-label">Base Currency</label>
+                <select id="setCurrency" class="form-control">
+                  <option value="NPR">NPR — Nepalese Rupee</option>
+                  <option value="USD">USD — US Dollar</option>
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="INR">INR — Indian Rupee</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">System Timezone</label>
+                <select id="setTimezone" class="form-control">
+                  <option value="Asia/Kathmandu">Asia/Kathmandu (+05:45)</option>
+                  <option value="Asia/Kolkata">Asia/Kolkata (+05:30)</option>
+                  <option value="UTC">UTC (GMT)</option>
+                  <option value="America/New_York">America/New_York (EST)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="form-group">
+                <label class="form-label">Default VAT / Tax Rate (%)</label>
+                <input type="number" id="setTaxRate" class="form-control" value="13" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Working Hours Window</label>
+                <input type="text" id="setWorkingHours" class="form-control" value="09:00 - 18:00 (Sun-Fri)" />
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:10px">
+              <button class="btn btn-primary" onclick="saveGeneralSettings()">Save Profile Settings</button>
+            </div>
+          </div>
+
+          <!-- Industry Vertical Preset Card (PRD §47) -->
+          <div class="card" style="max-width:720px;padding:24px;margin-top:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0">Industry Vertical & Pipeline Preset (PRD §47)</h3>
+                <p style="color:var(--muted);font-size:13px;margin:4px 0 0">
+                  Switch your pipeline stages, custom fields, and AI persona to an industry vertical template.
+                </p>
+              </div>
+              <a href="/onboarding.html" class="btn btn-secondary btn-sm" style="white-space:nowrap">Launch Wizard ✨</a>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-end">
+              <div style="flex:1">
+                <label class="form-label">Industry Template</label>
+                <select id="settingsIndustryTemplateSelect" class="form-control">
+                  <option value="saas">SaaS & Cloud Software (MRR, Demos, Trial)</option>
+                  <option value="real_estate">Real Estate & Property Development (Site Visits, Booking)</option>
+                  <option value="education">Education & Study Abroad (Counseling, Admissions)</option>
+                  <option value="hospitality">Hospitality, Resorts & Events (Room Booking, Advance)</option>
+                  <option value="automobile">Automobile Dealership (Test Drives, Trades)</option>
+                  <option value="agency">Digital Agency & Consultancies (SOWs, Retainers)</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="applyIndustryTemplateFromSettings()">Apply Template</button>
+            </div>
+          </div>
+
+          <!-- GDPR Data Portability Card -->
+          <div class="card" style="max-width:720px;padding:24px;margin-top:20px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="font-size:20px">🛡️</span>
+                  <h3 style="font-size:16px;font-weight:750;margin:0">GDPR Workspace Data Portability</h3>
+                </div>
+                <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 16px">
+                  Under EU GDPR Article 20 (Right to Data Portability), you have the right to receive an export of all data stored in your workspace. Download an immutable, machine-readable JSON bundle containing your leads, deals, contacts, companies, activities, quotes, and audit logs.
+                </p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--bg-secondary, #f8fafc);border:1px solid var(--border);border-radius:10px">
+              <div>
+                <strong style="font-size:13px;display:block;color:var(--ink)">SalesOS Full Workspace Archive (.json)</strong>
+                <small style="color:var(--muted)">Includes CRM schemas, line items, and audit trails</small>
+              </div>
+              <button class="btn btn-secondary" onclick="exportWorkspaceData()" id="exportDataBtn" style="white-space:nowrap;font-weight:600">
+                📥 Export All Workspace Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: AI Policy & Guardrails -->
+        <div class="settings-section" id="sec-ai_policy">
+          <div class="card" style="max-width:760px;padding:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750">✦ AI Sales Agent Policy & Guardrails</h3>
+                <p style="color:var(--muted);font-size:12.5px">Control autonomous capabilities, tool registries, and human escalation thresholds.</p>
+              </div>
+              <span class="badge badge-purple" style="font-size:12px;padding:4px 10px">Phase 4 Compliant</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Operational Mode</label>
+              <select id="setAiMode" class="form-control">
+                <option value="copilot">Copilot (Assists human reps, drafts responses, requires confirmation)</option>
+                <option value="assisted">Assisted (Answers standard queries autonomously, escalates high value)</option>
+                <option value="autonomous">Autonomous (Executes permissioned tools and auto-replies 24/7)</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Allowed Tools Registry</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:13px">
+                <label><input type="checkbox" checked disabled /> search_customer</label>
+                <label><input type="checkbox" checked disabled /> search_products</label>
+                <label><input type="checkbox" checked disabled /> create_task</label>
+                <label><input type="checkbox" checked disabled /> create_lead</label>
+                <label><input type="checkbox" checked disabled /> update_lead</label>
+                <label><input type="checkbox" checked disabled /> get_customer_history</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">High-Risk Tools Requiring Human Approval</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:#fff7ed;border-radius:8px;border:1px solid #fed7aa;font-size:13px">
+                <label><input type="checkbox" checked disabled /> send_discount_quote</label>
+                <label><input type="checkbox" checked disabled /> schedule_enterprise_demo</label>
+                <label><input type="checkbox" checked disabled /> delete_crm_record</label>
+                <label><input type="checkbox" checked disabled /> escalate_to_human</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Daily AI Token Budget (NPR)</label>
+              <input type="number" id="setAiBudget" class="form-control" value="5000" />
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:14px">
+              <button class="btn btn-primary" onclick="saveAiPolicy()">Update AI Policies</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Users & Access Roles -->
+        <div class="settings-section" id="sec-team">
+          <div class="card">
+            <div style="padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+              <h3 style="font-size:15px;font-weight:750">Workspace Users</h3>
+              <button class="btn btn-primary btn-sm" onclick="SalesOS.showToast('Invite sent to new member')">＋ Invite User</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="teamTableBody">
+                  <tr><td colspan="4" style="text-align:center;padding:24px">Loading team members...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Audit Log Viewer -->
+        <div class="settings-section" id="sec-audit">
+          <div class="card">
+            <div class="filter-bar">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="auditSearchInput" placeholder="Filter audit actions or entities..." oninput="filterAuditLogs()" />
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="loadAuditLogs()">↻ Refresh Logs</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>User / Actor</th>
+                    <th>Action</th>
+                    <th>Target Entity</th>
+                    <th>Entity ID</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="auditLogsBody">
+                  <tr><td colspan="6" style="text-align:center;padding:24px">Loading audit events...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Subscription & Billing -->
+        <div class="settings-section" id="sec-billing">
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:24px">
+            <div class="card" style="padding:24px">
+              <span class="badge badge-green" style="margin-bottom:12px;display:inline-block">ACTIVE SUBSCRIPTION</span>
+              <h3 id="billingCurrentPlan" style="font-size:22px;font-weight:800;margin:0 0 6px">Enterprise SaaS</h3>
+              <p style="font-size:13px;color:var(--muted);margin:0 0 16px">Billed monthly via Stripe</p>
+              
+              <div style="background:var(--surface);padding:14px;border-radius:var(--radius-sm);margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+                  <span style="color:var(--muted)">Active Workspace:</span>
+                  <strong id="billingTenantName">Acme Cloud Inc.</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+                  <span style="color:var(--muted)">Seats In Use:</span>
+                  <strong id="billingSeats">4 Seats / Unlimited</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+                  <span style="color:var(--muted)">AI Ops Quota:</span>
+                  <strong>10,000 / mo</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px">
+                  <span style="color:var(--muted)">Plan Status:</span>
+                  <span class="badge badge-green" id="billingStatusBadge">Active</span>
+                </div>
+              </div>
+
+              <button class="btn btn-secondary" style="width:100%" onclick="openBillingPortal()">⚙ Manage Billing & Invoices</button>
+            </div>
+
+            <div class="card" style="padding:24px">
+              <h3 style="font-size:16px;font-weight:750;margin:0 0 6px">Subscription & Plan Upgrades</h3>
+              <p style="font-size:12px;color:var(--muted);margin:0 0 18px">Instantly scale seats, AI automation quotas, and SLA guarantees.</p>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                <!-- Starter -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;background:var(--surface);display:flex;flex-direction:column;justify-content:space-between">
+                  <div>
+                    <strong style="font-size:14.5px;display:block">Starter SaaS</strong>
+                    <div style="font-size:22px;font-weight:800;margin:8px 0 12px">$29<span style="font-size:12px;font-weight:normal;color:var(--muted)">/mo</span></div>
+                    <ul style="font-size:12px;color:var(--muted);padding-left:16px;margin:0 0 16px;line-height:1.6">
+                      <li>2 User Seats</li>
+                      <li>1,000 Leads</li>
+                      <li>500 AI Ops/mo</li>
+                      <li>Standard CRM</li>
+                    </ul>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="startCheckout('starter')">Select Starter</button>
+                </div>
+
+                <!-- Growth -->
+                <div style="border:2px solid var(--primary);border-radius:var(--radius-sm);padding:16px;background:var(--surface);display:flex;flex-direction:column;justify-content:space-between;position:relative">
+                  <span style="position:absolute;top:-10px;right:10px;background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">POPULAR</span>
+                  <div>
+                    <strong style="font-size:14.5px;display:block">Growth SaaS</strong>
+                    <div style="font-size:22px;font-weight:800;margin:8px 0 12px">$79<span style="font-size:12px;font-weight:normal;color:var(--muted)">/mo</span></div>
+                    <ul style="font-size:12px;color:var(--muted);padding-left:16px;margin:0 0 16px;line-height:1.6">
+                      <li>5 User Seats</li>
+                      <li>10,000 Leads</li>
+                      <li>2,000 AI Ops/mo</li>
+                      <li>CPQ & Webhooks</li>
+                    </ul>
+                  </div>
+                  <button class="btn btn-primary btn-sm" onclick="startCheckout('growth')">Select Growth</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;background:var(--surface);display:flex;flex-direction:column;justify-content:space-between">
+                  <div>
+                    <strong style="font-size:14.5px;display:block">Enterprise</strong>
+                    <div style="font-size:22px;font-weight:800;margin:8px 0 12px">$199<span style="font-size:12px;font-weight:normal;color:var(--muted)">/mo</span></div>
+                    <ul style="font-size:12px;color:var(--muted);padding-left:16px;margin:0 0 16px;line-height:1.6">
+                      <li>Unlimited Seats</li>
+                      <li>Unlimited Leads</li>
+                      <li>10,000 AI Ops/mo</li>
+                      <li>E-Sign & SLA</li>
+                    </ul>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="startCheckout('enterprise')">Select Enterprise</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Custom Fields Builder -->
+        <div class="settings-section" id="sec-custom_fields">
+          <div class="card" style="padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0 0 4px">No-Code Custom Fields Builder</h3>
+                <p style="font-size:12px;color:var(--muted);margin:0">Add custom industry attributes to Leads, Contacts, and Deals without modifying database schemas.</p>
+              </div>
+              <button class="btn btn-primary" onclick="openAddCustomFieldModal()">＋ Add Custom Field</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Target Module</th>
+                    <th>Field Label</th>
+                    <th>API Key Name</th>
+                    <th>Data Type</th>
+                    <th>Options</th>
+                    <th>Required</th>
+                    <th style="text-align:right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="customFieldsTableBody">
+                  <tr><td colspan="7" style="text-align:center;padding:24px">Loading custom fields...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Webhooks & Zapier Integrations -->
+        <div class="settings-section" id="sec-webhooks">
+          <div class="card" style="padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0 0 4px">Outbound Webhooks (Zapier / Make / Slack)</h3>
+                <p style="font-size:12px;color:var(--muted);margin:0">Dispatch real-time cryptographically signed HMAC payloads to external webhooks on CRM events.</p>
+              </div>
+              <button class="btn btn-primary" onclick="openAddWebhookModal()">＋ Add Webhook Endpoint</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Integration Name</th>
+                    <th>Target URL</th>
+                    <th>Subscribed Events</th>
+                    <th>Secret Key</th>
+                    <th>Last Delivered</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="webhooksTableBody">
+                  <tr><td colspan="6" style="text-align:center;padding:24px">Loading webhooks...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Webhook Deliveries & DLQ Audit -->
+            <div style="margin-top:28px;border-top:1px solid var(--line);padding-top:20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div>
+                  <h4 style="font-size:14px;font-weight:700;margin:0 0 2px">Webhook Deliveries & Dead-Letter Queue (DLQ)</h4>
+                  <p style="font-size:11.5px;color:var(--muted);margin:0">Audit outbound deliveries, exponential retries, latency, and manually replay quarantined DLQ webhooks.</p>
+                </div>
+                <button class="btn btn-secondary" style="padding:4px 10px;font-size:12px" onclick="loadWebhookDeliveries()">↻ Refresh Deliveries</button>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Destination</th>
+                      <th>Status</th>
+                      <th>Attempts</th>
+                      <th>HTTP Code</th>
+                      <th>Latency</th>
+                      <th>Timestamp</th>
+                      <th style="text-align:right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="webhookDeliveriesTableBody">
+                    <tr><td colspan="8" style="text-align:center;padding:16px;color:var(--muted)">No recent webhook deliveries recorded.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: Add Custom Field -->
+  <div class="modal-overlay" id="addCustomFieldModal">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-header">
+        <h3 style="margin:0">＋ Add Custom Field</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('addCustomFieldModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="addCustomFieldForm" onsubmit="handleAddCustomFieldSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Attach To Module</label>
+            <select id="cfEntity" class="form-control">
+              <option value="leads">Leads</option>
+              <option value="contacts">Contacts</option>
+              <option value="deals">Deals / Opportunities</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Field Display Label</label>
+            <input type="text" id="cfLabel" class="form-control" placeholder="e.g. Industry Vertical" required oninput="autoGenerateCfName()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Field Name</label>
+            <input type="text" id="cfName" class="form-control" placeholder="e.g. industry_vertical" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Field Type</label>
+            <select id="cfType" class="form-control" onchange="toggleCfOptions()">
+              <option value="text">Short Text</option>
+              <option value="number">Number / Metric</option>
+              <option value="select">Dropdown Select</option>
+              <option value="date">Date Picker</option>
+            </select>
+          </div>
+          <div class="form-group" id="cfOptionsGroup" style="display:none">
+            <label class="form-label">Dropdown Options (Comma separated)</label>
+            <input type="text" id="cfOptions" class="form-control" placeholder="Option 1, Option 2, Option 3">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+            <input type="checkbox" id="cfRequired">
+            <label for="cfRequired" style="font-size:13px;cursor:pointer">Mandatory field on creation</label>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('addCustomFieldModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Custom Field</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Webhook -->
+  <div class="modal-overlay" id="addWebhookModal">
+    <div class="modal-box" style="max-width:520px">
+      <div class="modal-header">
+        <h3 style="margin:0">＋ Add Outbound Webhook</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('addWebhookModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="addWebhookForm" onsubmit="handleAddWebhookSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Integration / Webhook Name</label>
+            <input type="text" id="whName" class="form-control" placeholder="e.g. Zapier Deal Sync" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Webhook Destination URL</label>
+            <input type="url" id="whUrl" class="form-control" placeholder="https://hooks.zapier.com/..." required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Triggering Events</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+              <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="whEvent" value="deal_won" checked> Deal Won</label>
+              <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="whEvent" value="quote_signed" checked> Quote Signed</label>
+              <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="whEvent" value="lead_created" checked> Lead Created</label>
+              <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="whEvent" value="task_completed"> Task Completed</label>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('addWebhookModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Webhook</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Settings', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Settings' }]);
+
+    let allAuditLogs = [];
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(`sec-${tabId}`).classList.add('active');
+
+      if (tabId === 'team') loadTeam();
+      if (tabId === 'billing') loadBilling();
+      if (tabId === 'audit') loadAuditLogs();
+      if (tabId === 'custom_fields') loadCustomFields();
+      if (tabId === 'webhooks') {
+        loadWebhooks();
+        loadWebhookDeliveries();
+      }
+    }
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const s = await res.json();
+          if (s.company_name) document.getElementById('setCompanyName').value = s.company_name;
+          if (s.currency) document.getElementById('setCurrency').value = s.currency;
+          if (s.timezone) document.getElementById('setTimezone').value = s.timezone;
+          if (s.tax_rate) document.getElementById('setTaxRate').value = s.tax_rate;
+          if (s.working_hours) document.getElementById('setWorkingHours').value = s.working_hours;
+        }
+      } catch (e) {}
+    }
+
+    async function saveGeneralSettings() {
+      const company_name = document.getElementById('setCompanyName').value.trim();
+      const currency = document.getElementById('setCurrency').value;
+      const timezone = document.getElementById('setTimezone').value;
+      const tax_rate = Number(document.getElementById('setTaxRate').value);
+      const working_hours = document.getElementById('setWorkingHours').value.trim();
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ company_name, currency, timezone, tax_rate, working_hours })
+        });
+        if (res.ok) {
+          SalesOS.showToast('Workspace settings saved successfully');
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to save settings', 'error');
+      }
+    }
+
+    function exportWorkspaceData() {
+      SalesOS.showToast('Generating GDPR workspace export package...');
+      window.location.href = '/api/tenant/export';
+    }
+
+    async function saveAiPolicy() {
+      const agent_mode = document.getElementById('setAiMode').value;
+      const daily_budget = Number(document.getElementById('setAiBudget').value);
+
+      try {
+        const res = await fetch('/api/ai-policies', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_mode, daily_budget_micros: daily_budget * 1000000 })
+        });
+        if (res.ok) {
+          SalesOS.showToast('AI Policy updated and audited');
+        }
+      } catch (e) {
+        SalesOS.showToast('Policy updated');
+      }
+    }
+
+    async function loadTeam() {
+      try {
+        const res = await fetch('/api/users');
+        if (!res.ok) throw new Error();
+        const users = await res.json();
+
+        document.getElementById('teamTableBody').innerHTML = users.map(u => `
+          <tr>
+            <td>
+              <strong style="color:var(--ink)">${u.name}</strong>
+            </td>
+            <td><span>${u.email}</span></td>
+            <td><span class="badge ${u.role === 'owner' ? 'badge-purple' : u.role === 'admin' ? 'badge-blue' : 'badge-green'}">${u.role.toUpperCase()}</span></td>
+            <td><span class="badge badge-green">Active</span></td>
+          </tr>
+        `).join('');
+      } catch (e) {}
+    }
+
+    async function loadAuditLogs() {
+      try {
+        const res = await fetch('/api/audit-logs');
+        if (!res.ok) throw new Error();
+        allAuditLogs = await res.json();
+        renderAuditLogs(allAuditLogs);
+      } catch (e) {}
+    }
+
+    function renderAuditLogs(logs) {
+      const tbody = document.getElementById('auditLogsBody');
+      if (!logs.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px">No audit log records found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = logs.map(l => `
+        <tr>
+          <td><span style="font-size:12px;color:var(--muted)">${new Date(l.created_at || Date.now()).toLocaleString()}</span></td>
+          <td><strong>${l.user_name || 'System Operator'}</strong></td>
+          <td><span class="badge badge-blue">${l.action}</span></td>
+          <td><span>${l.entity_type}</span></td>
+          <td><code style="font-size:11px;background:#f1f5f9;padding:2px 6px;border-radius:4px">${l.entity_id || '—'}</code></td>
+          <td><small style="color:var(--muted)">${JSON.stringify(l.details || {})}</small></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterAuditLogs() {
+      const q = document.getElementById('auditSearchInput').value.toLowerCase();
+      const filtered = allAuditLogs.filter(l => 
+        (l.action && l.action.toLowerCase().includes(q)) || 
+        (l.entity_type && l.entity_type.toLowerCase().includes(q)) ||
+        (l.user_name && l.user_name.toLowerCase().includes(q))
+      );
+      renderAuditLogs(filtered);
+    }
+
+    // Custom Fields
+    async function loadCustomFields() {
+      try {
+        const res = await fetch('/api/settings/custom-fields');
+        if (!res.ok) throw new Error();
+        const fields = await res.json();
+        const tbody = document.getElementById('customFieldsTableBody');
+        if (!fields.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No custom fields configured yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = fields.map(f => `
+          <tr>
+            <td><strong style="text-transform:capitalize">${f.entity}</strong></td>
+            <td><strong>${f.label}</strong></td>
+            <td><code style="font-size:11px;color:var(--blue)">${f.field_name}</code></td>
+            <td><span class="badge badge-gray">${f.type}</span></td>
+            <td><small style="color:var(--muted)">${f.options && f.options.length ? f.options.join(', ') : '—'}</small></td>
+            <td>${f.required ? '<span class="badge badge-red">Required</span>' : '<span style="color:var(--muted)">Optional</span>'}</td>
+            <td style="text-align:right">
+              <button class="btn btn-secondary" style="padding:2px 8px;font-size:11px;color:var(--red)" onclick="deleteCustomField('${f.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {}
+    }
+
+    function openAddCustomFieldModal() {
+      SalesOS.showModal('addCustomFieldModal');
+    }
+
+    function autoGenerateCfName() {
+      const label = document.getElementById('cfLabel').value;
+      document.getElementById('cfName').value = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    }
+
+    function toggleCfOptions() {
+      const type = document.getElementById('cfType').value;
+      document.getElementById('cfOptionsGroup').style.display = type === 'select' ? 'block' : 'none';
+    }
+
+    async function handleAddCustomFieldSubmit(e) {
+      e.preventDefault();
+      const entity = document.getElementById('cfEntity').value;
+      const label = document.getElementById('cfLabel').value.trim();
+      const field_name = document.getElementById('cfName').value.trim();
+      const type = document.getElementById('cfType').value;
+      const optionsRaw = document.getElementById('cfOptions').value;
+      const options = optionsRaw ? optionsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const required = document.getElementById('cfRequired').checked;
+
+      try {
+        const res = await fetch('/api/settings/custom-fields', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity, label, field_name, type, options, required })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('addCustomFieldModal');
+          SalesOS.showToast('Custom field added successfully');
+          loadCustomFields();
+        }
+      } catch (err) {
+        SalesOS.showToast('Failed to add custom field', 'error');
+      }
+    }
+
+    async function deleteCustomField(id) {
+      if (!confirm('Are you sure you want to delete this custom field?')) return;
+      try {
+        const res = await fetch(`/api/settings/custom-fields/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Custom field removed');
+          loadCustomFields();
+        }
+      } catch (e) {}
+    }
+
+    // Webhooks
+    async function loadWebhooks() {
+      try {
+        const res = await fetch('/api/settings/webhooks');
+        if (!res.ok) throw new Error();
+        const webhooks = await res.json();
+        const tbody = document.getElementById('webhooksTableBody');
+        if (!webhooks.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No outbound webhooks registered.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = webhooks.map(w => `
+          <tr>
+            <td><strong>${w.name}</strong></td>
+            <td><code style="font-size:11px">${w.url}</code></td>
+            <td>${(w.events || []).map(ev => `<span class="badge badge-blue" style="font-size:10px;margin-right:4px">${ev}</span>`).join('')}</td>
+            <td><code style="font-size:10px;color:var(--muted)">${(w.secret || '').slice(0, 12)}...</code></td>
+            <td><small style="color:var(--muted)">${w.last_delivered_at ? new Date(w.last_delivered_at).toLocaleTimeString() : 'Never'}</small></td>
+            <td style="text-align:right;white-space:nowrap">
+              <button class="btn btn-secondary" style="padding:2px 8px;font-size:11px" onclick="testWebhook('${w.id}')">Ping Test</button>
+              <button class="btn btn-secondary" style="padding:2px 8px;font-size:11px;color:var(--red)" onclick="deleteWebhook('${w.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {}
+    }
+
+    function openAddWebhookModal() {
+      SalesOS.showModal('addWebhookModal');
+    }
+
+    async function handleAddWebhookSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('whName').value.trim();
+      const url = document.getElementById('whUrl').value.trim();
+      const events = Array.from(document.querySelectorAll('input[name="whEvent"]:checked')).map(cb => cb.value);
+
+      try {
+        const res = await fetch('/api/settings/webhooks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, url, events })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('addWebhookModal');
+          SalesOS.showToast('Outbound webhook registered');
+          loadWebhooks();
+        }
+      } catch (err) {
+        SalesOS.showToast('Failed to add webhook', 'error');
+      }
+    }
+
+    async function deleteWebhook(id) {
+      if (!confirm('Remove this webhook endpoint?')) return;
+      try {
+        const res = await fetch(`/api/settings/webhooks/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Webhook deleted');
+          loadWebhooks();
+        }
+      } catch (e) {}
+    }
+
+    async function testWebhook(id) {
+      SalesOS.showToast('Dispatching test ping...');
+      try {
+        const res = await fetch(`/api/settings/webhooks/${id}/test`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+          SalesOS.showToast(`Ping delivered! Status: ${data.status}`);
+          loadWebhooks();
+        } else {
+          SalesOS.showToast(`Ping simulated (${data.status})`);
+        }
+      } catch (e) {
+        SalesOS.showToast('Test failed', 'error');
+      }
+    }
+
+    async function loadBilling() {
+      try {
+        const res = await fetch('/api/billing/subscription');
+        if (res.ok) {
+          const b = await res.json();
+          document.getElementById('billingCurrentPlan').textContent = b.plan || 'Enterprise SaaS';
+          if (document.getElementById('billingTenantName')) {
+            document.getElementById('billingTenantName').textContent = SalesOS.currentTenant?.name || 'Acme Cloud Inc.';
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function startCheckout(planKey) {
+      SalesOS.showToast(`Initiating checkout for ${planKey.toUpperCase()}...`);
+      try {
+        const res = await fetch('/api/billing/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: planKey })
+        });
+        const data = await res.json();
+        if (data.url) {
+          if (data.mode === 'sandbox') {
+            SalesOS.showToast(`Simulated subscription upgraded to ${data.plan?.name || planKey}!`);
+            document.getElementById('billingCurrentPlan').textContent = data.plan?.name || planKey;
+          } else {
+            window.location.href = data.url;
+          }
+        } else {
+          SalesOS.showToast(data.error || 'Checkout initialization failed');
+        }
+      } catch (err) {
+        SalesOS.showToast('Network error initializing checkout', 'error');
+      }
+    }
+
+    async function openBillingPortal() {
+      SalesOS.showToast('Opening customer billing portal...');
+      try {
+        const res = await fetch('/api/billing/portal', { method: 'POST' });
+        const data = await res.json();
+        if (data.url) {
+          if (data.mode === 'sandbox') {
+            SalesOS.showToast('Sandbox mode: Stripe Customer Portal configured.');
+          } else {
+            window.location.href = data.url;
+          }
+        }
+      } catch (e) {
+        SalesOS.showToast('Could not open portal', 'error');
+      }
+    }
+
+    async function loadWebhookDeliveries() {
+      try {
+        const res = await fetch('/api/settings/webhooks/deliveries');
+        if (!res.ok) throw new Error();
+        const deliveries = await res.json();
+        const tbody = document.getElementById('webhookDeliveriesTableBody');
+        if (!deliveries.length) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:18px;color:var(--muted)">No recent webhook deliveries recorded.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = deliveries.map(d => {
+          const isDelivered = d.status === 'delivered';
+          const badgeClass = isDelivered ? 'badge-green' : 'badge-red';
+          const statusText = isDelivered ? '✓ Delivered' : '⚠️ DLQ Quarantined';
+          const latency = d.response_time_ms ? `${d.response_time_ms}ms` : '—';
+          return `
+            <tr>
+              <td><strong><span class="badge badge-blue" style="font-size:10px">${SalesOS.escapeHtml(d.event)}</span></strong></td>
+              <td><small style="color:var(--muted)">${SalesOS.escapeHtml(d.url || d.webhook_name || 'Webhook')}</small></td>
+              <td><span class="badge ${badgeClass}">${statusText}</span></td>
+              <td><strong>${d.attempts || 1}</strong> attempt(s)</td>
+              <td><code>${d.http_status || 'ERR'}</code></td>
+              <td><small>${latency}</small></td>
+              <td><small style="color:var(--muted)">${new Date(d.created_at).toLocaleTimeString()}</small></td>
+              <td style="text-align:right">
+                ${!isDelivered ? `<button class="btn btn-secondary" style="padding:2px 8px;font-size:11px" onclick="replayWebhookDelivery('${d.id}')">↻ Replay</button>` : `<span style="color:var(--green);font-size:12px">✓ Success</span>`}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (e) {}
+    }
+
+    async function replayWebhookDelivery(deliveryId) {
+      SalesOS.showToast('Replaying quarantined webhook from DLQ...');
+      try {
+        const res = await fetch(`/api/settings/webhooks/deliveries/${deliveryId}/retry`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok && data.replay?.success) {
+          SalesOS.showToast('Webhook successfully replayed and delivered!', 'success');
+        } else {
+          SalesOS.showToast(data.replay?.error || 'Replay attempt failed. Still in DLQ.', 'warning');
+        }
+        loadWebhookDeliveries();
+      } catch (e) {
+        SalesOS.showToast('Replay error', 'error');
+      }
+    }
+
+    async function applyIndustryTemplateFromSettings() {
+      const templateId = document.getElementById('settingsIndustryTemplateSelect').value;
+      SalesOS.showToast('Applying industry template & pipeline stages...');
+      try {
+        const res = await fetch('/api/templates/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ template_id: templateId, seed_products: true })
+        });
+        if (res.ok) {
+          SalesOS.showToast(`Industry template applied! Pipeline updated.`, 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          SalesOS.showToast('Failed to apply template', 'error');
+        }
+      } catch (_) {
+        SalesOS.showToast('Error applying template', 'error');
+      }
+    }
+
+    loadSettings();
+  </script>
+</body>
+</html>

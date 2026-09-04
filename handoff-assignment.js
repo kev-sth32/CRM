@@ -1,0 +1,1 @@
+async function assign(pool,tenantId,id,userId){const r=await pool.query("UPDATE handoffs SET assigned_user_id=$1 WHERE id=$2 AND tenant_id=$3 AND status='open' RETURNING id,assigned_user_id",[userId,id,tenantId]);if(!r.rows[0])throw Error('Open handoff not found');return r.rows[0]}module.exports={assign};

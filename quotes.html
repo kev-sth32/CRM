@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotes & CPQ — SalesOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    .line-item-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 80px 110px 100px 36px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .quote-summary-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+    .summary-row.total {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+    .badge-signed {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+    }
+    .badge-sent {
+      background: rgba(245, 158, 11, 0.12);
+      color: #d97706;
+    }
+    .badge-draft {
+      background: var(--surface-subtle);
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Quotes & Digital Proposals (CPQ)</h1>
+            <p>Generate formal quotes with line items, calculate discounts & taxes, and collect verified customer e-signatures.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="openCreateQuoteModal()">＋ Create Price Quote</button>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid" style="grid-template-columns:repeat(4, 1fr);margin-bottom:24px">
+          <div class="card metric-card">
+            <div class="metric-header"><span>Active Quotes</span><span style="color:var(--blue)">📄</span></div>
+            <div class="metric-value" id="metricTotalQuotes">1</div>
+            <div class="metric-delta delta-up">Total proposals issued</div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-header"><span>Quoted Pipeline Value</span><span style="color:#10b981">💰</span></div>
+            <div class="metric-value" id="metricQuotedValue">NPR 12,88,200</div>
+            <div class="metric-delta delta-up">Includes taxes & discounts</div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-header"><span>Signed & Accepted</span><span style="color:#059669">✓</span></div>
+            <div class="metric-value" id="metricSignedQuotes">0</div>
+            <div class="metric-delta delta-up">Auto-advances to Won</div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-header"><span>Avg Deal Turnaround</span><span style="color:#f59e0b">⏱</span></div>
+            <div class="metric-value">3.4 Days</div>
+            <div class="metric-delta delta-up">Quote creation to e-sign</div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs & Search -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="filter-tabs">
+              <button class="tab-item active" onclick="filterQuotes('all', this)">All Quotes</button>
+              <button class="tab-item" onclick="filterQuotes('Draft', this)">Draft</button>
+              <button class="tab-item" onclick="filterQuotes('Sent', this)">Sent</button>
+              <button class="tab-item" onclick="filterQuotes('Signed', this)">Signed</button>
+            </div>
+            <div class="table-search">
+              <input type="text" id="quoteSearchInput" class="form-control" placeholder="Search quote #, customer, or title..." oninput="handleQuoteSearch()">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Quote Number</th>
+                  <th>Proposal Title & Deal</th>
+                  <th>Customer</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="quotesTableBody">
+                <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">Loading quotes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Quote Modal -->
+  <div class="modal-overlay" id="createQuoteModal">
+    <div class="modal-box" style="max-width:720px">
+      <div class="modal-header">
+        <h3 style="margin:0">＋ Create Formal Price Quote</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createQuoteModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="createQuoteForm" onsubmit="handleCreateQuoteSubmit(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="form-group">
+              <label class="form-label">Quote Title</label>
+              <input type="text" id="quoteTitle" class="form-control" placeholder="e.g. Annual Software Licenses & Onboarding" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Linked Deal / Opportunity</label>
+              <select id="quoteDealSelect" class="form-control" onchange="autoFillCustomerFromDeal()">
+                <option value="">Select Opportunity (Optional)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="form-group">
+              <label class="form-label">Customer / Organization Name</label>
+              <input type="text" id="quoteCustomerName" class="form-control" placeholder="e.g. Himalayan Dynamics" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Customer Email</label>
+              <input type="email" id="quoteCustomerEmail" class="form-control" placeholder="contact@himalayandynamics.com" required>
+            </div>
+          </div>
+
+          <!-- Line Items -->
+          <div style="margin-top:16px;border-top:1px solid var(--line-light);padding-top:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <label class="form-label" style="margin:0;font-weight:700">Line Items & Products</label>
+              <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px" onclick="addLineItemRow()">＋ Add Line Item</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:2fr 1fr 80px 110px 100px 36px;gap:8px;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px">
+              <span>Item / Description</span>
+              <span>SKU</span>
+              <span>Qty</span>
+              <span>Unit Price (NPR)</span>
+              <span>Total</span>
+              <span></span>
+            </div>
+
+            <div id="lineItemsContainer">
+              <!-- Item Row 1 -->
+              <div class="line-item-row" id="itemRow_0">
+                <input type="text" class="form-control item-name" placeholder="Item Name" value="SalesOS Enterprise Annual" required>
+                <input type="text" class="form-control item-sku" placeholder="SKU" value="SOS-ENT">
+                <input type="number" class="form-control item-qty" value="1" min="1" oninput="calculateQuoteTotals()">
+                <input type="number" class="form-control item-price" value="48000" min="0" oninput="calculateQuoteTotals()">
+                <span class="item-total" style="font-weight:600;font-size:13px">NPR 48,000</span>
+                <button type="button" class="btn-icon" onclick="removeLineItemRow(0)" style="color:var(--red)">×</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Currency & Tax Treatment Controls -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 14px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Quote Currency</label>
+              <select id="quoteCurrency" class="form-control" onchange="calculateQuoteTotals()">
+                <option value="NPR">NPR — Nepalese Rupee</option>
+                <option value="USD">USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="INR">INR — Indian Rupee</option>
+                <option value="AED">AED — UAE Dirham</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Tax Calculation Mode</label>
+              <select id="quoteTaxMode" class="form-control" onchange="calculateQuoteTotals()">
+                <option value="exclusive">Exclusive (Additive VAT/Tax)</option>
+                <option value="inclusive">Inclusive (Embedded in Price)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Summary & Totals -->
+          <div class="quote-summary-box">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="boxSubtotal" style="font-weight:600">NPR 48,000</span>
+            </div>
+            <div class="summary-row" style="align-items:center">
+              <span>Discount (%):</span>
+              <input type="number" id="boxDiscountPct" value="0" min="0" max="100" style="width:70px;padding:4px 8px;font-size:12px" class="form-control" oninput="calculateQuoteTotals()">
+            </div>
+            <div class="summary-row">
+              <span>VAT / Tax (13%):</span>
+              <span id="boxTaxAmount" style="font-weight:600">NPR 6,240</span>
+            </div>
+            <div class="summary-row total">
+              <span>Grand Total:</span>
+              <span id="boxGrandTotal" style="color:var(--blue)">NPR 54,240</span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:16px">
+            <label class="form-label">Payment Terms & Scope Notes</label>
+            <textarea id="quoteTerms" class="form-control" rows="2" placeholder="e.g. Net 30 days. Includes 24/7 dedicated support SLA and guided data onboarding.">Net 30 days. Includes 24/7 dedicated support SLA and guided data onboarding.</textarea>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('createQuoteModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Generate Price Quote</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let allQuotes = [];
+    let currentFilter = 'all';
+    let lineItemIndex = 1;
+    let availableDeals = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      SalesOS.init('Quotes & Proposals', [
+        { label: 'Workspace', href: '/index.html' },
+        { label: 'Quotes & Proposals' }
+      ]);
+      loadQuotes();
+      loadDealsForSelect();
+    });
+
+    async function loadQuotes() {
+      try {
+        const res = await fetch('/api/quotes');
+        if (res.ok) {
+          allQuotes = await res.json();
+          renderQuotesTable(allQuotes);
+          updateMetrics();
+        }
+      } catch (e) {
+        console.error('Failed to load quotes', e);
+      }
+    }
+
+    async function loadDealsForSelect() {
+      try {
+        const res = await fetch('/api/opportunities');
+        if (res.ok) {
+          availableDeals = await res.json();
+          const select = document.getElementById('quoteDealSelect');
+          availableDeals.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = `${d.name || d.title} (${SalesOS.formatCurrency(d.amount)})`;
+            select.appendChild(opt);
+          });
+        }
+      } catch (e) {}
+    }
+
+    function autoFillCustomerFromDeal() {
+      const dealId = document.getElementById('quoteDealSelect').value;
+      const deal = availableDeals.find(d => d.id === dealId);
+      if (deal) {
+        if (!document.getElementById('quoteTitle').value) {
+          document.getElementById('quoteTitle').value = `Proposal for ${deal.name || deal.title}`;
+        }
+        if (deal.company) document.getElementById('quoteCustomerName').value = deal.company;
+      }
+    }
+
+    function renderQuotesTable(quotes) {
+      const tbody = document.getElementById('quotesTableBody');
+      const filtered = quotes.filter(q => currentFilter === 'all' || q.status === currentFilter);
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No quotes found for this filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(q => {
+        let statusBadge = 'badge-draft';
+        if (q.status === 'Signed') statusBadge = 'badge-signed';
+        else if (q.status === 'Sent') statusBadge = 'badge-sent';
+
+        const signToken = q.access_token || q.id;
+        const signUrl = `${window.location.origin}/quote-view.html?token=${signToken}`;
+
+        return `
+          <tr>
+            <td><strong style="font-family:var(--font-mono);font-size:12px;color:var(--blue)">${q.quote_number}</strong></td>
+            <td>
+              <strong>${q.title}</strong>
+              <small style="display:block;color:var(--muted)">${q.deal_title ? `Deal: ${q.deal_title}` : 'Standalone Quote'}</small>
+            </td>
+            <td>
+              <div>${q.customer_name}</div>
+              <small style="color:var(--muted)">${q.customer_email || '—'}</small>
+            </td>
+            <td><strong style="font-size:14px">${SalesOS.formatCurrency(q.total, q.currency)}</strong></td>
+            <td><span class="badge ${statusBadge}">${q.status}</span></td>
+            <td>${SalesOS.formatDate(q.created_at)}</td>
+            <td style="text-align:right;white-space:nowrap">
+              <a href="/quote-view.html?token=${signToken}" target="_blank" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" title="View Customer Sign Page">
+                ✍ Sign Page
+              </a>
+              <button class="btn btn-secondary" style="padding:4px 8px;font-size:11px" onclick="copySignLink('${signToken}')" title="Copy secure customer signing link">
+                🔗 Copy Link
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateMetrics() {
+      document.getElementById('metricTotalQuotes').textContent = allQuotes.length;
+      const totalVal = allQuotes.reduce((sum, q) => sum + Number(q.total || 0), 0);
+      document.getElementById('metricQuotedValue').textContent = SalesOS.formatCurrency(totalVal);
+      const signed = allQuotes.filter(q => q.status === 'Signed').length;
+      document.getElementById('metricSignedQuotes').textContent = signed;
+    }
+
+    function filterQuotes(status, btn) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-tabs .tab-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderQuotesTable(allQuotes);
+    }
+
+    function handleQuoteSearch() {
+      const q = document.getElementById('quoteSearchInput').value.toLowerCase().trim();
+      const filtered = allQuotes.filter(item => 
+        (item.title && item.title.toLowerCase().includes(q)) ||
+        (item.quote_number && item.quote_number.toLowerCase().includes(q)) ||
+        (item.customer_name && item.customer_name.toLowerCase().includes(q))
+      );
+      renderQuotesTable(filtered);
+    }
+
+    function addLineItemRow() {
+      const container = document.getElementById('lineItemsContainer');
+      const idx = lineItemIndex++;
+      const div = document.createElement('div');
+      div.className = 'line-item-row';
+      div.id = `itemRow_${idx}`;
+      div.innerHTML = `
+        <input type="text" class="form-control item-name" placeholder="Item Name" required>
+        <input type="text" class="form-control item-sku" placeholder="SKU">
+        <input type="number" class="form-control item-qty" value="1" min="1" oninput="calculateQuoteTotals()">
+        <input type="number" class="form-control item-price" value="0" min="0" oninput="calculateQuoteTotals()">
+        <span class="item-total" style="font-weight:600;font-size:13px">NPR 0</span>
+        <button type="button" class="btn-icon" onclick="removeLineItemRow(${idx})" style="color:var(--red)">×</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeLineItemRow(idx) {
+      const el = document.getElementById(`itemRow_${idx}`);
+      if (el) el.remove();
+      calculateQuoteTotals();
+    }
+
+    function calculateQuoteTotals() {
+      const currency = document.getElementById('quoteCurrency')?.value || 'NPR';
+      const taxMode = document.getElementById('quoteTaxMode')?.value || 'exclusive';
+
+      const rows = document.querySelectorAll('.line-item-row');
+      let subtotal = 0;
+
+      rows.forEach(row => {
+        const qty = Number(row.querySelector('.item-qty').value) || 0;
+        const price = Number(row.querySelector('.item-price').value) || 0;
+        const total = qty * price;
+        row.querySelector('.item-total').textContent = SalesOS.formatCurrency(total, currency);
+        subtotal += total;
+      });
+
+      const discountPct = Number(document.getElementById('boxDiscountPct').value) || 0;
+      const discountAmt = Math.round(subtotal * (discountPct / 100));
+      const discountedSubtotal = subtotal - discountAmt;
+      const taxRate = 13;
+      let taxAmount = 0;
+      let grandTotal = discountedSubtotal;
+
+      if (taxMode === 'inclusive') {
+        taxAmount = Math.round(discountedSubtotal * (taxRate / (100 + taxRate)));
+        grandTotal = discountedSubtotal;
+      } else {
+        taxAmount = Math.round(discountedSubtotal * (taxRate / 100));
+        grandTotal = discountedSubtotal + taxAmount;
+      }
+
+      document.getElementById('boxSubtotal').textContent = SalesOS.formatCurrency(subtotal, currency);
+      document.getElementById('boxTaxAmount').textContent = `${SalesOS.formatCurrency(taxAmount, currency)} ${taxMode === 'inclusive' ? '(Embedded)' : '(13%)'}`;
+      document.getElementById('boxGrandTotal').textContent = SalesOS.formatCurrency(grandTotal, currency);
+    }
+
+    function openCreateQuoteModal() {
+      SalesOS.showModal('createQuoteModal');
+      calculateQuoteTotals();
+    }
+
+    async function handleCreateQuoteSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('quoteTitle').value.trim();
+      const dealId = document.getElementById('quoteDealSelect').value;
+      const customer_name = document.getElementById('quoteCustomerName').value.trim();
+      const customer_email = document.getElementById('quoteCustomerEmail').value.trim();
+      const discount_pct = Number(document.getElementById('boxDiscountPct').value) || 0;
+      const currency = document.getElementById('quoteCurrency')?.value || 'NPR';
+      const tax_mode = document.getElementById('quoteTaxMode')?.value || 'exclusive';
+      const terms = document.getElementById('quoteTerms').value.trim();
+
+      const line_items = [];
+      document.querySelectorAll('.line-item-row').forEach(row => {
+        line_items.push({
+          name: row.querySelector('.item-name').value.trim(),
+          sku: row.querySelector('.item-sku').value.trim() || 'CUSTOM',
+          qty: Number(row.querySelector('.item-qty').value) || 1,
+          price: Number(row.querySelector('.item-price').value) || 0
+        });
+      });
+
+      try {
+        const res = await fetch('/api/quotes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            deal_id: dealId,
+            customer_name,
+            customer_email,
+            discount_pct,
+            currency,
+            tax_mode,
+            terms,
+            line_items
+          })
+        });
+
+        if (res.ok) {
+          SalesOS.closeModal('createQuoteModal');
+          SalesOS.showToast('Price quote generated successfully!');
+          await loadQuotes();
+        } else {
+          SalesOS.showToast('Failed to create quote.', 'error');
+        }
+      } catch (err) {
+        SalesOS.showToast('Server error while generating quote.', 'error');
+      }
+    }
+
+    function copySignLink(token) {
+      const url = `${window.location.origin}/quote-view.html?token=${token}`;
+      navigator.clipboard.writeText(url).then(() => {
+        SalesOS.showToast('Customer signing link copied to clipboard!');
+      }).catch(() => {
+        prompt('Copy customer signing URL:', url);
+      });
+    }
+  </script>
+</body>
+</html>

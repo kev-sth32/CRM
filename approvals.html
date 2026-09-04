@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Approvals & Quality Evaluations · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .approval-card {
+      padding: 22px 24px;
+      margin-bottom: 18px;
+    }
+    .approval-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .approval-payload-box {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 12.5px;
+      margin: 12px 0 16px;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .tab-btn.active {
+      background: var(--blue, #6366f1);
+      color: #fff;
+      border-color: var(--blue, #6366f1);
+    }
+    .eval-card {
+      padding: 16px 20px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>✦ AI Agent Operations & Quality</h1>
+            <p>Human-in-the-loop review queue for high-risk autonomous sales actions and conversation quality evaluation.</p>
+          </div>
+          <div class="page-actions">
+            <div style="display:flex;gap:6px;background:#e2e8f0;padding:3px;border-radius:8px">
+              <button class="tab-btn active" id="btnTabApprovals" onclick="switchTab('approvals')">Queue Approvals</button>
+              <button class="tab-btn" id="btnTabEvals" onclick="switchTab('evals')">Quality Evaluations (PRD §55)</button>
+            </div>
+            <button class="btn btn-secondary" onclick="reloadCurrentTab()">↻ Refresh</button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Approvals Queue -->
+        <div id="tabApprovalsView">
+          <div id="approvalsList">
+            <div class="card" style="padding:32px;text-align:center">
+              <div class="spinner"></div>
+              <p style="color:var(--muted)">Checking pending AI approvals...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: AI Quality Evaluations -->
+        <div id="tabEvalsView" style="display:none">
+          <!-- Summary Metrics Cards -->
+          <div class="metrics-grid" style="margin-bottom:24px">
+            <div class="card metric-card">
+              <div class="metric-header"><span>Quality Rate</span></div>
+              <div class="metric-value" id="evalQualityRate">0%</div>
+              <div class="metric-delta delta-up">Approved Quality Score</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-header"><span>Good Ratings</span></div>
+              <div class="metric-value" id="evalGoodCount" style="color:var(--green)">0</div>
+              <div class="metric-delta" style="color:var(--muted)">Accurate tool & reply execution</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-header"><span>Needs Improvement</span></div>
+              <div class="metric-value" id="evalNeedsImproveCount" style="color:var(--orange)">0</div>
+              <div class="metric-delta" style="color:var(--muted)">Sub-optimal tone or routing</div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-header"><span>Bad Ratings</span></div>
+              <div class="metric-value" id="evalBadCount" style="color:var(--red)">0</div>
+              <div class="metric-delta" style="color:var(--muted)">Failed or escalated responses</div>
+            </div>
+          </div>
+
+          <!-- Evaluation Feedback Submission Card -->
+          <div class="card" style="padding:20px;margin-bottom:24px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">Rate an AI Sales Interaction</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:end">
+              <div>
+                <label class="form-label" style="font-size:12px">Rating *</label>
+                <select id="newEvalRating" class="form-control" style="font-size:13px">
+                  <option value="good">👍 Good (Accurate & helpful)</option>
+                  <option value="needs_improvement">⚠️ Needs Improvement (Could be better)</option>
+                  <option value="bad">👎 Bad (Inaccurate or hallucinated)</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size:12px">Category</label>
+                <select id="newEvalCategory" class="form-control" style="font-size:13px">
+                  <option value="qualification">Lead Qualification</option>
+                  <option value="pricing_quote">Pricing & Proposal</option>
+                  <option value="product_recommendation">Product Recommendation</option>
+                  <option value="objection_handling">Objection Handling</option>
+                  <option value="handoff_timing">Human Handoff Timing</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size:12px">Reviewer Feedback & Notes</label>
+                <input type="text" id="newEvalFeedback" class="form-control" placeholder="e.g. Accurately captured BANT budget and scheduled demo" style="font-size:13px" />
+              </div>
+              <div>
+                <button class="btn btn-primary" onclick="submitEvaluation()">Submit Rating</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evaluations List -->
+          <div class="card" style="padding:20px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Historical AI Interaction Reviews</h3>
+            <div id="evaluationsList">
+              <p style="color:var(--muted);text-align:center;padding:24px">No reviews recorded yet.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('AI Agents & Approvals', [{ label: 'SalesOS', href: '/index.html' }, { label: 'AI Guardrails & Approvals' }]);
+
+    let approvals = [];
+    let currentTab = 'approvals';
+
+    function switchTab(tab) {
+      currentTab = tab;
+      if (tab === 'approvals') {
+        document.getElementById('tabApprovalsView').style.display = 'block';
+        document.getElementById('tabEvalsView').style.display = 'none';
+        document.getElementById('btnTabApprovals').classList.add('active');
+        document.getElementById('btnTabEvals').classList.remove('active');
+        loadApprovals();
+      } else {
+        document.getElementById('tabApprovalsView').style.display = 'none';
+        document.getElementById('tabEvalsView').style.display = 'block';
+        document.getElementById('btnTabApprovals').classList.remove('active');
+        document.getElementById('btnTabEvals').classList.add('active');
+        loadEvaluations();
+      }
+    }
+
+    function reloadCurrentTab() {
+      if (currentTab === 'approvals') loadApprovals();
+      else loadEvaluations();
+    }
+
+    async function loadApprovals() {
+      try {
+        const res = await fetch('/api/ai-approvals');
+        if (!res.ok) throw new Error();
+        approvals = await res.json();
+        renderApprovals();
+      } catch (e) {
+        SalesOS.showToast('Unable to load approvals', 'error');
+      }
+    }
+
+    function renderApprovals() {
+      const container = document.getElementById('approvalsList');
+      if (!approvals.length) {
+        container.innerHTML = `
+          <div class="card" style="padding:48px;text-align:center">
+            <div class="state-icon">✓</div>
+            <h3>No pending approvals</h3>
+            <p style="color:var(--muted)">All high-risk autonomous actions have been reviewed and executed.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = approvals.map(appr => {
+        const p = appr.payload || {};
+        const isApproved = appr.status === 'approved';
+        const isExecuted = appr.status === 'executed';
+        const isPending = appr.status === 'pending';
+
+        return `
+          <div class="card approval-card">
+            <div class="approval-header">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                  <span class="badge ${isPending ? 'badge-orange' : isApproved ? 'badge-blue' : isExecuted ? 'badge-green' : 'badge-red'}">
+                    ${SalesOS.escapeHtml((appr.status || 'PENDING').toUpperCase())}
+                  </span>
+                  <strong style="font-size:15px;color:var(--ink)">Action: ${SalesOS.escapeHtml(appr.action)}</strong>
+                </div>
+                <small style="color:var(--muted)">Requested by ${SalesOS.escapeHtml(appr.requested_by || 'Autonomous AI Agent')} · ${new Date(appr.created_at || Date.now()).toLocaleString()}</small>
+              </div>
+
+              <div style="display:flex;gap:8px">
+                ${isPending ? `
+                  <button class="btn btn-secondary btn-sm" onclick="decide('${SalesOS.escapeHtml(appr.id)}', 'rejected')">✕ Reject</button>
+                  <button class="btn btn-primary btn-sm" onclick="decide('${SalesOS.escapeHtml(appr.id)}', 'approved')">✓ Approve Action</button>
+                ` : isApproved ? `
+                  <button class="btn btn-primary btn-sm" onclick="executeAction('${SalesOS.escapeHtml(appr.id)}')">⚡ Execute Now</button>
+                ` : `
+                  <span class="badge badge-green">✓ Executed</span>
+                `}
+              </div>
+            </div>
+
+            <div class="approval-payload-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                ${Object.entries(p).map(([k, v]) => `
+                  <div>
+                    <span style="color:var(--muted);text-transform:capitalize">${SalesOS.escapeHtml(k.replace(/_/g, ' '))}:</span>
+                    <strong>${SalesOS.escapeHtml(typeof v === 'object' ? JSON.stringify(v) : v)}</strong>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function decide(id, status) {
+      const reason = prompt(status === 'approved' ? 'Add optional approval reason:' : 'Reason for rejection:') || 'Operator reviewed';
+      try {
+        const res = await fetch(`/api/ai-approvals/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, reason })
+        });
+        if (res.ok) {
+          SalesOS.showToast(`Action ${status}!`);
+          loadApprovals();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error updating approval', 'error');
+      }
+    }
+
+    async function executeAction(id) {
+      try {
+        const res = await fetch(`/api/ai-approvals/${id}/execute`, { method: 'POST' });
+        if (res.ok) {
+          SalesOS.showToast('Protected tool executed successfully! ⚡');
+          loadApprovals();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to execute action', 'error');
+      }
+    }
+
+    /* Evaluations API methods */
+    async function loadEvaluations() {
+      try {
+        const res = await fetch('/api/ai/evaluations');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        const s = data.summary || { total: 0, good: 0, bad: 0, needs_improvement: 0, quality_rate: 0 };
+        document.getElementById('evalQualityRate').textContent = `${Math.round((s.quality_rate || 0) * 100)}%`;
+        document.getElementById('evalGoodCount').textContent = s.good || 0;
+        document.getElementById('evalNeedsImproveCount').textContent = s.needs_improvement || 0;
+        document.getElementById('evalBadCount').textContent = s.bad || 0;
+
+        const listContainer = document.getElementById('evaluationsList');
+        const evals = data.evaluations || [];
+        if (!evals.length) {
+          listContainer.innerHTML = '<p style="color:var(--muted);text-align:center;padding:24px">No reviews recorded yet. Rate an interaction above.</p>';
+          return;
+        }
+
+        listContainer.innerHTML = evals.map(e => `
+          <div class="eval-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge ${e.rating === 'good' ? 'badge-green' : (e.rating === 'bad' ? 'badge-red' : 'badge-orange')}">
+                  ${SalesOS.escapeHtml(e.rating.replace('_', ' ').toUpperCase())}
+                </span>
+                <strong style="font-size:13px">${SalesOS.escapeHtml(e.category || 'General')}</strong>
+              </div>
+              <small style="color:var(--muted);font-size:11px">${new Date(e.created_at).toLocaleString()}</small>
+            </div>
+            <p style="font-size:12.5px;color:var(--ink);margin:0">${SalesOS.escapeHtml(e.feedback || 'No written feedback provided.')}</p>
+          </div>
+        `).join('');
+      } catch (err) {
+        SalesOS.showToast('Error loading evaluations', 'error');
+      }
+    }
+
+    async function submitEvaluation() {
+      const rating = document.getElementById('newEvalRating').value;
+      const category = document.getElementById('newEvalCategory').value;
+      const feedback = document.getElementById('newEvalFeedback').value.trim();
+
+      try {
+        const res = await fetch('/api/ai/evaluations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating, category, feedback })
+        });
+        if (res.ok) {
+          SalesOS.showToast('AI conversation rating submitted! ✦');
+          document.getElementById('newEvalFeedback').value = '';
+          loadEvaluations();
+        }
+      } catch (err) {
+        SalesOS.showToast('Failed to submit evaluation', 'error');
+      }
+    }
+
+    loadApprovals();
+  </script>
+</body>
+</html>

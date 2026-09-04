@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content" style="display:flex;align-items:center;justify-content:center;min-height:75vh">
+        <div class="card" style="max-width:480px;text-align:center;padding:48px 32px">
+          <div style="font-size:64px;font-weight:900;color:var(--blue);letter-spacing:-2px;margin-bottom:8px">404</div>
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Page Not Found</h2>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px">
+            The page or resource you are looking for might have been moved, removed, or is temporarily unavailable.
+          </p>
+          <div style="display:flex;gap:10px;justify-content:center">
+            <a href="/index.html" class="btn btn-primary">Return to Dashboard</a>
+            <a href="/leads.html" class="btn btn-secondary">View Leads</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('404', [{ label: 'SalesOS', href: '/index.html' }, { label: '404 Not Found' }]);
+  </script>
+</body>
+</html>

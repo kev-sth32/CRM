@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Accounts · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Companies</h1>
+            <p>Track enterprise accounts, buying groups, account-level pipeline value, and key stakeholders.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadCompanies()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateCompanyModal()">＋ New Company</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Filter & Search Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="companySearchInput" placeholder="Search by name, industry, city..." oninput="debounceSearch()" />
+              </div>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Total Accounts: <strong id="companyCount">0</strong>
+            </div>
+          </div>
+
+          <!-- Companies Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Organization Name</th>
+                  <th>Industry Sector</th>
+                  <th>Tier / Segment</th>
+                  <th>Headquarters City</th>
+                  <th>Website</th>
+                  <th>Telephone</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="companiesTableBody">
+                <tr>
+                  <td colspan="7">
+                    <div class="state-loading">
+                      <div class="spinner"></div>
+                      <p>Loading company accounts...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Company Detail Drawer -->
+  <div class="drawer-overlay" id="companyDrawerOverlay" onclick="closeCompanyDrawer()"></div>
+  <aside class="drawer" id="companyDrawer">
+    <div class="drawer-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="tenant-avatar" id="drawerCompanyAvatar" style="width:42px;height:42px;font-size:15px;background:#e0e7ff;color:#4338ca">KI</div>
+        <div>
+          <h3 id="drawerCompanyName" style="font-size:17px;font-weight:750">Koirala Industries</h3>
+          <small id="drawerCompanyIndustry" style="color:var(--muted)">Manufacturing & Distribution</small>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeCompanyDrawer()">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <a href="/deals.html" class="btn btn-primary btn-sm" style="flex:1">＋ Add Opportunity</a>
+        <button class="btn btn-secondary btn-sm" onclick="openEditCompanyModal()">✎ Edit Account</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteCompany()">🗑 Delete</button>
+      </div>
+
+      <!-- Overview Details -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Account Overview</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px">
+          <div>
+            <span style="color:var(--muted);display:block">City</span>
+            <strong id="drawerCompanyCity">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Tier</span>
+            <span class="badge badge-purple" id="drawerCompanyTier">Enterprise</span>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Website</span>
+            <a id="drawerCompanyWebsite" href="#" target="_blank" style="color:var(--blue)">—</a>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Telephone</span>
+            <strong id="drawerCompanyPhone">—</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacts Under This Company -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Associated Contacts</h4>
+          <a href="/contacts.html" style="font-size:11.5px;color:var(--blue);font-weight:600">View Contacts →</a>
+        </div>
+        <div id="companyContactsContainer">
+          <p style="color:var(--muted);font-size:12px">Loading stakeholders...</p>
+        </div>
+      </div>
+
+      <!-- Open Opportunities -->
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Active Deals & Pipeline</h4>
+          <a href="/deals.html" style="font-size:11.5px;color:var(--blue);font-weight:600">Kanban →</a>
+        </div>
+        <div id="companyDealsContainer">
+          <p style="color:var(--muted);font-size:12px">Loading deals...</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Create Company Modal -->
+  <div class="modal-overlay" id="createCompanyModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create Company Account</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createCompanyModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Company Name *</label>
+          <input type="text" id="companyName" class="form-control" placeholder="e.g. Acme Corporation" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Industry Sector</label>
+          <input type="text" id="companyIndustry" class="form-control" placeholder="e.g. Retail, FinTech, Logistics" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Tier</label>
+          <select id="companyTier" class="form-control">
+            <option value="Enterprise">Enterprise</option>
+            <option value="Mid-Market">Mid-Market</option>
+            <option value="Startup / Growth">Startup / Growth</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Headquarters City</label>
+          <input type="text" id="companyCity" class="form-control" placeholder="e.g. Kathmandu, Biratnagar" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Website URL</label>
+          <input type="url" id="companyWebsite" class="form-control" placeholder="https://example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="companyPhone" class="form-control" placeholder="+977-1-4000000" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createCompanyModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateCompany()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Company Modal -->
+  <div class="modal-overlay" id="editCompanyModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Company Details</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('editCompanyModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editCompanyId" />
+        <div class="form-group">
+          <label class="form-label">Company Name *</label>
+          <input type="text" id="editCompanyName" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Industry Sector</label>
+          <input type="text" id="editCompanyIndustry" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Tier</label>
+          <select id="editCompanyTier" class="form-control">
+            <option value="Enterprise">Enterprise</option>
+            <option value="Mid-Market">Mid-Market</option>
+            <option value="Startup / Growth">Startup / Growth</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Headquarters City</label>
+          <input type="text" id="editCompanyCity" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Website URL</label>
+          <input type="url" id="editCompanyWebsite" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="editCompanyPhone" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('editCompanyModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitEditCompany()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Companies', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Companies' }]);
+
+    let allCompanies = [];
+    let activeCompany = null;
+    let searchTimeout = null;
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadCompanies, 250);
+    }
+
+    async function loadCompanies() {
+      const q = document.getElementById('companySearchInput').value.trim();
+      const params = new URLSearchParams();
+      if (q) params.set('search', q);
+
+      try {
+        const res = await fetch(`/api/companies?${params.toString()}`);
+        if (!res.ok) throw new Error();
+        allCompanies = await res.json();
+        renderCompanies();
+      } catch (e) {
+        document.getElementById('companiesTableBody').innerHTML = `
+          <tr><td colspan="7">
+            <div class="state-error">
+              <div class="state-icon">⚠️</div>
+              <h3>Unable to load company accounts</h3>
+              <p>Please check your connection and retry.</p>
+              <button class="btn btn-secondary btn-sm" onclick="loadCompanies()">Retry</button>
+            </div>
+          </td></tr>
+        `;
+      }
+    }
+
+    function renderCompanies() {
+      const tbody = document.getElementById('companiesTableBody');
+      document.getElementById('companyCount').textContent = allCompanies.length;
+
+      if (!allCompanies.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="7">
+            <div class="state-empty">
+              <div class="state-icon">▱</div>
+              <h3>No companies found</h3>
+              <p>Create your first business account to link contacts and opportunities.</p>
+              <button class="btn btn-primary btn-sm" onclick="openCreateCompanyModal()">＋ Create Company</button>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allCompanies.map(comp => {
+        const initials = escapeHtml((comp.name || 'CO').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase());
+        const safeWebsite = (comp.website && /^https?:\/\//i.test(comp.website.trim())) ? escapeHtml(comp.website.trim()) : null;
+        return `
+          <tr style="cursor:pointer" onclick="openCompanyDrawerById('${escapeHtml(comp.id)}')">
+            <td>
+              <div style="display:flex;align-items:center;gap:11px">
+                <div class="tenant-avatar" style="background:#e0e7ff;color:#4338ca">
+                  ${initials}
+                </div>
+                <div>
+                  <strong style="color:var(--ink);display:block">${escapeHtml(comp.name)}</strong>
+                  <small style="color:var(--muted)">ID: ${escapeHtml(comp.id)}</small>
+                </div>
+              </div>
+            </td>
+            <td><span style="color:var(--ink-secondary)">${escapeHtml(comp.industry || '—')}</span></td>
+            <td><span class="badge ${comp.tier === 'Enterprise' ? 'badge-purple' : 'badge-blue'}">${escapeHtml(comp.tier || 'Standard')}</span></td>
+            <td><span>${escapeHtml(comp.city || '—')}</span></td>
+            <td>
+              ${safeWebsite ? `<a href="${safeWebsite}" target="_blank" rel="noopener noreferrer" style="color:var(--blue);text-decoration:none" onclick="event.stopPropagation()">🌐 Visit</a>` : '—'}
+            </td>
+            <td><span style="color:var(--muted)">${escapeHtml(comp.phone || '—')}</span></td>
+            <td style="text-align:right" onclick="event.stopPropagation()">
+              <button class="btn btn-secondary btn-sm" onclick="openCompanyDrawerById('${escapeHtml(comp.id)}')">View</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function openCompanyDrawerById(id) {
+      const comp = allCompanies.find(c => c.id === id);
+      if (!comp) return;
+      activeCompany = comp;
+
+      document.getElementById('drawerCompanyName').textContent = comp.name;
+      document.getElementById('drawerCompanyIndustry').textContent = comp.industry || 'Business Account';
+      document.getElementById('drawerCompanyCity').textContent = comp.city || '—';
+      document.getElementById('drawerCompanyTier').textContent = comp.tier || 'Enterprise';
+      document.getElementById('drawerCompanyPhone').textContent = comp.phone || '—';
+      document.getElementById('drawerCompanyAvatar').textContent = (comp.name || 'CO').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+
+      const webEl = document.getElementById('drawerCompanyWebsite');
+      if (comp.website && /^https?:\/\//i.test(comp.website.trim())) {
+        webEl.textContent = comp.website;
+        webEl.href = comp.website;
+      } else {
+        webEl.textContent = '—';
+        webEl.removeAttribute('href');
+      }
+
+      // Load associated contacts
+      try {
+        const cRes = await fetch('/api/contacts');
+        if (cRes.ok) {
+          const contacts = await cRes.json();
+          const linked = contacts.filter(x => x.company_id === comp.id || (x.company_name && x.company_name.toLowerCase() === comp.name.toLowerCase()));
+          const cBox = document.getElementById('companyContactsContainer');
+          if (linked.length) {
+            cBox.innerHTML = linked.map(c => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-light);font-size:12.5px">
+                <div>
+                  <strong>${escapeHtml(c.name)}</strong>
+                  <span style="color:var(--muted);display:block;font-size:11px">${escapeHtml(c.title || 'Contact')}</span>
+                </div>
+                <a href="/contacts.html?search=${encodeURIComponent(c.name)}" class="btn btn-secondary btn-sm">Profile →</a>
+              </div>
+            `).join('');
+          } else {
+            cBox.innerHTML = '<p style="color:var(--muted);font-size:12px">No contacts linked to this account yet.</p>';
+          }
+        }
+      } catch (e) {}
+
+      // Load associated opportunities
+      try {
+        const oRes = await fetch('/api/opportunities');
+        if (oRes.ok) {
+          const deals = await oRes.json();
+          const linkedDeals = deals.filter(x => x.company_id === comp.id || (x.company_name && x.company_name.toLowerCase() === comp.name.toLowerCase()));
+          const dBox = document.getElementById('companyDealsContainer');
+          if (linkedDeals.length) {
+            dBox.innerHTML = linkedDeals.map(d => `
+              <div style="padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:12.5px;margin-bottom:8px">
+                <strong style="display:block">${escapeHtml(d.name)}</strong>
+                <div style="display:flex;justify-content:space-between;color:var(--muted);margin-top:4px">
+                  <span class="badge badge-blue">${escapeHtml(d.stage)}</span>
+                  <strong style="color:var(--ink)">${SalesOS.formatCurrency(d.amount)}</strong>
+                </div>
+              </div>
+            `).join('');
+          } else {
+            dBox.innerHTML = '<p style="color:var(--muted);font-size:12px">No active opportunities found for this account.</p>';
+          }
+        }
+      } catch (e) {}
+
+      document.getElementById('companyDrawerOverlay').classList.add('active');
+      document.getElementById('companyDrawer').classList.add('open');
+    }
+
+    function closeCompanyDrawer() {
+      document.getElementById('companyDrawerOverlay').classList.remove('active');
+      document.getElementById('companyDrawer').classList.remove('open');
+    }
+
+    function openCreateCompanyModal() {
+      SalesOS.showModal('createCompanyModal');
+      document.getElementById('companyName').focus();
+    }
+
+    async function submitCreateCompany() {
+      const name = document.getElementById('companyName').value.trim();
+      const industry = document.getElementById('companyIndustry').value.trim();
+      const tier = document.getElementById('companyTier').value;
+      const city = document.getElementById('companyCity').value.trim();
+      const website = document.getElementById('companyWebsite').value.trim();
+      const phone = document.getElementById('companyPhone').value.trim();
+
+      if (!name) {
+        SalesOS.showToast('Please enter company name', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/companies', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, industry, tier, city, website, phone })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createCompanyModal');
+          SalesOS.showToast('Company created successfully');
+          loadCompanies();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error creating company', 'error');
+      }
+    }
+
+    function openEditCompanyModal() {
+      if (!activeCompany) return;
+      document.getElementById('editCompanyId').value = activeCompany.id;
+      document.getElementById('editCompanyName').value = activeCompany.name;
+      document.getElementById('editCompanyIndustry').value = activeCompany.industry || '';
+      document.getElementById('editCompanyTier').value = activeCompany.tier || 'Enterprise';
+      document.getElementById('editCompanyCity').value = activeCompany.city || '';
+      document.getElementById('editCompanyWebsite').value = activeCompany.website || '';
+      document.getElementById('editCompanyPhone').value = activeCompany.phone || '';
+
+      SalesOS.showModal('editCompanyModal');
+    }
+
+    async function submitEditCompany() {
+      const id = document.getElementById('editCompanyId').value;
+      const name = document.getElementById('editCompanyName').value.trim();
+      const industry = document.getElementById('editCompanyIndustry').value.trim();
+      const tier = document.getElementById('editCompanyTier').value;
+      const city = document.getElementById('editCompanyCity').value.trim();
+      const website = document.getElementById('editCompanyWebsite').value.trim();
+      const phone = document.getElementById('editCompanyPhone').value.trim();
+
+      try {
+        const res = await fetch(`/api/companies/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, industry, tier, city, website, phone })
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          SalesOS.closeModal('editCompanyModal');
+          SalesOS.showToast('Company details updated');
+          openCompanyDrawerById(updated.id);
+          loadCompanies();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to update company', 'error');
+      }
+    }
+
+    async function confirmDeleteCompany() {
+      if (!activeCompany) return;
+      if (!confirm(`Delete company account "${activeCompany.name}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/companies/${activeCompany.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Company deleted');
+          closeCompanyDrawer();
+          loadCompanies();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting company', 'error');
+      }
+    }
+
+    loadCompanies();
+  </script>
+</body>
+</html>

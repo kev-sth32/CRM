@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SalesOS — Modern AI Sales Operating System</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      padding: 22px 24px;
+      position: relative;
+      background: var(--gradient-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      border-color: #cbd5e1;
+    }
+    .metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .metric-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      box-shadow: var(--shadow-sm);
+    }
+    .metric-value {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -0.9px;
+      margin: 14px 0 8px;
+      color: var(--ink);
+    }
+    .metric-delta {
+      font-size: 11.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2.5px 8.5px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+    }
+    .delta-up { background: var(--green-light); color: #047857; border-color: #a7f3d0; }
+    .delta-down { background: var(--red-light); color: #b91c1c; border-color: #fecaca; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+    .chart-container {
+      padding: 20px 24px;
+      height: 280px;
+      position: relative;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      position: absolute;
+      right: 24px;
+      top: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .ai-brief-list {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .ai-brief-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line-light);
+      transition: var(--transition);
+    }
+    .ai-brief-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--line-light);
+      transition: var(--transition);
+    }
+    .activity-item:hover {
+      background: #f8fafc;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--blue-light);
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @media (max-width: 1100px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Executive Dashboard</h1>
+            <p>Real-time pipeline health, autonomous AI summaries, and high-priority revenue actions.</p>
+          </div>
+          <div class="page-actions">
+            <select class="filter-select" id="timePeriodSelect" onchange="loadDashboardStats()">
+              <option value="30d">Last 30 Days (Sep 2026)</option>
+              <option value="60d">Last 60 Days (Q3)</option>
+              <option value="ytd">Year to Date (2026)</option>
+            </select>
+            <button class="btn btn-primary" onclick="openCreateLeadModal()">＋ New Lead</button>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid" id="metricsContainer">
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span>Revenue this month</span>
+              <div class="metric-icon-wrap" style="background:#e6f9f0;color:#059669">↗</div>
+            </div>
+            <div class="metric-value" id="metricRevenue">NPR 24,86,000</div>
+            <div class="metric-delta delta-up">↑ 18.6% <span style="color:var(--muted);font-weight:400">vs last month</span></div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span>Active pipeline</span>
+              <div class="metric-icon-wrap" style="background:#eaf1ff;color:#2563eb">◇</div>
+            </div>
+            <div class="metric-value" id="metricPipeline">NPR 68,42,000</div>
+            <div class="metric-delta delta-up">↑ 12.4% <span style="color:var(--muted);font-weight:400">vs last month</span></div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span>Qualified leads</span>
+              <div class="metric-icon-wrap" style="background:#fff7ed;color:#d97706">♙</div>
+            </div>
+            <div class="metric-value" id="metricLeads">184</div>
+            <div class="metric-delta delta-up">↑ 24.1% <span style="color:var(--muted);font-weight:400">this month</span></div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span>Conversion rate</span>
+              <div class="metric-icon-wrap" style="background:#f5f3ff;color:#7c3aed">◉</div>
+            </div>
+            <div class="metric-value" id="metricConversion">18.4%</div>
+            <div class="metric-delta delta-up">↑ 3.2% <span style="color:var(--muted);font-weight:400">vs benchmark</span></div>
+          </div>
+        </div>
+
+        <!-- Middle Grid: Chart & AI Brief -->
+        <div class="dashboard-grid">
+          <!-- Chart -->
+          <div class="card">
+            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+              <h3 style="font-size:15px;font-weight:700">Revenue & Forecast Velocity</h3>
+              <a href="/reports.html" style="font-size:12.5px;color:var(--blue);text-decoration:none;font-weight:600">Full Reports →</a>
+            </div>
+            <div class="chart-container">
+              <div class="chart-legend">
+                <span><i class="legend-dot" style="background:var(--blue)"></i>Realized Revenue</span>
+                <span><i class="legend-dot" style="background:#93c5fd"></i>AI Forecast</span>
+              </div>
+              <svg viewBox="0 0 700 190" preserveAspectRatio="none" style="width:100%;height:195px;margin-top:24px">
+                <g stroke="#f1f5f9" stroke-width="1">
+                  <line x1="0" y1="35" x2="700" y2="35" />
+                  <line x1="0" y1="75" x2="700" y2="75" />
+                  <line x1="0" y1="115" x2="700" y2="115" />
+                  <line x1="0" y1="155" x2="700" y2="155" />
+                </g>
+                <g fill="#94a3b8" font-size="10.5">
+                  <text y="38">30L</text>
+                  <text y="78">20L</text>
+                  <text y="118">10L</text>
+                  <text y="158">0</text>
+                  <text x="50" y="182">Apr</text>
+                  <text x="165" y="182">May</text>
+                  <text x="280" y="182">Jun</text>
+                  <text x="395" y="182">Jul</text>
+                  <text x="510" y="182">Aug</text>
+                  <text x="625" y="182">Sep</text>
+                </g>
+                <path d="M35 142 C90 134 110 120 150 122 S225 108 265 112 S325 88 375 92 S435 74 485 82 S545 50 590 62 S645 36 680 44 L680 155 L35 155Z" fill="rgba(37,99,235,0.08)"/>
+                <path d="M35 142 C90 134 110 120 150 122 S225 108 265 112 S325 88 375 92 S435 74 485 82 S545 50 590 62 S645 36 680 44" fill="none" stroke="var(--blue)" stroke-width="3"/>
+                <path d="M35 146 C115 140 165 132 225 134 S345 114 405 120 S525 94 585 100 S645 78 680 82" fill="none" stroke="#93c5fd" stroke-width="2.5" stroke-dasharray="5 5"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- AI Daily Brief -->
+          <div class="card">
+            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+              <h3 style="font-size:15px;font-weight:700">✦ Autonomous AI Daily Brief</h3>
+              <a href="/approvals.html" style="font-size:12.5px;color:var(--purple);text-decoration:none;font-weight:600">Pending Actions →</a>
+            </div>
+            <div class="ai-brief-list" id="aiBriefContainer">
+              <div class="ai-brief-item">
+                <span class="badge badge-red">URGENT</span>
+                <div>
+                  <strong style="font-size:13px;display:block">3 high-value deals are at risk</strong>
+                  <span style="color:var(--muted);font-size:12px">Himalayan Retail and 2 others had no customer activity in over 7 days.</span>
+                </div>
+              </div>
+              <div class="ai-brief-item">
+                <span class="badge badge-orange">ACTION</span>
+                <div>
+                  <strong style="font-size:13px;display:block">8 high-intent leads need contact</strong>
+                  <span style="color:var(--muted);font-size:12px">Prospects engaged with your pricing calculator and downloaded enterprise whitepapers.</span>
+                </div>
+              </div>
+              <div class="ai-brief-item">
+                <span class="badge badge-blue">INSIGHT</span>
+                <div>
+                  <strong style="font-size:13px;display:block">Website Chat is your top converting channel</strong>
+                  <span style="color:var(--muted);font-size:12px">32% qualified lead conversion rate this week with average response time under 45s.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Grid: Priority Leads & Recent Activity -->
+        <div class="dashboard-grid">
+          <!-- Priority Leads Table -->
+          <div class="card">
+            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+              <h3 style="font-size:15px;font-weight:700">Priority Leads</h3>
+              <a href="/leads.html" style="font-size:12.5px;color:var(--blue);text-decoration:none;font-weight:600">View All Leads →</a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Lead Name</th>
+                    <th>Score</th>
+                    <th>Stage</th>
+                    <th>Source</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="priorityLeadsBody">
+                  <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading priority leads...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Activity Feed -->
+          <div class="card">
+            <div style="padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+              <h3 style="font-size:15px;font-weight:700">Recent Activity</h3>
+              <a href="/tasks.html" style="font-size:12.5px;color:var(--blue);text-decoration:none;font-weight:600">View Tasks →</a>
+            </div>
+            <div id="recentActivityContainer" style="padding:6px 0">
+              <div class="activity-item">
+                <div class="activity-icon">✦</div>
+                <div>
+                  <strong style="font-size:13px;display:block">AI qualified Rajan Koirala</strong>
+                  <span style="color:var(--muted);font-size:11.5px">Score: 94 · Demo requested · 12 min ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#e6f9f0;color:#047857">✓</div>
+                <div>
+                  <strong style="font-size:13px;display:block">Deal moved to Negotiation</strong>
+                  <span style="color:var(--muted);font-size:11.5px">Koirala Industries · Amount: NPR 18,50,000</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#fff7ed;color:#b45309">◷</div>
+                <div>
+                  <strong style="font-size:13px;display:block">Follow-up reminder set</strong>
+                  <span style="color:var(--muted);font-size:11.5px">Bright Ventures · Assigned to Sita Thapa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Lead Modal -->
+  <div class="modal-overlay" id="createLeadModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create New Lead</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createLeadModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="newLeadName" class="form-control" placeholder="e.g. Ramesh Karki" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input type="text" id="newLeadCompany" class="form-control" placeholder="e.g. Karki Distributors" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="newLeadEmail" class="form-control" placeholder="ramesh@karki.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="newLeadPhone" class="form-control" placeholder="+977-9800000000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lead Source</label>
+          <select id="newLeadSource" class="form-control">
+            <option value="Website Chat">Website Chat</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Google Ads">Google Ads</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Referral</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createLeadModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateLead()">Create & Qualify Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Dashboard', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Dashboard' }]);
+
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch('/api/dashboard/stats');
+        if (!res.ok) throw new Error('API unavailable');
+        const data = await res.json();
+
+        document.getElementById('metricRevenue').textContent = SalesOS.formatCurrency(data.revenue_this_month);
+        document.getElementById('metricPipeline').textContent = SalesOS.formatCurrency(data.active_pipeline);
+        document.getElementById('metricLeads').textContent = data.qualified_leads;
+        document.getElementById('metricConversion').textContent = data.conversion_rate;
+
+        // Render Priority Leads
+        const tbody = document.getElementById('priorityLeadsBody');
+        if (data.priority_leads && data.priority_leads.length) {
+          tbody.innerHTML = data.priority_leads.map(lead => `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="tenant-avatar" style="background:#e0e7ff;color:#4338ca">
+                    ${(lead.name || 'L').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
+                  </div>
+                  <div>
+                    <strong style="font-size:13px;display:block">${lead.name}</strong>
+                    <small style="color:var(--muted)">${lead.company || 'Direct Contact'}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge ${lead.score >= 80 ? 'badge-green' : lead.score >= 50 ? 'badge-orange' : 'badge-blue'}">
+                  ${lead.score !== null ? `${lead.score} / 100` : '—'}
+                </span>
+              </td>
+              <td><span style="font-weight:550;color:var(--ink-secondary)">${lead.stage}</span></td>
+              <td><span style="color:var(--muted);font-size:12px">${lead.source || 'Website'}</span></td>
+              <td>
+                <a href="/leads.html?highlight=${lead.id}" class="btn btn-secondary btn-sm">Engage →</a>
+              </td>
+            </tr>
+          `).join('');
+        }
+        // Fetch and render live AI Daily Sales Manager Briefing (PRD §24)
+        try {
+          const rBrief = await fetch('/api/ai/daily-brief');
+          if (rBrief.ok) {
+            const brief = await rBrief.json();
+            const container = document.getElementById('aiBriefContainer');
+            if (container && brief) {
+              let itemsHtml = '';
+              if (brief.narrative) {
+                itemsHtml += `
+                  <div style="padding:10px 12px;background:rgba(99,102,241,0.06);border-left:3px solid var(--blue);border-radius:4px;font-size:12.5px;color:var(--ink);margin-bottom:10px;line-height:1.5">
+                    <strong>Daily Executive Narrative:</strong> ${SalesOS.escapeHtml(brief.narrative)}
+                  </div>
+                `;
+              }
+              (brief.recommendations || []).forEach(rec => {
+                const badgeClass = rec.priority === 'urgent' ? 'badge-red' : (rec.priority === 'high' ? 'badge-orange' : 'badge-blue');
+                itemsHtml += `
+                  <div class="ai-brief-item">
+                    <span class="badge ${badgeClass}">${SalesOS.escapeHtml(rec.priority.toUpperCase())}</span>
+                    <div>
+                      <strong style="font-size:13px;display:block">${SalesOS.escapeHtml(rec.action)}</strong>
+                      <span style="color:var(--muted);font-size:12px">${SalesOS.escapeHtml(rec.reason)}</span>
+                      ${rec.suggested_message ? `<div style="font-size:11.5px;color:var(--blue);margin-top:4px">💡 ${SalesOS.escapeHtml(rec.suggested_message)}</div>` : ''}
+                    </div>
+                  </div>
+                `;
+              });
+              if (itemsHtml) container.innerHTML = itemsHtml;
+            }
+          }
+        } catch (_) {}
+      } catch (e) {
+        console.error('Error loading dashboard stats:', e);
+        const tbody = document.getElementById('priorityLeadsBody');
+        if (tbody && tbody.innerHTML.includes('Loading priority leads...')) {
+          tbody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">
+              <div style="font-size:13px;color:var(--ink-secondary);font-weight:600">No active leads found in this period.</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px">Click <strong>＋ New Lead</strong> above to capture or import leads.</div>
+            </td></tr>
+          `;
+        }
+      }
+    }
+
+    function openCreateLeadModal() {
+      SalesOS.showModal('createLeadModal');
+      document.getElementById('newLeadName').focus();
+    }
+
+    async function submitCreateLead() {
+      const name = document.getElementById('newLeadName').value.trim();
+      const company = document.getElementById('newLeadCompany').value.trim();
+      const email = document.getElementById('newLeadEmail').value.trim();
+      const phone = document.getElementById('newLeadPhone').value.trim();
+      const source = document.getElementById('newLeadSource').value;
+
+      if (!name) {
+        SalesOS.showToast('Please enter the lead name.', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company, email, phone, source, stage: 'New lead' })
+        });
+
+        if (res.ok) {
+          const newLead = await res.json();
+          // Auto qualify
+          await fetch(`/api/leads/${newLead.id}/qualify`, { method: 'POST' });
+          SalesOS.closeModal('createLeadModal');
+          SalesOS.showToast(`Lead created and qualified! Score: ${newLead.score || 80}/100`);
+          loadDashboardStats();
+        } else {
+          SalesOS.showToast('Failed to create lead', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Network error while saving lead', 'error');
+      }
+    }
+
+    loadDashboardStats();
+  </script>
+</body>
+</html>

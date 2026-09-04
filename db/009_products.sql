@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS products(id UUID PRIMARY KEY DEFAULT gen_random_uuid(),tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,name TEXT NOT NULL,sku TEXT,description TEXT,price NUMERIC(14,2) NOT NULL DEFAULT 0,currency CHAR(3) NOT NULL DEFAULT 'NPR',stock NUMERIC(14,2),is_active BOOLEAN NOT NULL DEFAULT true,metadata JSONB NOT NULL DEFAULT '{}'::jsonb,created_at TIMESTAMPTZ NOT NULL DEFAULT now(),updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),deleted_at TIMESTAMPTZ);
+CREATE INDEX IF NOT EXISTS products_tenant_idx ON products(tenant_id,name);

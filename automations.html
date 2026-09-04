@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Automations & Workflows · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .automation-card {
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: var(--transition);
+    }
+    .automation-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .flow-step-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .flow-step-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .flow-arrow {
+      color: #94a3b8;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Sales Automations</h1>
+            <p>Construct event-driven triggers, qualification rules, deal alert sequences, and autonomous execution logic.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadAutomations()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateAutomationModal()">＋ Build Workflow</button>
+          </div>
+        </div>
+
+        <div id="automationsListContainer">
+          <div class="card" style="padding:32px;text-align:center">
+            <div class="spinner"></div>
+            <p style="color:var(--muted)">Loading automated workflows...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Automation Modal -->
+  <div class="modal-overlay" id="createAutomationModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create Automation Workflow</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createAutomationModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Workflow Name *</label>
+          <input type="text" id="autoName" class="form-control" placeholder="e.g. VIP Inbound Lead Routing" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">When this Event Occurs (Trigger) *</label>
+          <select id="autoTrigger" class="form-control">
+            <option value="New Lead Created (Score > 75)">New Lead Created (Score > 75)</option>
+            <option value="Deal Stage Unchanged for 7 Days">Deal Stage Unchanged for 7 Days</option>
+            <option value="Inbound Website Chat Message">Inbound Website Chat Message</option>
+            <option value="Opportunity Moved to Proposal">Opportunity Moved to Proposal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">If These Conditions Are Met</label>
+          <input type="text" id="autoCondition" class="form-control" placeholder="e.g. Source in ['Website Chat', 'WhatsApp']" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Execute Actions (Action Branch) *</label>
+          <input type="text" id="autoAction" class="form-control" placeholder="e.g. Assign to Arjun Sharma + Send Welcome Email + Schedule Task" required />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createAutomationModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateAutomation()">Activate Workflow</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Automations', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Automations' }]);
+
+    let allAutomations = [];
+
+    async function loadAutomations() {
+      try {
+        const res = await fetch('/api/automations');
+        if (!res.ok) throw new Error();
+        allAutomations = await res.json();
+        renderAutomations();
+      } catch (e) {
+        SalesOS.showToast('Unable to load automations', 'error');
+      }
+    }
+
+    function renderAutomations() {
+      const container = document.getElementById('automationsListContainer');
+
+      if (!allAutomations.length) {
+        container.innerHTML = `
+          <div class="card" style="padding:48px 24px;text-align:center">
+            <div class="state-icon">⚙</div>
+            <h3>No automation workflows yet</h3>
+            <p style="color:var(--muted);margin-bottom:16px">Automate routine sales qualifications, deal reminders, and follow-ups.</p>
+            <button class="btn btn-primary btn-sm" onclick="openCreateAutomationModal()">＋ Build First Workflow</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = allAutomations.map(auto => {
+        const isActive = auto.status === 'active';
+        return `
+          <div class="card automation-card">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <strong style="font-size:15px;color:var(--ink)">${escapeHtml(auto.name)}</strong>
+                <div style="color:var(--muted);font-size:12px;margin-top:2px">
+                  Executed <strong>${auto.runs_count || 0} times</strong> · Last execution: ${auto.last_run ? SalesOS.formatDate(auto.last_run) : 'Never'}
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span class="badge ${isActive ? 'badge-green' : 'badge-gray'}">${isActive ? 'Active' : 'Paused'}</span>
+                <button class="btn btn-secondary btn-sm" onclick="toggleAutomationStatus('${escapeHtml(auto.id)}', '${escapeHtml(auto.status)}')">
+                  ${isActive ? '⏸ Pause' : '▶ Resume'}
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteAutomation('${escapeHtml(auto.id)}')">🗑</button>
+              </div>
+            </div>
+
+            <!-- Flow Visualizer -->
+            <div class="flow-step-container">
+              <div class="flow-step">
+                <div class="flow-step-icon" style="background:#eaf1ff;color:#2563eb">⚡</div>
+                <div>
+                  <small style="color:var(--muted);display:block;font-size:10.5px">TRIGGER</small>
+                  <strong>${escapeHtml(auto.trigger || 'Event')}</strong>
+                </div>
+              </div>
+
+              <span class="flow-arrow">➔</span>
+
+              <div class="flow-step">
+                <div class="flow-step-icon" style="background:#fef3c7;color:#b45309">⚖</div>
+                <div>
+                  <small style="color:var(--muted);display:block;font-size:10.5px">CONDITION</small>
+                  <span>${escapeHtml(auto.condition || 'Always')}</span>
+                </div>
+              </div>
+
+              <span class="flow-arrow">➔</span>
+
+              <div class="flow-step">
+                <div class="flow-step-icon" style="background:#dcfce7;color:#15803d">⚙</div>
+                <div>
+                  <small style="color:var(--muted);display:block;font-size:10.5px">ACTION</small>
+                  <strong>${escapeHtml(auto.action || 'Execute Action')}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleAutomationStatus(id, currentStatus) {
+      const newStatus = currentStatus === 'active' ? 'paused' : 'active';
+      try {
+        const res = await fetch(`/api/automations/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          SalesOS.showToast(`Workflow ${newStatus === 'active' ? 'resumed' : 'paused'}`);
+          loadAutomations();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error toggling workflow status', 'error');
+      }
+    }
+
+    function openCreateAutomationModal() {
+      SalesOS.showModal('createAutomationModal');
+      document.getElementById('autoName').focus();
+    }
+
+    async function submitCreateAutomation() {
+      const name = document.getElementById('autoName').value.trim();
+      const trigger = document.getElementById('autoTrigger').value;
+      const condition = document.getElementById('autoCondition').value.trim() || 'All instances';
+      const action = document.getElementById('autoAction').value.trim();
+
+      if (!name || !action) {
+        SalesOS.showToast('Name and Action are required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/automations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name, trigger, condition, action, status: 'active', runs_count: 0, last_run: new Date().toISOString()
+          })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createAutomationModal');
+          SalesOS.showToast('Workflow activated successfully');
+          loadAutomations();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error creating workflow', 'error');
+      }
+    }
+
+    async function deleteAutomation(id) {
+      if (!confirm('Delete this automation workflow?')) return;
+      try {
+        const res = await fetch(`/api/automations/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Workflow deleted');
+          loadAutomations();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting workflow', 'error');
+      }
+    }
+
+    loadAutomations();
+  </script>
+</body>
+</html>

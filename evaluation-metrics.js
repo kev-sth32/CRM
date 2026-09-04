@@ -1,0 +1,1 @@
+function summarize(rows=[]){const total=rows.length,good=rows.filter(x=>x.rating==='good').length,bad=rows.filter(x=>x.rating==='bad').length;return {total,good,bad,needs_improvement:total-good-bad,quality_rate:total?good/total:0}}module.exports={summarize};

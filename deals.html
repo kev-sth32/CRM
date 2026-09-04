@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deals & Pipeline · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .kanban-board {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 24px;
+      min-height: calc(100vh - 250px);
+      align-items: flex-start;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .kanban-column {
+      flex: 0 0 290px;
+      min-width: 280px;
+      max-width: 330px;
+      scroll-snap-align: start;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: flex;
+    }
+    .mobile-card-actions {
+      display: none;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line-light);
+      justify-content: space-between;
+      gap: 6px;
+    }
+    @media (max-width: 768px) {
+      .mobile-card-actions {
+        display: flex;
+      }
+    }
+      flex-direction: column;
+      max-height: calc(100vh - 250px);
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kanban-column.drag-over {
+      background: #eef2ff;
+      border-color: var(--blue, #6366f1);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+    }
+    .kanban-column-header {
+      padding: 12px 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stage-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .kanban-counter {
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .kanban-column-value {
+      font-size: 11.5px;
+      color: var(--muted);
+      padding: 0 14px 10px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--line-light);
+    }
+    .kanban-cards {
+      padding: 10px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      min-height: 140px;
+      transition: background 0.15s ease;
+    }
+    .deal-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-sm);
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+      position: relative;
+      user-select: none;
+    }
+    .deal-card:active {
+      cursor: grabbing;
+    }
+    .deal-card:hover {
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+    .deal-card.is-dragging {
+      opacity: 0.35;
+      transform: scale(0.96) rotate(1deg);
+      border: 2px dashed var(--blue, #6366f1);
+      box-shadow: none;
+    }
+    .deal-card:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+    .deal-card.card-grabbed {
+      outline: 2px solid var(--blue) !important;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25), var(--shadow-md) !important;
+      border-color: var(--blue) !important;
+      background: #f0f9ff !important;
+    }
+    .deal-card-grip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #94a3b8;
+      font-size: 13px;
+      opacity: 0.4;
+      cursor: grab;
+      transition: opacity 0.15s ease;
+    }
+    .deal-card:hover .deal-card-grip {
+      opacity: 1;
+    }
+    .deal-amount {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 8px 0 4px;
+    }
+    .deal-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line-light);
+    }
+    .empty-column-state {
+      text-align: center;
+      padding: 24px 12px;
+      color: #94a3b8;
+      font-size: 12px;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      background: rgba(241, 245, 249, 0.6);
+      pointer-events: none;
+    }
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-search {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+    .filter-search input {
+      width: 100%;
+      padding: 7px 12px 7px 32px;
+      font-size: 13px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      background: #fff;
+    }
+    .filter-search input:focus {
+      border-color: var(--blue, #6366f1);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    .filter-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 13px;
+      pointer-events: none;
+    }
+    .view-toggle-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .view-toggle-btn.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Deals & Opportunities</h1>
+            <p>Visual sales pipeline stages, probability forecasting, deal risks, and automated stage progression.</p>
+          </div>
+          <div class="page-actions">
+            <div style="display:flex;gap:4px;background:#e2e8f0;padding:3px;border-radius:8px">
+              <button class="view-toggle-btn active" id="btnKanbanView" onclick="setViewMode('kanban')">▦ Kanban</button>
+              <button class="view-toggle-btn" id="btnTableView" onclick="setViewMode('table')">≡ Table</button>
+            </div>
+            <button class="btn btn-secondary" onclick="loadDeals()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateDealModal()">＋ New Deal</button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span class="filter-search-icon">🔍</span>
+            <input type="text" id="dealSearchInput" placeholder="Filter deals by name, company, or contact..." oninput="handleSearchInput(this.value)" />
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <label style="font-size:12px;font-weight:600;color:var(--muted)">Risk:</label>
+            <select id="dealRiskFilter" class="form-control" style="font-size:12px;padding:6px 10px;width:auto" onchange="handleRiskFilterChange(this.value)">
+              <option value="all">All Risks</option>
+              <option value="Healthy">Healthy Only</option>
+              <option value="At Risk">At Risk Only</option>
+            </select>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--muted)">
+            <span id="pipelineTotalSummary" style="font-weight:700;color:var(--ink)">Total Pipeline: NPR 0</span>
+          </div>
+        </div>
+
+        <!-- Kanban Board View -->
+        <div id="kanbanViewWrapper">
+          <div id="kanbanAriaLive" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></div>
+          <div class="kanban-board" id="kanbanBoard"></div>
+        </div>
+
+        <!-- Table View -->
+        <div class="card" id="tableViewWrapper" style="display:none">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Deal Name</th>
+                  <th>Account / Company</th>
+                  <th>Key Contact</th>
+                  <th>Amount</th>
+                  <th>Stage</th>
+                  <th>Probability</th>
+                  <th>Expected Close</th>
+                  <th>Risk Status</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dealsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Deal Detail Drawer -->
+  <div class="drawer-overlay" id="dealDrawerOverlay" onclick="closeDealDrawer()"></div>
+  <aside class="drawer" id="dealDrawer">
+    <div class="drawer-header">
+      <div>
+        <h3 id="drawerDealName" style="font-size:17px;font-weight:750">Deal Name</h3>
+        <small id="drawerDealCompany" style="color:var(--muted)">Company Name</small>
+      </div>
+      <button class="modal-close" onclick="closeDealDrawer()">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Quick Stage Switcher -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+        <label style="font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap">Pipeline Stage:</label>
+        <select id="drawerStageSelect" class="form-control" style="font-size:12.5px;padding:6px 10px" onchange="changeDealStageFromDrawer(this.value)">
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="advanceDealStage()">➔ Advance Next</button>
+        <button class="btn btn-sm" style="background:#10b981;color:white;border:none" onclick="setDealStageQuick('Closed Won')">✓ Mark Won</button>
+        <button class="btn btn-sm" style="background:#ef4444;color:white;border:none" onclick="setDealStageQuick('Closed Lost')">✕ Mark Lost</button>
+        <button class="btn btn-secondary btn-sm" onclick="openEditDealModal()">✎ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteDeal()">🗑</button>
+      </div>
+
+      <!-- Financials Card -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Deal Valuation & Probability</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px">
+          <div>
+            <span style="color:var(--muted);display:block">Deal Amount</span>
+            <strong id="drawerDealAmount" style="font-size:16px;color:var(--blue)">NPR 0</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Win Probability</span>
+            <strong id="drawerDealProbability" style="font-size:16px;color:var(--green)">0%</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Current Stage</span>
+            <span class="badge badge-blue" id="drawerDealStage">Discovery</span>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Expected Close</span>
+            <strong id="drawerDealCloseDate">2026-09-30</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Assessment -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Health & Risk State</h4>
+          <span class="badge badge-green" id="drawerDealRiskBadge">Healthy</span>
+        </div>
+        <p id="drawerDealRiskReason" style="font-size:12px;color:var(--muted)">Regular communication observed. On schedule.</p>
+      </div>
+
+      <!-- Related Stakeholders -->
+      <div class="card" style="padding:16px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Primary Contact</h4>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px">
+          <div>
+            <strong id="drawerDealContact">—</strong>
+            <span id="drawerDealContactCompany" style="display:block;color:var(--muted);font-size:11px">—</span>
+          </div>
+          <a href="/inbox.html" class="btn btn-secondary btn-sm">✉ Message</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Create Deal Modal -->
+  <div class="modal-overlay" id="createDealModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create Opportunity</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createDealModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Opportunity Name *</label>
+          <input type="text" id="dealName" class="form-control" placeholder="e.g. Enterprise License Expansion" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Account</label>
+          <input type="text" id="dealCompany" class="form-control" placeholder="e.g. Koirala Industries" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Key Contact Name</label>
+          <input type="text" id="dealContact" class="form-control" placeholder="e.g. Rajan Koirala" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deal Amount (NPR) *</label>
+          <input type="number" id="dealAmount" class="form-control" placeholder="1500000" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Initial Stage</label>
+          <select id="dealStage" class="form-control">
+            <option value="New lead">New lead</option>
+            <option value="Discovery" selected>Discovery</option>
+            <option value="Demo">Demo</option>
+            <option value="Proposal">Proposal</option>
+            <option value="Negotiation">Negotiation</option>
+            <option value="Closed Won">Closed Won</option>
+            <option value="Closed Lost">Closed Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Win Probability (%)</label>
+          <input type="range" id="dealProbability" min="5" max="100" step="5" value="50" oninput="document.getElementById('probVal').textContent = this.value + '%'" style="width:100%" />
+          <span id="probVal" style="font-size:12px;font-weight:700;color:var(--blue)">50%</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expected Close Date</label>
+          <input type="date" id="dealCloseDate" class="form-control" value="2026-09-30" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createDealModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateDeal()">Create Opportunity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Deal Modal -->
+  <div class="modal-overlay" id="editDealModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Opportunity</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('editDealModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editDealId" />
+        <div class="form-group">
+          <label class="form-label">Opportunity Name *</label>
+          <input type="text" id="editDealName" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select id="editDealStage" class="form-control">
+            <option value="New lead">New lead</option>
+            <option value="Discovery">Discovery</option>
+            <option value="Demo">Demo</option>
+            <option value="Proposal">Proposal</option>
+            <option value="Negotiation">Negotiation</option>
+            <option value="Closed Won">Closed Won</option>
+            <option value="Closed Lost">Closed Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deal Amount (NPR)</label>
+          <input type="number" id="editDealAmount" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Win Probability (%)</label>
+          <input type="number" id="editDealProbability" class="form-control" min="0" max="100" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expected Close Date</label>
+          <input type="date" id="editDealCloseDate" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('editDealModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitEditDeal()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Deals', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Deals' }]);
+
+    const DEFAULT_STAGES = [
+      'New lead',
+      'Discovery',
+      'Demo',
+      'Proposal',
+      'Negotiation',
+      'Closed Won',
+      'Closed Lost'
+    ];
+
+    const STAGE_COLORS = {
+      'New lead': '#64748b',
+      'Discovery': '#6366f1',
+      'Demo': '#0ea5e9',
+      'Proposal': '#8b5cf6',
+      'Negotiation': '#f59e0b',
+      'Closed Won': '#10b981',
+      'Closed Lost': '#ef4444'
+    };
+
+    let allDeals = [];
+    let activeDeal = null;
+    let draggedDealId = null;
+    let keyboardGrabbedDealId = null;
+    let keyboardOriginalStage = null;
+    let searchFilter = '';
+    let riskFilter = 'all';
+
+    function getActiveStages() {
+      const stages = [...DEFAULT_STAGES];
+      allDeals.forEach(d => {
+        if (d.stage && !stages.includes(d.stage)) {
+          stages.push(d.stage);
+        }
+      });
+      return stages;
+    }
+
+    function setViewMode(mode) {
+      if (mode === 'kanban') {
+        document.getElementById('kanbanViewWrapper').style.display = 'block';
+        document.getElementById('tableViewWrapper').style.display = 'none';
+        document.getElementById('btnKanbanView').classList.add('active');
+        document.getElementById('btnTableView').classList.remove('active');
+      } else {
+        document.getElementById('kanbanViewWrapper').style.display = 'none';
+        document.getElementById('tableViewWrapper').style.display = 'block';
+        document.getElementById('btnKanbanView').classList.remove('active');
+        document.getElementById('btnTableView').classList.add('active');
+      }
+    }
+
+    function handleSearchInput(val) {
+      searchFilter = (val || '').trim().toLowerCase();
+      renderKanban();
+      renderTable();
+    }
+
+    function handleRiskFilterChange(val) {
+      riskFilter = val;
+      renderKanban();
+      renderTable();
+    }
+
+    function getFilteredDeals() {
+      return allDeals.filter(d => {
+        if (riskFilter !== 'all') {
+          const dealRisk = (d.risk || 'Healthy').toLowerCase();
+          if (dealRisk !== riskFilter.toLowerCase()) return false;
+        }
+        if (searchFilter) {
+          const matchName = (d.name || d.title || '').toLowerCase().includes(searchFilter);
+          const matchCompany = (d.company_name || d.company || '').toLowerCase().includes(searchFilter);
+          const matchContact = (d.contact_name || '').toLowerCase().includes(searchFilter);
+          if (!matchName && !matchCompany && !matchContact) return false;
+        }
+        return true;
+      });
+    }
+
+    async function loadDeals() {
+      try {
+        const res = await fetch('/api/opportunities');
+        if (!res.ok) throw new Error();
+        allDeals = await res.json();
+        renderKanban();
+        renderTable();
+      } catch (e) {
+        SalesOS.showToast('Unable to load opportunities', 'error');
+      }
+    }
+
+    function renderKanban() {
+      const board = document.getElementById('kanbanBoard');
+      if (!board) return;
+      board.innerHTML = '';
+
+      const filtered = getFilteredDeals();
+      const stages = getActiveStages();
+
+      // Update total pipeline summary
+      const totalPipeline = filtered.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+      const summaryEl = document.getElementById('pipelineTotalSummary');
+      if (summaryEl) {
+        summaryEl.textContent = `Total Pipeline: ${SalesOS.formatCurrency(totalPipeline)} (${filtered.length} deals)`;
+      }
+
+      stages.forEach(stage => {
+        const stageDeals = filtered.filter(d => (d.stage || 'Discovery') === stage);
+        const stageValue = stageDeals.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+        const dotColor = STAGE_COLORS[stage] || '#6366f1';
+
+        const col = document.createElement('div');
+        col.className = 'kanban-column';
+        col.setAttribute('data-stage', stage);
+
+        // Drag and drop event listeners on column
+        col.addEventListener('dragover', handleColumnDragOver);
+        col.addEventListener('dragenter', handleColumnDragEnter);
+        col.addEventListener('dragleave', handleColumnDragLeave);
+        col.addEventListener('drop', (e) => handleColumnDrop(e, stage));
+
+        col.innerHTML = `
+          <div class="kanban-column-header">
+            <span class="stage-pill">
+              <span class="stage-dot" style="background:${dotColor}"></span>
+              <span>${escapeHtml(stage)}</span>
+            </span>
+            <span class="kanban-counter">${stageDeals.length}</span>
+          </div>
+          <div class="kanban-column-value">${SalesOS.formatCurrency(stageValue)}</div>
+          <div class="kanban-cards" id="stage-cards-${stage.replace(/\s+/g, '-')}">
+            ${stageDeals.length === 0 ? `
+              <div class="empty-column-state">
+                Drop deals here
+              </div>
+            ` : stageDeals.map(d => {
+              const isGrabbed = keyboardGrabbedDealId === String(d.id);
+              return `
+              <div class="deal-card ${isGrabbed ? 'card-grabbed' : ''}"
+                   id="deal-card-${escapeHtml(d.id)}"
+                   draggable="true"
+                   tabindex="0"
+                   role="button"
+                   aria-roledescription="draggable deal card"
+                   aria-grabbed="${isGrabbed}"
+                   aria-label="Deal: ${escapeHtml(d.name || d.title || 'Untitled')}, ${SalesOS.formatCurrency(d.amount)}, Stage: ${escapeHtml(stage)}. Press Space to pick up or drop, Left/Right arrows to move."
+                   ondragstart="handleCardDragStart(event, '${escapeHtml(d.id)}')"
+                   ondragend="handleCardDragEnd(event)"
+                   onkeydown="handleCardKeyNav(event, '${escapeHtml(d.id)}', '${escapeHtml(stage)}')"
+                   onclick="handleCardClick(event, '${escapeHtml(d.id)}')">
+                <span class="deal-card-grip" title="Drag or press Space to move stage">⋮⋮</span>
+                <strong style="font-size:13px;display:block;color:var(--ink);padding-right:16px">${escapeHtml(d.name || d.title || 'Untitled Deal')}</strong>
+                <small style="color:var(--muted);font-size:11.5px">${escapeHtml(d.company_name || d.company || 'Independent Account')}</small>
+                <div class="deal-amount">${SalesOS.formatCurrency(d.amount)}</div>
+                <div class="deal-meta">
+                  <span class="badge ${d.risk === 'At Risk' ? 'badge-red' : 'badge-green'}">${escapeHtml(d.risk || 'Healthy')}</span>
+                  <span>${escapeHtml(String(d.probability || 50))}% prob.</span>
+                </div>
+                <div class="mobile-card-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-secondary" style="padding:2px 8px;font-size:11px" onclick="shiftDealStageMobile('${escapeHtml(d.id)}', -1)" title="Move left">← Prev</button>
+                  <span style="font-size:11px;color:var(--muted);align-self:center">Stage</span>
+                  <button type="button" class="btn btn-secondary" style="padding:2px 8px;font-size:11px" onclick="shiftDealStageMobile('${escapeHtml(d.id)}', 1)" title="Move right">Next →</button>
+                </div>
+              </div>
+            `;}).join('')}
+          </div>
+        `;
+        board.appendChild(col);
+      });
+    }
+
+    function announceAria(message) {
+      const el = document.getElementById('kanbanAriaLive');
+      if (el) el.textContent = message;
+    }
+
+    async function shiftDealStageMobile(dealId, direction) {
+      const deal = allDeals.find(d => String(d.id) === String(dealId));
+      if (!deal) return;
+      const stages = getActiveStages();
+      const currentIdx = stages.indexOf(deal.stage || 'Lead In');
+      const targetIdx = currentIdx + direction;
+      if (targetIdx < 0 || targetIdx >= stages.length) return;
+      const targetStage = stages[targetIdx];
+      const oldStage = deal.stage;
+      deal.stage = targetStage;
+      renderKanban();
+      renderTable();
+      SalesOS.showToast(`Moved deal to "${targetStage}"`, 'success');
+
+      try {
+        const res = await fetch(`/api/opportunities/${dealId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: targetStage })
+        });
+        if (!res.ok) throw new Error();
+      } catch (err) {
+        deal.stage = oldStage;
+        renderKanban();
+        renderTable();
+        SalesOS.showToast('Failed to sync stage update', 'error');
+      }
+    }
+
+    function handleCardClick(e, id) {
+      if (keyboardGrabbedDealId) return;
+      openDealDrawerById(id);
+    }
+
+    async function handleCardKeyNav(e, id, currentStage) {
+      const deal = allDeals.find(d => String(d.id) === String(id));
+      if (!deal) return;
+      const stages = getActiveStages();
+      const currentIdx = stages.indexOf(deal.stage || currentStage);
+
+      // Space key picks up or drops
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (keyboardGrabbedDealId === String(id)) {
+          keyboardGrabbedDealId = null;
+          keyboardOriginalStage = null;
+          announceAria(`Confirmed placement of ${deal.name || deal.title} in ${deal.stage}.`);
+          SalesOS.showToast(`Placed deal in "${deal.stage}"`, 'success');
+          renderKanban();
+          setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+        } else {
+          keyboardGrabbedDealId = String(id);
+          keyboardOriginalStage = deal.stage;
+          announceAria(`Picked up ${deal.name || deal.title}. Current stage: ${deal.stage}. Use Left and Right arrow keys to change stages, Space to drop, Escape to cancel.`);
+          SalesOS.showToast(`Picked up deal. Use ← / → to change stage, Space to drop.`, 'info');
+          renderKanban();
+          setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+        }
+        return;
+      }
+
+      // Enter key confirms drop
+      if (e.key === 'Enter') {
+        if (keyboardGrabbedDealId === String(id)) {
+          e.preventDefault();
+          e.stopPropagation();
+          keyboardGrabbedDealId = null;
+          keyboardOriginalStage = null;
+          announceAria(`Confirmed placement of ${deal.name || deal.title} in ${deal.stage}.`);
+          SalesOS.showToast(`Placed deal in "${deal.stage}"`, 'success');
+          renderKanban();
+          setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+        }
+        return;
+      }
+
+      // Escape cancels move
+      if (e.key === 'Escape' && keyboardGrabbedDealId === String(id)) {
+        e.preventDefault();
+        e.stopPropagation();
+        deal.stage = keyboardOriginalStage;
+        keyboardGrabbedDealId = null;
+        keyboardOriginalStage = null;
+        announceAria(`Movement cancelled. Returned ${deal.name || deal.title} to ${deal.stage}.`);
+        SalesOS.showToast('Deal movement cancelled', 'warning');
+        renderKanban();
+        setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+        return;
+      }
+
+      // ArrowRight moves to next stage
+      if (e.key === 'ArrowRight' && keyboardGrabbedDealId === String(id)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentIdx < stages.length - 1) {
+          const nextStage = stages[currentIdx + 1];
+          const oldStage = deal.stage;
+          deal.stage = nextStage;
+          announceAria(`Moved ${deal.name || deal.title} to ${nextStage}. Press Space or Enter to confirm.`);
+          renderKanban();
+          setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+
+          try {
+            const res = await fetch(`/api/opportunities/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ stage: nextStage })
+            });
+            if (!res.ok) throw new Error();
+            renderTable();
+          } catch (err) {
+            deal.stage = oldStage;
+            renderKanban();
+            renderTable();
+            SalesOS.showToast('Failed to sync stage update', 'error');
+          }
+        }
+        return;
+      }
+
+      // ArrowLeft moves to previous stage
+      if (e.key === 'ArrowLeft' && keyboardGrabbedDealId === String(id)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentIdx > 0) {
+          const prevStage = stages[currentIdx - 1];
+          const oldStage = deal.stage;
+          deal.stage = prevStage;
+          announceAria(`Moved ${deal.name || deal.title} to ${prevStage}. Press Space or Enter to confirm.`);
+          renderKanban();
+          setTimeout(() => document.getElementById(`deal-card-${id}`)?.focus(), 50);
+
+          try {
+            const res = await fetch(`/api/opportunities/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ stage: prevStage })
+            });
+            if (!res.ok) throw new Error();
+            renderTable();
+          } catch (err) {
+            deal.stage = oldStage;
+            renderKanban();
+            renderTable();
+            SalesOS.showToast('Failed to sync stage update', 'error');
+          }
+        }
+        return;
+      }
+    }
+
+    /* Drag and Drop Handlers */
+    function handleCardDragStart(e, id) {
+      draggedDealId = id;
+      e.dataTransfer.setData('text/plain', id);
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => {
+        const el = document.getElementById(`deal-card-${id}`);
+        if (el) el.classList.add('is-dragging');
+      }, 0);
+    }
+
+    function handleCardDragEnd(e) {
+      draggedDealId = null;
+      document.querySelectorAll('.deal-card').forEach(c => c.classList.remove('is-dragging'));
+      document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+    }
+
+    function handleColumnDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleColumnDragEnter(e) {
+      e.preventDefault();
+      const col = e.currentTarget;
+      if (col && col.classList.contains('kanban-column')) {
+        col.classList.add('drag-over');
+      }
+    }
+
+    function handleColumnDragLeave(e) {
+      const col = e.currentTarget;
+      if (col && !col.contains(e.relatedTarget)) {
+        col.classList.remove('drag-over');
+      }
+    }
+
+    async function handleColumnDrop(e, targetStage) {
+      e.preventDefault();
+      document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+      const id = e.dataTransfer.getData('text/plain') || draggedDealId;
+      if (!id) return;
+
+      const deal = allDeals.find(d => String(d.id) === String(id));
+      if (!deal) return;
+      if (deal.stage === targetStage) return;
+
+      const oldStage = deal.stage;
+      deal.stage = targetStage;
+      renderKanban();
+      renderTable();
+
+      try {
+        const res = await fetch(`/api/opportunities/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: targetStage })
+        });
+        if (!res.ok) throw new Error();
+        SalesOS.showToast(`Opportunity moved to "${targetStage}"`);
+      } catch (err) {
+        deal.stage = oldStage;
+        renderKanban();
+        renderTable();
+        SalesOS.showToast('Failed to update deal stage', 'error');
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('dealsTableBody');
+      const filtered = getFilteredDeals();
+
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px">No opportunities found matching criteria.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(d => `
+        <tr style="cursor:pointer" onclick="openDealDrawerById('${escapeHtml(d.id)}')">
+          <td><strong style="color:var(--ink)">${escapeHtml(d.name || d.title || 'Untitled Deal')}</strong></td>
+          <td>${escapeHtml(d.company_name || d.company || '—')}</td>
+          <td>${escapeHtml(d.contact_name || '—')}</td>
+          <td><strong>${SalesOS.formatCurrency(d.amount)}</strong></td>
+          <td><span class="badge badge-blue">${escapeHtml(d.stage || 'Discovery')}</span></td>
+          <td>${escapeHtml(String(d.probability || 50))}%</td>
+          <td><span style="font-size:12px;color:var(--muted)">${escapeHtml(d.expected_close_date || '—')}</span></td>
+          <td><span class="badge ${d.risk === 'At Risk' ? 'badge-red' : 'badge-green'}">${escapeHtml(d.risk || 'Healthy')}</span></td>
+          <td style="text-align:right" onclick="event.stopPropagation()">
+            <button class="btn btn-secondary btn-sm" onclick="openDealDrawerById('${escapeHtml(d.id)}')">View</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openDealDrawerById(id) {
+      const d = allDeals.find(x => String(x.id) === String(id));
+      if (!d) return;
+      activeDeal = d;
+
+      document.getElementById('drawerDealName').textContent = d.name || d.title || 'Untitled Deal';
+      document.getElementById('drawerDealCompany').textContent = d.company_name || d.company || 'Direct Account';
+      document.getElementById('drawerDealAmount').textContent = SalesOS.formatCurrency(d.amount);
+      document.getElementById('drawerDealProbability').textContent = `${d.probability || 50}%`;
+      document.getElementById('drawerDealStage').textContent = d.stage || 'Discovery';
+      document.getElementById('drawerDealCloseDate').textContent = d.expected_close_date || '2026-09-30';
+      document.getElementById('drawerDealContact').textContent = d.contact_name || 'Primary Stakeholder';
+      document.getElementById('drawerDealContactCompany').textContent = d.company_name || d.company || 'Account';
+
+      // Populate stage switcher in drawer
+      const stageSelect = document.getElementById('drawerStageSelect');
+      if (stageSelect) {
+        stageSelect.innerHTML = getActiveStages().map(s => `
+          <option value="${escapeHtml(s)}" ${s === d.stage ? 'selected' : ''}>${escapeHtml(s)}</option>
+        `).join('');
+      }
+
+      const riskBadge = document.getElementById('drawerDealRiskBadge');
+      const riskReason = document.getElementById('drawerDealRiskReason');
+      if (d.risk === 'At Risk') {
+        riskBadge.textContent = 'At Risk';
+        riskBadge.className = 'badge badge-red';
+        riskReason.textContent = d.risk_reason || 'Inactivity detected over 5 days.';
+      } else {
+        riskBadge.textContent = 'Healthy';
+        riskBadge.className = 'badge badge-green';
+        riskReason.textContent = 'Consistent stakeholder engagement observed.';
+      }
+
+      document.getElementById('dealDrawerOverlay').classList.add('active');
+      document.getElementById('dealDrawer').classList.add('open');
+    }
+
+    function closeDealDrawer() {
+      document.getElementById('dealDrawerOverlay').classList.remove('active');
+      document.getElementById('dealDrawer').classList.remove('open');
+    }
+
+    async function advanceDealStage() {
+      if (!activeDeal) return;
+      const stages = getActiveStages();
+      const currentIdx = stages.indexOf(activeDeal.stage);
+      const nextStage = stages[currentIdx + 1] || stages[stages.length - 1];
+
+      await setDealStageQuick(nextStage);
+    }
+
+    async function setDealStageQuick(targetStage) {
+      if (!activeDeal) return;
+      if (activeDeal.stage === targetStage) {
+        SalesOS.showToast(`Opportunity is already in ${targetStage}`);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/opportunities/${activeDeal.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: targetStage })
+        });
+        if (res.ok) {
+          activeDeal.stage = targetStage;
+          SalesOS.showToast(`Opportunity updated to ${targetStage}!`);
+          openDealDrawerById(activeDeal.id);
+          loadDeals();
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error updating deal stage', 'error');
+      }
+    }
+
+    async function changeDealStageFromDrawer(targetStage) {
+      return setDealStageQuick(targetStage);
+    }
+
+    function openCreateDealModal() {
+      SalesOS.showModal('createDealModal');
+      document.getElementById('dealName').focus();
+    }
+
+    async function submitCreateDeal() {
+      const name = document.getElementById('dealName').value.trim();
+      const company_name = document.getElementById('dealCompany').value.trim();
+      const contact_name = document.getElementById('dealContact').value.trim();
+      const amount = Number(document.getElementById('dealAmount').value);
+      const stage = document.getElementById('dealStage').value;
+      const probability = Number(document.getElementById('dealProbability').value);
+      const expected_close_date = document.getElementById('dealCloseDate').value;
+
+      if (!name || !amount) {
+        SalesOS.showToast('Name and amount are required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/opportunities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company_name, contact_name, amount, stage, probability, expected_close_date, risk: 'Healthy' })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createDealModal');
+          SalesOS.showToast('Opportunity added to pipeline!');
+          loadDeals();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error creating opportunity', 'error');
+      }
+    }
+
+    function openEditDealModal() {
+      if (!activeDeal) return;
+      document.getElementById('editDealId').value = activeDeal.id;
+      document.getElementById('editDealName').value = activeDeal.name || activeDeal.title || '';
+      document.getElementById('editDealStage').value = activeDeal.stage || 'Discovery';
+      document.getElementById('editDealAmount').value = activeDeal.amount || 0;
+      document.getElementById('editDealProbability').value = activeDeal.probability || 50;
+      document.getElementById('editDealCloseDate').value = activeDeal.expected_close_date || '';
+
+      SalesOS.showModal('editDealModal');
+    }
+
+    async function submitEditDeal() {
+      const id = document.getElementById('editDealId').value;
+      const name = document.getElementById('editDealName').value.trim();
+      const stage = document.getElementById('editDealStage').value;
+      const amount = Number(document.getElementById('editDealAmount').value);
+      const probability = Number(document.getElementById('editDealProbability').value);
+      const expected_close_date = document.getElementById('editDealCloseDate').value;
+
+      try {
+        const res = await fetch(`/api/opportunities/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, stage, amount, probability, expected_close_date })
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          SalesOS.closeModal('editDealModal');
+          SalesOS.showToast('Opportunity updated');
+          openDealDrawerById(updated.id);
+          loadDeals();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error updating opportunity', 'error');
+      }
+    }
+
+    async function confirmDeleteDeal() {
+      if (!activeDeal) return;
+      if (!confirm(`Delete opportunity "${activeDeal.name || activeDeal.title || 'this opportunity'}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/opportunities/${activeDeal.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Opportunity deleted');
+          closeDealDrawer();
+          loadDeals();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting opportunity', 'error');
+      }
+    }
+
+    loadDeals();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+const assert=require('assert');const {chunkText}=require('./knowledge-processor');const x=chunkText('a'.repeat(2000),{size:900,overlap:100});assert(x.length===3);assert(x.join('').length>2000);console.log('Knowledge chunking test passed');

@@ -1,0 +1,1 @@
+const assert=require('assert');const {scoreLead}=require('./lead-scoring');const x=scoreLead({intent:'purchase',email:'a@b.com'},[{name:'Intent',field:'intent',equals:'purchase',points:70},{name:'Email',field:'email',exists:true,points:20}]);assert.equal(x.score,90);assert.equal(x.qualification,'hot');assert.equal(x.signals.length,2);console.log('Lead scoring test passed');

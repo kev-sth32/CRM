@@ -1,0 +1,1 @@
+function routeIntent(intent){const map={lead:'lead_agent',support:'support_agent',followup:'followup_agent',proposal:'proposal_agent',retention:'retention_agent',manager:'manager_agent'};return map[intent]||'sales_agent'}module.exports={routeIntent};

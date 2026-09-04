@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup Your AI Sales Machine · SalesOS Onboarding</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .wizard-header {
+      padding: 16px 32px;
+      background: rgba(14, 21, 38, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wizard-container {
+      display: flex;
+      flex: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 32px 24px;
+      gap: 32px;
+    }
+    .wizard-sidebar {
+      width: 320px;
+      background: #0e1526;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      height: fit-content;
+    }
+    .stepper-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .step-item.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      font-weight: 700;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .step-item.completed {
+      color: #34d399;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .step-item.active .step-num {
+      background: var(--blue, #6366f1);
+      color: #fff;
+    }
+    .step-item.completed .step-num {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+    .wizard-content {
+      flex: 1;
+      background: #0e1526;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .step-panel {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+    .step-panel.active {
+      display: flex;
+    }
+    .wizard-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .industry-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .industry-card:hover {
+      border-color: #818cf8;
+      background: rgba(99, 102, 241, 0.08);
+    }
+    .industry-card.selected {
+      border-color: #818cf8;
+      background: rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+    }
+    .industry-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .form-label {
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-control-dark {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 13.5px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control-dark:focus {
+      border-color: #818cf8;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+    .channel-checkbox-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      font-size: 12.5px;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="wizard-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:20px;color:#818cf8">✦</span>
+      <strong style="font-size:16px;letter-spacing:-0.01em">SalesOS · AI Sales Machine Setup</strong>
+      <span class="badge badge-blue">PRD Configuration Wizard</span>
+    </div>
+    <div>
+      <a href="/index.html" class="btn btn-secondary btn-sm">Skip to CRM →</a>
+    </div>
+  </header>
+
+  <div class="wizard-container">
+    <!-- Left Navigation Stepper (12 Steps) -->
+    <aside class="wizard-sidebar">
+      <h4 style="font-size:12px;text-transform:uppercase;color:#94a3b8;letter-spacing:0.05em;margin-bottom:14px">12-Step Activation</h4>
+      <ul class="stepper-list" id="stepperList">
+        <li class="step-item active" onclick="jumpToStep(1)"><span class="step-num">1</span> Business Info</li>
+        <li class="step-item" onclick="jumpToStep(2)"><span class="step-num">2</span> Industry Vertical</li>
+        <li class="step-item" onclick="jumpToStep(3)"><span class="step-num">3</span> Products & Services</li>
+        <li class="step-item" onclick="jumpToStep(4)"><span class="step-num">4</span> Pricing Model</li>
+        <li class="step-item" onclick="jumpToStep(5)"><span class="step-num">5</span> Sales Pipeline</li>
+        <li class="step-item" onclick="jumpToStep(6)"><span class="step-num">6</span> Channels</li>
+        <li class="step-item" onclick="jumpToStep(7)"><span class="step-num">7</span> AI Persona</li>
+        <li class="step-item" onclick="jumpToStep(8)"><span class="step-num">8</span> Knowledge Base</li>
+        <li class="step-item" onclick="jumpToStep(9)"><span class="step-num">9</span> Sales Rules & SLAs</li>
+        <li class="step-item" onclick="jumpToStep(10)"><span class="step-num">10</span> AI Permissions</li>
+        <li class="step-item" onclick="jumpToStep(11)"><span class="step-num">11</span> Data Import / Seed</li>
+        <li class="step-item" onclick="jumpToStep(12)"><span class="step-num">12</span> Launch Department</li>
+      </ul>
+    </aside>
+
+    <!-- Main Wizard Content -->
+    <main class="wizard-content">
+      <!-- Step 1: Business Info -->
+      <div class="step-panel active" id="panel-1">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 1 — Business Information</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:24px">Define your company profile, base currency, and operating timezone.</p>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Company Name</label>
+          <input type="text" id="wCompanyName" class="form-control-dark" value="Acme Enterprise Cloud" required />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label">Operating Currency</label>
+            <select id="wCurrency" class="form-control-dark">
+              <option value="NPR">NPR (Nepalese Rupee)</option>
+              <option value="USD" selected>USD (US Dollar)</option>
+              <option value="EUR">EUR (Euro)</option>
+              <option value="INR">INR (Indian Rupee)</option>
+              <option value="GBP">GBP (British Pound)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary Timezone</label>
+            <select id="wTimezone" class="form-control-dark">
+              <option value="Asia/Kathmandu" selected>Asia/Kathmandu (UTC+5:45)</option>
+              <option value="America/New_York">America/New_York (EST)</option>
+              <option value="Europe/London">Europe/London (GMT)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Industry Vertical -->
+      <div class="step-panel" id="panel-2">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 2 — Industry Vertical Template</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:18px">Choose your industry to automatically tailor pipelines, custom fields, and AI personas.</p>
+        <div class="industry-grid" id="industryGrid">
+          <div class="industry-card selected" onclick="selectIndustry('saas')">
+            <span class="industry-icon">💻</span>
+            <strong style="font-size:14px;color:#fff">SaaS & Cloud</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Recurring MRR, demos, trial conversion</p>
+          </div>
+          <div class="industry-card" onclick="selectIndustry('real_estate')">
+            <span class="industry-icon">🏢</span>
+            <strong style="font-size:14px;color:#fff">Real Estate</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Site visits, units, property matching</p>
+          </div>
+          <div class="industry-card" onclick="selectIndustry('education')">
+            <span class="industry-icon">🎓</span>
+            <strong style="font-size:14px;color:#fff">Education & Abroad</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Admissions, counseling, test scores</p>
+          </div>
+          <div class="industry-card" onclick="selectIndustry('hospitality')">
+            <span class="industry-icon">🏨</span>
+            <strong style="font-size:14px;color:#fff">Hotels & Resorts</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Room bookings, events, advance deposits</p>
+          </div>
+          <div class="industry-card" onclick="selectIndustry('automobile')">
+            <span class="industry-icon">🚗</span>
+            <strong style="font-size:14px;color:#fff">Automobile</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Test drives, vehicle trims, trade-in</p>
+          </div>
+          <div class="industry-card" onclick="selectIndustry('agency')">
+            <span class="industry-icon">⚡</span>
+            <strong style="font-size:14px;color:#fff">Digital Agency</strong>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px">Retainers, SOW scopes, milestones</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Products & Services -->
+      <div class="step-panel" id="panel-3">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 3 — Products & Service Catalog</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px">The AI Sales Agent references your catalog to recommend packages and provide authorized pricing.</p>
+        <div id="catalogList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <!-- Populated from template -->
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="addCustomProductRow()">＋ Add Custom Product</button>
+      </div>
+
+      <!-- Step 4: Pricing Model -->
+      <div class="step-panel" id="panel-4">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 4 — Pricing & Discount Policy</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Configure how your products are quoted and what discount thresholds require approval.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">Default Pricing Model</label>
+            <select id="wPricingModel" class="form-control-dark">
+              <option value="recurring">Recurring Subscription (Monthly / Annual)</option>
+              <option value="fixed">Fixed Price Catalog</option>
+              <option value="custom_quote">CPQ Custom Proposals & Quotes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Autonomous Discount Ceiling (%)</label>
+            <input type="number" id="wMaxDiscount" class="form-control-dark" value="10" min="0" max="30" />
+            <small style="color:#94a3b8;font-size:11px">Discounts above this threshold require human manager approval.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Sales Pipeline -->
+      <div class="step-panel" id="panel-5">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 5 — Sales Pipeline Stages</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px">Pipeline stages configured for your industry vertical Kanban board.</p>
+        <div id="pipelineStagesPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Step 6: Channels -->
+      <div class="step-panel" id="panel-6">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 6 — Communication Channels</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Enable the customer touchpoints to route conversations into your Unified Inbox.</p>
+        <label class="channel-checkbox-card">
+          <input type="checkbox" id="chWebchat" checked />
+          <div>
+            <strong style="display:block;color:#fff;font-size:13px">Website Chat Widget</strong>
+            <small style="color:#94a3b8">Real-time livechat widget embedded on your landing pages.</small>
+          </div>
+        </label>
+        <label class="channel-checkbox-card">
+          <input type="checkbox" id="chWhatsapp" checked />
+          <div>
+            <strong style="display:block;color:#fff;font-size:13px">WhatsApp Cloud API</strong>
+            <small style="color:#94a3b8">Meta WhatsApp Cloud API with two-way messaging and templates.</small>
+          </div>
+        </label>
+        <label class="channel-checkbox-card">
+          <input type="checkbox" id="chEmail" checked />
+          <div>
+            <strong style="display:block;color:#fff;font-size:13px">Transactional Email</strong>
+            <small style="color:#94a3b8">CAN-SPAM compliant email delivery with RFC 8058 one-click unsubscribe.</small>
+          </div>
+        </label>
+        <label class="channel-checkbox-card">
+          <input type="checkbox" id="chSms" checked />
+          <div>
+            <strong style="display:block;color:#fff;font-size:13px">SMS Messaging</strong>
+            <small style="color:#94a3b8">High-deliverability SMS alerts and opt-out keyword enforcement.</small>
+          </div>
+        </label>
+      </div>
+
+      <!-- Step 7: AI Persona -->
+      <div class="step-panel" id="panel-7">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 7 — AI Sales Persona & Voice</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Configure how your autonomous AI agent communicates with prospects.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label">AI Agent Name</label>
+            <input type="text" id="wAgentName" class="form-control-dark" value="Aria (SalesOS AI)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Communication Tone</label>
+            <select id="wAgentTone" class="form-control-dark">
+              <option value="consultative, data-driven, and technical" selected>Consultative & Data-Driven</option>
+              <option value="warm, welcoming, and hospitable">Warm & Hospitable</option>
+              <option value="guiding, encouraging, and supportive">Guiding & Supportive</option>
+              <option value="enthusiastic, direct, and fast-paced">Enthusiastic & Direct</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Supported Languages</label>
+          <input type="text" id="wAgentLanguages" class="form-control-dark" value="English, Nepali, Hindi" />
+          <small style="color:#94a3b8;font-size:11px">Agent detects incoming language and replies naturally.</small>
+        </div>
+      </div>
+
+      <!-- Step 8: Knowledge Base -->
+      <div class="step-panel" id="panel-8">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 8 — Knowledge Base Ingestion</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Upload product documentation, FAQs, and company policies for RAG semantic search.</p>
+        <div style="border:2px dashed rgba(255,255,255,0.15);padding:32px;text-align:center;border-radius:8px;background:rgba(255,255,255,0.02)">
+          <span style="font-size:32px;display:block;margin-bottom:8px">📄</span>
+          <strong style="color:#fff;font-size:14px">Drag & Drop Product Sheets, PDFs, or FAQs</strong>
+          <p style="color:#94a3b8;font-size:12px;margin:8px 0">Automated chunking, embedding generation & pgvector indexing enabled.</p>
+          <button class="btn btn-secondary btn-sm" onclick="SalesOS.showToast('Demo knowledge document indexed successfully')">Select Files to Ingest</button>
+        </div>
+      </div>
+
+      <!-- Step 9: Sales Rules & SLAs -->
+      <div class="step-panel" id="panel-9">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 9 — Sales Rules, Working Hours & SLAs</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Specify working hours and automated follow-up intervals.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">Operating Schedule</label>
+            <input type="text" id="wWorkingHours" class="form-control-dark" value="09:00 - 18:00 (Sun - Fri)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lead Response SLA</label>
+            <select id="wSla" class="form-control-dark">
+              <option value="instant">Instant Autonomous Response (< 60s)</option>
+              <option value="5min">Within 5 Minutes</option>
+              <option value="15min">Within 15 Minutes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 10: AI Permissions & Guardrails -->
+      <div class="step-panel" id="panel-10">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 10 — AI Permissions & Execution Gates</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Configure what actions the AI agent can execute autonomously vs with human approval.</p>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Default Operating Mode</label>
+          <select id="wAgentMode" class="form-control-dark">
+            <option value="copilot" selected>Copilot Mode (AI drafts; human approves all mutations)</option>
+            <option value="assisted">Assisted Mode (AI handles routine messages; human approves quotes)</option>
+            <option value="autonomous">Autonomous Mode (AI executes within policy rules)</option>
+          </select>
+        </div>
+        <div style="padding:14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px">
+          <strong style="color:#f87171;font-size:12.5px;display:block;margin-bottom:4px">Strict Guardrails Enforced</strong>
+          <p style="color:#94a3b8;font-size:11.5px;margin:0">AI can never fabricate pricing, execute direct SQL queries, or access other tenant workspaces.</p>
+        </div>
+      </div>
+
+      <!-- Step 11: Data Import / Seed -->
+      <div class="step-panel" id="panel-11">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 11 — Data Import & Sample Workspace</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Choose whether to seed your workspace with industry sample leads and opportunities.</p>
+        <label class="channel-checkbox-card">
+          <input type="checkbox" id="wSeedData" checked />
+          <div>
+            <strong style="display:block;color:#fff;font-size:13px">Pre-seed with realistic vertical leads & pipeline deals</strong>
+            <small style="color:#94a3b8">Recommended for testing the autonomous AI agent and reports immediately.</small>
+          </div>
+        </label>
+      </div>
+
+      <!-- Step 12: Launch Department -->
+      <div class="step-panel" id="panel-12">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Step 12 — Activate Virtual Sales Department</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:24px">Your configuration is ready. Activate your AI Sales Machine to begin continuous lead qualification.</p>
+        <div class="card" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);padding:20px;margin-bottom:24px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px">
+            <div><span style="color:#94a3b8">Selected Industry:</span> <strong id="summaryIndustry" style="color:#fff">SaaS & Cloud</strong></div>
+            <div><span style="color:#94a3b8">Currency:</span> <strong id="summaryCurrency" style="color:#fff">USD</strong></div>
+            <div><span style="color:#94a3b8">Agent Persona:</span> <strong id="summaryAgent" style="color:#818cf8">Aria (SalesOS AI)</strong></div>
+            <div><span style="color:#94a3b8">Operating Mode:</span> <strong id="summaryMode" style="color:#34d399">Copilot Mode</strong></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="padding:12px 24px;font-size:15px" onclick="completeOnboarding()">⚡ Launch AI Virtual Sales Department</button>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="wizard-footer">
+        <button class="btn btn-secondary" id="btnBack" onclick="prevStep()" disabled>← Previous</button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Continue Next →</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    let currentStep = 1;
+    let selectedIndustryKey = 'saas';
+    let availableTemplates = [];
+
+    async function initWizard() {
+      try {
+        const res = await fetch('/api/templates');
+        if (res.ok) {
+          availableTemplates = await res.json();
+        }
+      } catch (_) {}
+      updateIndustryDetails();
+    }
+
+    function jumpToStep(step) {
+      if (step < 1 || step > 12) return;
+      currentStep = step;
+      renderSteps();
+    }
+
+    function nextStep() {
+      if (currentStep < 12) {
+        currentStep++;
+        renderSteps();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        renderSteps();
+      }
+    }
+
+    function renderSteps() {
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      const activePanel = document.getElementById(`panel-${currentStep}`);
+      if (activePanel) activePanel.classList.add('active');
+
+      document.querySelectorAll('.step-item').forEach((el, i) => {
+        el.classList.remove('active');
+        if (i + 1 === currentStep) el.classList.add('active');
+        if (i + 1 < currentStep) el.classList.add('completed');
+      });
+
+      document.getElementById('btnBack').disabled = (currentStep === 1);
+      document.getElementById('btnNext').style.display = (currentStep === 12) ? 'none' : 'inline-block';
+
+      // Update summary for step 12
+      if (currentStep === 12) {
+        document.getElementById('summaryIndustry').textContent = selectedIndustryKey.toUpperCase();
+        document.getElementById('summaryCurrency').textContent = document.getElementById('wCurrency').value;
+        document.getElementById('summaryAgent').textContent = document.getElementById('wAgentName').value;
+        document.getElementById('summaryMode').textContent = document.getElementById('wAgentMode').value.toUpperCase();
+      }
+    }
+
+    function selectIndustry(key) {
+      selectedIndustryKey = key;
+      document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+      updateIndustryDetails();
+    }
+
+    function updateIndustryDetails() {
+      // Update stages preview in step 5
+      const stageMap = {
+        'saas': ['New lead', 'Discovery', 'Demo Scheduled', 'Trial Active', 'Proposal & Security Review', 'Negotiation', 'Closed Won', 'Closed Lost'],
+        'real_estate': ['New Inquiry', 'Property Matching', 'Site Visit Scheduled', 'Site Visit Completed', 'Price Negotiation & Terms', 'Token & Booking Paid', 'Closed Won', 'Closed Lost'],
+        'education': ['New Inquiry', 'Academic Counseling', 'University & Course Selection', 'Application Submitted', 'Offer Letter Received', 'Visa Processing & Interview', 'Enrolled & Departed', 'Dropped / Rejected'],
+        'hospitality': ['Inquiry Received', 'Date & Room Selection', 'Quotation & Package Sent', 'Advance Deposit Received', 'Checked-In / Event Hosted', 'Completed & Feedback Received', 'Cancelled'],
+        'automobile': ['Inquiry Received', 'Model Interest & Qualification', 'Test Drive Scheduled', 'Test Drive Completed', 'Financing & Trade-in Quote', 'Booking Deposit Paid', 'Vehicle Delivered', 'Lost to Competitor'],
+        'agency': ['Requirement Identified', 'Discovery Call Held', 'Scope & Proposal Drafted', 'SOW Negotiation', 'Contract & Retainer Signed', 'Project Kickoff', 'Closed Won', 'Closed Lost']
+      };
+
+      const stages = stageMap[selectedIndustryKey] || stageMap['saas'];
+      const preview = document.getElementById('pipelineStagesPreview');
+      if (preview) {
+        preview.innerHTML = stages.map(s => `<span class="stage-badge"><span>●</span> ${escapeHtml(s)}</span>`).join('');
+      }
+
+      // Update sample products in step 3
+      const catalogList = document.getElementById('catalogList');
+      if (catalogList) {
+        catalogList.innerHTML = `
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:#94a3b8">
+            <span>Product / Service Name</span>
+            <span>Category</span>
+            <span>Base Price</span>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;padding:8px 0;font-size:13px">
+            <span>Standard ${selectedIndustryKey.toUpperCase()} Package</span>
+            <span>Core</span>
+            <span>15,000</span>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;padding:8px 0;font-size:13px">
+            <span>Premium Enterprise Solution</span>
+            <span>Enterprise</span>
+            <span>85,000</span>
+          </div>
+        `;
+      }
+    }
+
+    function addCustomProductRow() {
+      SalesOS.showToast('Product row added to catalog');
+    }
+
+    async function completeOnboarding() {
+      const payload = {
+        company_name: document.getElementById('wCompanyName').value,
+        industry: selectedIndustryKey,
+        currency: document.getElementById('wCurrency').value,
+        timezone: document.getElementById('wTimezone').value,
+        working_hours: document.getElementById('wWorkingHours').value,
+        ai_persona: {
+          name: document.getElementById('wAgentName').value,
+          tone: document.getElementById('wAgentTone').value,
+          language: document.getElementById('wAgentLanguages').value,
+          mode: document.getElementById('wAgentMode').value
+        },
+        seed_data: document.getElementById('wSeedData').checked
+      };
+
+      try {
+        const res = await fetch('/api/onboarding/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // Also apply the chosen industry template
+        await fetch('/api/templates/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ template_id: selectedIndustryKey, seed_products: true })
+        });
+
+        if (res.ok) {
+          SalesOS.showToast('Setup complete! Redirecting to SalesOS Dashboard...');
+          setTimeout(() => {
+            window.location.href = '/index.html';
+          }, 1000);
+        }
+      } catch (err) {
+        SalesOS.showToast('Error saving onboarding configuration', 'error');
+      }
+    }
+
+    initWizard();
+  </script>
+</body>
+</html>

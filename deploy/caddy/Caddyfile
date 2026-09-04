@@ -1,0 +1,30 @@
+# Production Caddy Reverse Proxy Configuration for SalesOS SaaS
+# Replace your-domain.com with your actual public domain
+{
+    email admin@salesos.io
+}
+
+# In local testing or IP access, replace with :80 or your domain
+:80 {
+    encode gzip zstd
+
+    # Security Headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        -Server
+    }
+
+    # Reverse Proxy to SalesOS Web Service
+    reverse_proxy salesos-web:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+
+        # SSE and Streaming support
+        flush_interval -1
+    }
+}

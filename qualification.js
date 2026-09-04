@@ -1,0 +1,1 @@
+function confidenceBand(confidence){if(confidence>=.85)return 'high';if(confidence>=.6)return 'medium';return 'low'}function qualificationDecision({score,confidence=1}){return {score,confidence,confidence_band:confidenceBand(confidence),requires_review:confidence<.6||score>=80&&confidence<.85}}module.exports={confidenceBand,qualificationDecision};

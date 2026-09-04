@@ -1,0 +1,1 @@
+async function recommend(pool,tenantId,query){if(!query?.trim())throw Error('query is required');const r=await pool.query('SELECT id,name,sku,price,description FROM products WHERE tenant_id=$1 AND is_active=true AND deleted_at IS NULL AND (name ILIKE $2 OR description ILIKE $2) LIMIT 10',[tenantId,`%${query}%`]);return r.rows}module.exports={recommend};

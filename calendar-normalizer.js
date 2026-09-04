@@ -1,0 +1,1 @@
+function normalizeSlots(slots=[]){return slots.filter(x=>x.start&&x.end).map(x=>({start:new Date(x.start).toISOString(),end:new Date(x.end).toISOString(),timezone:x.timezone||'UTC'}))}module.exports={normalizeSlots};

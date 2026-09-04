@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Analytics & Reports · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .funnel-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .funnel-label {
+      width: 110px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .funnel-track {
+      flex: 1;
+      height: 24px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .funnel-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), #60a5fa);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      transition: width 0.6s ease;
+    }
+    .funnel-meta {
+      width: 140px;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Analytics & Forecasting</h1>
+            <p>Comprehensive pipeline conversion funnels, rep performance, AI attribution, and revenue velocity.</p>
+          </div>
+          <div class="page-actions">
+            <select class="filter-select" id="reportPeriod" onchange="loadReports()">
+              <option value="q3">Current Quarter (Q3 2026)</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="ytd">Full Year 2026</option>
+            </select>
+            <button class="btn btn-secondary" onclick="exportReportsCSV()">📥 Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+          <div class="card" style="padding:18px 20px">
+            <span style="color:var(--muted);font-size:12px;font-weight:600">Total Closed Revenue</span>
+            <div id="statTotalRevenue" style="font-size:24px;font-weight:800;color:var(--ink);margin:8px 0 4px">NPR 24,86,000</div>
+            <span class="badge badge-green">↑ 18.6% vs target</span>
+          </div>
+
+          <div class="card" style="padding:18px 20px">
+            <span style="color:var(--muted);font-size:12px;font-weight:600">Projected Q3 Forecast</span>
+            <div id="statProjectedQ3" style="font-size:24px;font-weight:800;color:var(--blue);margin:8px 0 4px">NPR 75,00,000</div>
+            <span class="badge badge-blue">84% confidence band</span>
+          </div>
+
+          <div class="card" style="padding:18px 20px">
+            <span style="color:var(--muted);font-size:12px;font-weight:600">✦ AI-Assisted Revenue</span>
+            <div id="statAiRevenue" style="font-size:24px;font-weight:800;color:var(--purple);margin:8px 0 4px">NPR 16,90,000</div>
+            <span class="badge badge-purple">68% of closed deals</span>
+          </div>
+
+          <div class="card" style="padding:18px 20px">
+            <span style="color:var(--muted);font-size:12px;font-weight:600">Average Deal Cycle</span>
+            <div id="statDealCycle" style="font-size:24px;font-weight:800;color:var(--ink);margin:8px 0 4px">14.2 Days</div>
+            <span class="badge badge-green">↓ 3.8 days faster</span>
+          </div>
+        </div>
+
+        <!-- Middle Grid: Pipeline Funnel & Channel Performance -->
+        <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:20px;margin-bottom:24px">
+          <!-- Funnel -->
+          <div class="card" style="padding:22px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Pipeline Conversion Funnel</h3>
+            <div id="funnelContainer"></div>
+          </div>
+
+          <!-- Channel Attribution -->
+          <div class="card" style="padding:22px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Channel ROI & Conversion</h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Channel</th>
+                    <th>Leads</th>
+                    <th>Won</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="channelRoiBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Grid: Sales Rep Leaderboard -->
+        <div class="card" style="padding:22px">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Sales Representative Quota Attainment</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Representative</th>
+                  <th>Quarterly Target</th>
+                  <th>Closed Attainment</th>
+                  <th>Attainment %</th>
+                  <th>Performance Tier</th>
+                </tr>
+              </thead>
+              <tbody id="salesRepsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Reports', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Reports' }]);
+
+    let reportData = null;
+
+    async function loadReports() {
+      try {
+        const res = await fetch('/api/reports');
+        if (!res.ok) throw new Error();
+        reportData = await res.json();
+
+        // Render Summary
+        const s = reportData.summary;
+        document.getElementById('statTotalRevenue').textContent = SalesOS.formatCurrency(s.total_revenue);
+        document.getElementById('statProjectedQ3').textContent = SalesOS.formatCurrency(s.projected_q3);
+        document.getElementById('statAiRevenue').textContent = SalesOS.formatCurrency(s.ai_assisted_revenue);
+        document.getElementById('statDealCycle').textContent = `${s.avg_deal_cycle_days} Days`;
+
+        // Render Funnel
+        const funnel = reportData.pipeline_funnel || [];
+        const maxVal = Math.max(...funnel.map(x => x.count), 1);
+        document.getElementById('funnelContainer').innerHTML = funnel.map(f => {
+          const pct = Math.max(15, Math.round((f.count / maxVal) * 100));
+          return `
+            <div class="funnel-bar-wrap">
+              <div class="funnel-label">${f.stage}</div>
+              <div class="funnel-track">
+                <div class="funnel-fill" style="width:${pct}%">${f.count} deals</div>
+              </div>
+              <div class="funnel-meta">${SalesOS.formatCurrency(f.value)}</div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Channel ROI
+        const channels = reportData.channel_roi || [];
+        document.getElementById('channelRoiBody').innerHTML = channels.map(c => `
+          <tr>
+            <td><strong style="color:var(--ink)">${c.channel}</strong></td>
+            <td>${c.leads}</td>
+            <td><span class="badge badge-green">${c.won} deals</span></td>
+            <td><strong>${SalesOS.formatCurrency(c.revenue)}</strong></td>
+          </tr>
+        `).join('');
+
+        // Render Sales Reps
+        const reps = reportData.sales_reps || [];
+        document.getElementById('salesRepsBody').innerHTML = reps.map(r => `
+          <tr>
+            <td><strong>${r.name}</strong></td>
+            <td>${SalesOS.formatCurrency(r.quota)}</td>
+            <td><strong style="color:var(--blue)">${SalesOS.formatCurrency(r.achieved)}</strong></td>
+            <td><span class="badge badge-green">${r.pct}</span></td>
+            <td><span class="badge badge-purple">Top Performer</span></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        SalesOS.showToast('Error loading report statistics', 'error');
+      }
+    }
+
+    function exportReportsCSV() {
+      if (!reportData) return;
+      let csv = 'Stage,Deal Count,Value (NPR)\n';
+      const sanitizeCell = (val) => {
+        if (val === null || val === undefined) return '""';
+        let str = String(val);
+        // CWE-1236: Prevent CSV formula injection by prepending single quote to formula trigger characters
+        if (/^[=+\-@\t\r]/.test(str)) {
+          str = "'" + str;
+        }
+        return `"${str.replace(/"/g, '""')}"`;
+      };
+      (reportData.pipeline_funnel || []).forEach(f => {
+        csv += `${sanitizeCell(f.stage)},${Number(f.count) || 0},${Number(f.value) || 0}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `salesos-report-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      SalesOS.showToast('Report CSV downloaded');
+    }
+
+    loadReports();
+  </script>
+</body>
+</html>

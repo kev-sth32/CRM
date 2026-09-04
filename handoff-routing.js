@@ -1,0 +1,1 @@
+function routeHandoff({confidence=1,complaint=false,requestedHuman=false,value=0,threshold=0}){if(complaint||requestedHuman||confidence<.6||value>=threshold)return {handoff:true,priority:value>=threshold?'high':'normal'};return {handoff:false}}module.exports={routeHandoff};

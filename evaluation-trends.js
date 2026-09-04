@@ -1,0 +1,1 @@
+function trend(rows=[]){const by={};for(const r of rows){const k=new Date(r.created_at).toISOString().slice(0,10);by[k]??={total:0,good:0};by[k].total++;if(r.rating==='good')by[k].good++}return Object.entries(by).sort().map(([date,x])=>({date,...x,quality_rate:x.good/x.total}))}module.exports={trend};

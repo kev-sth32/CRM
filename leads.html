@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leads Management · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .score-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .score-hot { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
+    .score-warm { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; }
+    .score-nurture { background: #f1f5f9; color: #64748b; border: 2px solid #cbd5e1; }
+
+    .signal-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      font-size: 12.5px;
+    }
+    .timeline-entry {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--blue);
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .timeline-entry::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 18px;
+      bottom: -12px;
+      width: 2px;
+      background: #e2e8f0;
+    }
+    .timeline-entry:last-child::before { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Leads</h1>
+            <p>Capture, prioritize, AI-qualify, and convert prospective accounts into revenue opportunities.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadLeads()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateLeadModal()">＋ New Lead</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Filter & Search Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="leadSearchInput" placeholder="Search by name, company, email..." oninput="debounceSearch()" />
+              </div>
+
+              <select class="filter-select" id="stageFilter" onchange="loadLeads()">
+                <option value="all">All Stages</option>
+                <option value="New lead">New lead</option>
+                <option value="Qualified">Qualified</option>
+                <option value="Demo requested">Demo requested</option>
+                <option value="Pricing sent">Pricing sent</option>
+                <option value="Proposal">Proposal</option>
+                <option value="Won">Won</option>
+              </select>
+
+              <select class="filter-select" id="sortBy" onchange="loadLeads()">
+                <option value="score_desc">Sort: Highest Score</option>
+                <option value="date_desc">Sort: Newest First</option>
+                <option value="name_asc">Sort: Name (A-Z)</option>
+              </select>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Showing <strong id="leadCount">0</strong> leads
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Lead / Contact</th>
+                  <th>Company</th>
+                  <th>AI Score</th>
+                  <th>Stage</th>
+                  <th>Owner</th>
+                  <th>Source</th>
+                  <th>Created</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody">
+                <tr>
+                  <td colspan="8">
+                    <div class="state-loading">
+                      <div class="spinner"></div>
+                      <p>Loading leads from CRM...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <span id="pageInfo">Showing page 1</span>
+            <div class="pagination-controls">
+              <button class="btn btn-secondary btn-sm" id="prevPageBtn" onclick="changePage(-1)" disabled>Previous</button>
+              <button class="btn btn-secondary btn-sm" id="nextPageBtn" onclick="changePage(1)" disabled>Next</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Lead Detail Slide Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeLeadDrawer()"></div>
+  <aside class="drawer" id="leadDrawer">
+    <div class="drawer-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="drawerScoreBadge" class="score-circle score-hot">94</div>
+        <div>
+          <h3 id="drawerLeadName" style="font-size:17px;font-weight:750">Rajan Koirala</h3>
+          <small id="drawerLeadCompany" style="color:var(--muted)">Koirala Industries</small>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeLeadDrawer()">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Quick Action Buttons -->
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="runAIQualification()">✦ AI Re-Qualify</button>
+        <button class="btn btn-secondary btn-sm" style="flex:1" onclick="openDirectEmailModal()">✉ Send Email</button>
+        <button class="btn btn-secondary btn-sm" onclick="openEditLeadModal()">✎ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteLead()" title="Archive / Soft Delete Lead">🗑</button>
+        <button class="btn btn-secondary btn-sm" style="color:#b91c1c;border-color:#fca5a5" onclick="confirmGdprPurgeLead()" title="GDPR Article 17 Right to Erasure (Permanently Purge PII)">🛡️ Purge PII</button>
+      </div>
+
+      <!-- Contact Details Card -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Contact Details</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px">
+          <div>
+            <span style="color:var(--muted);display:block">Email</span>
+            <strong id="drawerEmail">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Phone</span>
+            <strong id="drawerPhone">—</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Current Stage</span>
+            <strong id="drawerStage">New lead</strong>
+          </div>
+          <div>
+            <span style="color:var(--muted);display:block">Assigned Rep</span>
+            <strong id="drawerAssigned">Bikram KC</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Industry Fields Card -->
+      <div class="card" id="drawerCustomFieldsCard" style="padding:16px;margin-bottom:18px;display:none">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">🧩 Custom Attributes</h4>
+        <div id="drawerCustomFieldsList" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px"></div>
+      </div>
+
+      <!-- AI Qualification Signals -->
+      <div class="card" style="padding:16px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">✦ AI Qualification Signals</h4>
+          <span class="badge badge-green" id="drawerBand">HOT (High Intent)</span>
+        </div>
+        <div id="drawerSignalsContainer">
+          <p style="color:var(--muted);font-size:12px">No signals recorded yet. Click "AI Re-Qualify" to evaluate.</p>
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="card" style="padding:16px">
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--ink-secondary)">Activity Timeline</h4>
+        <div id="drawerTimeline">
+          <div class="timeline-entry">
+            <div class="timeline-dot"></div>
+            <div>
+              <strong style="font-size:12.5px;display:block">Lead Captured via Website Chat</strong>
+              <small style="color:var(--muted)">Inquiry for multi-branch package</small>
+            </div>
+          </div>
+          <div class="timeline-entry">
+            <div class="timeline-dot" style="background:#10b981"></div>
+            <div>
+              <strong style="font-size:12.5px;display:block">AI Evaluated & Scored</strong>
+              <small style="color:var(--muted)">Matched budget and decision maker rules</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Create Lead Modal -->
+  <div class="modal-overlay" id="createLeadModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create New Lead</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createLeadModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="createName" class="form-control" placeholder="e.g. Maya Shrestha" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input type="text" id="createCompany" class="form-control" placeholder="e.g. Shrestha Trading" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="createEmail" class="form-control" placeholder="maya@shrestha.np" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="createPhone" class="form-control" placeholder="+977-9800000000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select id="createStage" class="form-control">
+            <option value="New lead">New lead</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Demo requested">Demo requested</option>
+            <option value="Proposal">Proposal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lead Source</label>
+          <select id="createSource" class="form-control">
+            <option value="Website Chat">Website Chat</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Google Ads">Google Ads</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Referral</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createLeadModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateLead()">Create & Qualify</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Lead Modal -->
+  <div class="modal-overlay" id="editLeadModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Lead Details</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('editLeadModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editLeadId" />
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="editName" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input type="text" id="editCompany" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="editEmail" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="editPhone" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select id="editStage" class="form-control">
+            <option value="New lead">New lead</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Demo requested">Demo requested</option>
+            <option value="Pricing sent">Pricing sent</option>
+            <option value="Proposal">Proposal</option>
+            <option value="Won">Won</option>
+            <option value="Lost">Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assigned Representative</label>
+          <select id="editAssigned" class="form-control">
+            <option value="Arjun Sharma">Arjun Sharma (Owner)</option>
+            <option value="Sita Thapa">Sita Thapa (Manager)</option>
+            <option value="Bikram KC">Bikram KC (Sales Rep)</option>
+            <option value="Unassigned">Unassigned</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('editLeadModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitEditLead()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direct Email Modal -->
+  <div class="modal-overlay" id="directEmailModal">
+    <div class="modal-box" style="max-width:540px">
+      <div class="modal-header">
+        <h3 style="margin:0">✉ Send Direct Email</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('directEmailModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="directEmailForm" onsubmit="handleSendDirectEmail(event)">
+          <div class="form-group">
+            <label class="form-label">Recipient</label>
+            <input type="text" id="emailRecipient" class="form-control" readonly style="background:var(--surface-subtle)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Template</label>
+            <select id="emailTemplateSelect" class="form-control" onchange="applyEmailTemplate()">
+              <option value="custom">Custom Message</option>
+              <option value="followup">Follow-up on Inbound Inquiry</option>
+              <option value="pricing">Pricing & Commercial Proposal</option>
+              <option value="demo">Demo Scheduling & Calendar Link</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" id="emailSubject" class="form-control" placeholder="e.g. Following up on your inquiry with SalesOS" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message Body</label>
+            <textarea id="emailBody" class="form-control" rows="5" placeholder="Hi [Name], thank you for reaching out..." required></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('directEmailModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="emailSendBtn">Send Email & Log Timeline</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Leads', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Leads' }]);
+
+    let allLeads = [];
+    let selectedLead = null;
+    let searchTimeout = null;
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadLeads, 250);
+    }
+
+    async function loadLeads() {
+      const q = document.getElementById('leadSearchInput').value.trim();
+      const stage = document.getElementById('stageFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+
+      const params = new URLSearchParams();
+      if (q) params.set('search', q);
+      if (stage !== 'all') params.set('stage', stage);
+
+      try {
+        const res = await fetch(`/api/leads?${params.toString()}`);
+        if (!res.ok) throw new Error();
+        allLeads = await res.json();
+
+        // Sort
+        if (sortBy === 'score_desc') {
+          allLeads.sort((a, b) => (b.score || 0) - (a.score || 0));
+        } else if (sortBy === 'date_desc') {
+          allLeads.sort((a, b) => new Date(b.created || 0) - new Date(a.created || 0));
+        } else if (sortBy === 'name_asc') {
+          allLeads.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        renderLeadsTable();
+
+        // If URL has highlight param
+        const highlightId = new URLSearchParams(location.search).get('highlight');
+        if (highlightId) {
+          const l = allLeads.find(x => x.id === highlightId);
+          if (l) openLeadDrawer(l);
+        }
+      } catch (e) {
+        document.getElementById('leadsTableBody').innerHTML = `
+          <tr><td colspan="8">
+            <div class="state-error">
+              <div class="state-icon">⚠️</div>
+              <h3>Unable to load leads</h3>
+              <p>Please check your connection and retry.</p>
+              <button class="btn btn-secondary btn-sm" onclick="loadLeads()">Retry</button>
+            </div>
+          </td></tr>
+        `;
+      }
+    }
+
+    function renderLeadsTable() {
+      const tbody = document.getElementById('leadsTableBody');
+      document.getElementById('leadCount').textContent = allLeads.length;
+
+      if (!allLeads.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="8">
+            <div class="state-empty">
+              <div class="state-icon">♙</div>
+              <h3>No leads found</h3>
+              <p>Try adjusting your search criteria or create a new prospect.</p>
+              <button class="btn btn-primary btn-sm" onclick="openCreateLeadModal()">＋ Create First Lead</button>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allLeads.map(lead => {
+        const initials = (lead.name || 'L').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+        const scoreClass = (lead.score >= 80) ? 'score-hot' : (lead.score >= 50) ? 'score-warm' : 'score-nurture';
+        const badgeColor = (lead.score >= 80) ? 'badge-green' : (lead.score >= 50) ? 'badge-orange' : 'badge-gray';
+
+        return `
+          <tr style="cursor:pointer" onclick="openLeadDrawerById('${escapeHtml(lead.id)}')">
+            <td>
+              <div style="display:flex;align-items:center;gap:11px">
+                <div class="tenant-avatar" style="background:#e0e7ff;color:#4338ca;font-weight:700">
+                  ${escapeHtml(initials)}
+                </div>
+                <div>
+                  <strong style="display:block;color:var(--ink)">${escapeHtml(lead.name)}</strong>
+                  <small style="color:var(--muted)">${escapeHtml(lead.email || 'No email')}</small>
+                </div>
+              </div>
+            </td>
+            <td><strong>${escapeHtml(lead.company || '—')}</strong></td>
+            <td>
+              <span class="badge ${badgeColor}">
+                ★ ${lead.score !== null ? `${lead.score}` : 'Unscored'}
+              </span>
+            </td>
+            <td><span class="badge badge-blue">${escapeHtml(lead.stage || 'New lead')}</span></td>
+            <td><span style="font-size:12px;color:var(--ink-secondary)">${escapeHtml(lead.assigned_to || 'Unassigned')}</span></td>
+            <td><span style="font-size:12px;color:var(--muted)">${escapeHtml(lead.source || 'Direct')}</span></td>
+            <td><span style="font-size:12px;color:var(--muted)">${SalesOS.formatDate(lead.created)}</span></td>
+            <td style="text-align:right" onclick="event.stopPropagation()">
+              <button class="btn btn-secondary btn-sm" onclick="openLeadDrawerById('${escapeHtml(lead.id)}')">View</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openLeadDrawerById(id) {
+      const lead = allLeads.find(l => l.id === id);
+      if (lead) openLeadDrawer(lead);
+    }
+
+    function openLeadDrawer(lead) {
+      selectedLead = lead;
+      document.getElementById('drawerLeadName').textContent = lead.name;
+      document.getElementById('drawerLeadCompany').textContent = lead.company || 'Direct Prospect';
+      document.getElementById('drawerEmail').textContent = lead.email || '—';
+      document.getElementById('drawerPhone').textContent = lead.phone || '—';
+      document.getElementById('drawerStage').textContent = lead.stage;
+      document.getElementById('drawerAssigned').textContent = lead.assigned_to || 'Unassigned';
+
+      const scoreEl = document.getElementById('drawerScoreBadge');
+      scoreEl.textContent = lead.score !== null ? lead.score : '—';
+      scoreEl.className = 'score-circle ' + (lead.score >= 80 ? 'score-hot' : lead.score >= 50 ? 'score-warm' : 'score-nurture');
+
+      const bandEl = document.getElementById('drawerBand');
+      if (lead.score >= 80) {
+        bandEl.textContent = 'HOT (High Intent)';
+        bandEl.className = 'badge badge-green';
+      } else if (lead.score >= 50) {
+        bandEl.textContent = 'WARM (Nurturing)';
+        bandEl.className = 'badge badge-orange';
+      } else {
+        bandEl.textContent = 'NURTURE (Cold)';
+        bandEl.className = 'badge badge-gray';
+      }
+
+      // Render Signals
+      const sigBox = document.getElementById('drawerSignalsContainer');
+      if (lead.signals && lead.signals.length) {
+        sigBox.innerHTML = lead.signals.map(s => `
+          <div class="signal-item">
+            <span>${s.reason || s.rule}</span>
+            <strong style="color:var(--green)">+${s.points} pts</strong>
+          </div>
+        `).join('');
+      } else {
+        sigBox.innerHTML = '<p style="color:var(--muted);font-size:12px">No signals recorded yet. Click "AI Re-Qualify" to score.</p>';
+      }
+
+      document.getElementById('drawerOverlay').classList.add('active');
+      document.getElementById('leadDrawer').classList.add('open');
+    }
+
+    function closeLeadDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('active');
+      document.getElementById('leadDrawer').classList.remove('open');
+    }
+
+    async function runAIQualification() {
+      if (!selectedLead) return;
+      try {
+        const res = await fetch(`/api/leads/${selectedLead.id}/qualify`, { method: 'POST' });
+        if (!res.ok) throw new Error();
+        const result = await res.json();
+        SalesOS.showToast(`AI Qualification Completed! New Score: ${result.score}/100`);
+        selectedLead.score = result.score;
+        selectedLead.qualification = result.qualification;
+        selectedLead.signals = result.signals;
+        openLeadDrawer(selectedLead);
+        loadLeads();
+      } catch (e) {
+        SalesOS.showToast('Qualification error', 'error');
+      }
+    }
+
+    function openCreateLeadModal() {
+      SalesOS.showModal('createLeadModal');
+      document.getElementById('createName').focus();
+    }
+
+    async function submitCreateLead() {
+      const name = document.getElementById('createName').value.trim();
+      const company = document.getElementById('createCompany').value.trim();
+      const email = document.getElementById('createEmail').value.trim();
+      const phone = document.getElementById('createPhone').value.trim();
+      const stage = document.getElementById('createStage').value;
+      const source = document.getElementById('createSource').value;
+
+      if (!name) {
+        SalesOS.showToast('Name is required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company, email, phone, stage, source })
+        });
+        if (res.ok) {
+          const lead = await res.json();
+          // Auto qualify
+          await fetch(`/api/leads/${lead.id}/qualify`, { method: 'POST' });
+          SalesOS.closeModal('createLeadModal');
+          SalesOS.showToast('Lead created and scored!');
+          loadLeads();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to create lead', 'error');
+      }
+    }
+
+    function openEditLeadModal() {
+      if (!selectedLead) return;
+      document.getElementById('editLeadId').value = selectedLead.id;
+      document.getElementById('editName').value = selectedLead.name;
+      document.getElementById('editCompany').value = selectedLead.company || '';
+      document.getElementById('editEmail').value = selectedLead.email || '';
+      document.getElementById('editPhone').value = selectedLead.phone || '';
+      document.getElementById('editStage').value = selectedLead.stage || 'New lead';
+      document.getElementById('editAssigned').value = selectedLead.assigned_to || 'Unassigned';
+
+      SalesOS.showModal('editLeadModal');
+    }
+
+    async function submitEditLead() {
+      const id = document.getElementById('editLeadId').value;
+      const name = document.getElementById('editName').value.trim();
+      const company = document.getElementById('editCompany').value.trim();
+      const email = document.getElementById('editEmail').value.trim();
+      const phone = document.getElementById('editPhone').value.trim();
+      const stage = document.getElementById('editStage').value;
+      const assigned_to = document.getElementById('editAssigned').value;
+
+      try {
+        const res = await fetch(`/api/leads/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, company, email, phone, stage, assigned_to })
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          SalesOS.closeModal('editLeadModal');
+          SalesOS.showToast('Lead details updated');
+          openLeadDrawer(updated);
+          loadLeads();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to update lead', 'error');
+      }
+    }
+
+    async function confirmDeleteLead() {
+      if (!selectedLead) return;
+      if (!confirm(`Are you sure you want to delete lead "${selectedLead.name}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/leads/${selectedLead.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Lead removed from active pipeline');
+          closeLeadDrawer();
+          loadLeads();
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to delete lead', 'error');
+      }
+    }
+
+    async function confirmGdprPurgeLead() {
+      if (!selectedLead) return;
+      const promptConfirm = prompt(`WARNING: GDPR Right to Erasure is permanent and irreversible.\nAll personal information (name, email, phone) will be permanently purged and anonymized.\n\nType "PURGE" to confirm erasure for "${selectedLead.name}":`);
+      if (promptConfirm !== 'PURGE') return;
+
+      try {
+        const res = await fetch(`/api/leads/${selectedLead.id}/purge-gdpr`, { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          SalesOS.showToast(`Lead PII permanently erased. Cert: ${data.certificate_id}`);
+          closeLeadDrawer();
+          loadLeads();
+        } else {
+          SalesOS.showToast('Failed to execute GDPR erasure', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Error executing GDPR erasure', 'error');
+      }
+    }
+
+    function openDirectEmailModal() {
+      if (!selectedLead) return;
+      document.getElementById('emailRecipient').value = `${selectedLead.name} <${selectedLead.email || 'no-email@customer.com'}>`;
+      document.getElementById('emailSubject').value = `Following up on SalesOS inquiry — ${selectedLead.company || 'your organization'}`;
+      applyEmailTemplate();
+      SalesOS.showModal('directEmailModal');
+    }
+
+    function applyEmailTemplate() {
+      const tpl = document.getElementById('emailTemplateSelect').value;
+      const bodyEl = document.getElementById('emailBody');
+      const name = selectedLead ? selectedLead.name.split(' ')[0] : 'there';
+      const comp = selectedLead && selectedLead.company ? selectedLead.company : 'your team';
+
+      if (tpl === 'followup') {
+        bodyEl.value = `Hi ${name},\n\nThank you for exploring SalesOS for ${comp}. I wanted to follow up on your recent inquiry and see if you had any questions regarding our multi-tenant capabilities or omnichannel tools.\n\nWould you be open to a quick 15-minute call this week?\n\nBest regards,\nSalesOS Team`;
+      } else if (tpl === 'pricing') {
+        bodyEl.value = `Hi ${name},\n\nAttached is the commercial breakdown for ${comp}. Our enterprise license includes dedicated SLAs, autonomous AI agent orchestration, and full data ownership.\n\nPlease let me know if you would like to proceed with a formal price quote.\n\nBest regards,\nSalesOS Commercial Desk`;
+      } else if (tpl === 'demo') {
+        bodyEl.value = `Hi ${name},\n\nI would love to walk you through a tailored demonstration of SalesOS for ${comp}. You can pick any time that suits you directly via our calendar:\n\nhttps://salesos.io/calendar/meet\n\nLooking forward to speaking soon!\n\nBest,\nSalesOS Solutions Engineering`;
+      } else {
+        bodyEl.value = `Hi ${name},\n\n`;
+      }
+    }
+
+    async function handleSendDirectEmail(e) {
+      e.preventDefault();
+      if (!selectedLead || !selectedLead.id) return;
+      const subject = document.getElementById('emailSubject').value.trim();
+      const body = document.getElementById('emailBody').value.trim();
+      const btn = document.getElementById('emailSendBtn');
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch(`/api/leads/${selectedLead.id}/email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject, body, recipient: selectedLead.email })
+        });
+        const data = await res.json();
+        btn.disabled = false;
+        btn.textContent = 'Send Email & Log Timeline';
+
+        if (!res.ok) {
+          SalesOS.showToast(data.error || 'Failed to dispatch email');
+          return;
+        }
+
+        SalesOS.closeModal('directEmailModal');
+        SalesOS.showToast(`Email dispatched to ${selectedLead.email || 'customer'}!`);
+
+        // Append to timeline
+        const timeline = document.getElementById('drawerTimeline');
+        if (timeline) {
+          const entry = document.createElement('div');
+          entry.className = 'timeline-entry';
+          entry.innerHTML = `
+            <div class="timeline-dot" style="background:#2563eb"></div>
+            <div>
+              <strong style="font-size:12.5px;display:block">✉ Outbound Email: ${escapeHtml(subject)}</strong>
+              <small style="color:var(--muted)">Just now by ${SalesOS.currentUser?.name || 'Sales Rep'} (${data.email?.mode === 'sandbox' ? 'Sandbox Logged' : 'Delivered'})</small>
+              <div style="font-size:12px;color:var(--text);margin-top:4px;white-space:pre-wrap;background:var(--surface);padding:6px;border-radius:4px">${escapeHtml(body.slice(0, 160))}${body.length > 160 ? '...' : ''}</div>
+            </div>
+          `;
+          timeline.prepend(entry);
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Send Email & Log Timeline';
+        SalesOS.showToast('Network error while dispatching email');
+      }
+    }
+
+    loadLeads();
+  </script>
+</body>
+</html>

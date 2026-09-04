@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — SalesOS Enterprise CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    body {
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 40%),
+                  radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.05), transparent 40%),
+                  var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: var(--font-sans);
+    }
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07);
+    }
+    .brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      color: white;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.35);
+    }
+    .brand-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .brand-header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .quick-logins {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line-light);
+    }
+    .quick-login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px dashed var(--line);
+      background: var(--surface-subtle);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.15s ease;
+    }
+    .quick-login-btn:hover {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="brand-header">
+        <div class="brand-icon">✦</div>
+        <h1 id="authTitle">Sign In to SalesOS</h1>
+        <p id="authSubtitle">Omnichannel CRM & Autonomous Sales Engine</p>
+      </div>
+
+      <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:20px">
+        <button type="button" id="tabSignIn" style="flex:1;padding:10px;background:none;border:none;border-bottom:2px solid var(--primary);font-weight:700;color:var(--text);cursor:pointer" onclick="setAuthMode('signin')">Sign In</button>
+        <button type="button" id="tabRegister" style="flex:1;padding:10px;background:none;border:none;border-bottom:2px solid transparent;font-weight:600;color:var(--muted);cursor:pointer" onclick="setAuthMode('register')">Start 14-Day Trial</button>
+      </div>
+
+      <form id="loginForm" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group" id="groupCompany" style="display:none">
+          <label class="form-label" for="companyName">Company / Workspace Name</label>
+          <input type="text" id="companyName" class="form-control" placeholder="Acme Global Inc.">
+        </div>
+
+        <div class="form-group" id="groupName" style="display:none">
+          <label class="form-label" for="fullName">Your Full Name</label>
+          <input type="text" id="fullName" class="form-control" placeholder="Jane Doe">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Work Email</label>
+          <input type="email" id="email" class="form-control" placeholder="arjun@acmecloud.com" required autocomplete="email" value="arjun@acmecloud.com">
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label class="form-label" for="password" style="margin-bottom:0">Password</label>
+            <a href="#" id="forgotLink" onclick="openForgotModal(); return false;" style="font-size:12px;color:var(--blue);text-decoration:none">Forgot password?</a>
+          </div>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" value="secret">
+        </div>
+
+        <div id="loginError" style="color:var(--red);font-size:12px;margin-bottom:14px;min-height:16px"></div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;padding:12px;font-size:14px;font-weight:600">
+          Sign In to Workspace
+        </button>
+      </form>
+
+      <div class="quick-logins">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:0.05em;margin-bottom:10px">
+          Quick Demo Accounts
+        </div>
+        <button type="button" class="quick-login-btn" style="border-color:#a855f7;background:rgba(168, 85, 247, 0.06);color:#7e22ce" onclick="quickFill('superadmin@salesos.io', 'secret')">
+          <span><strong>⚡ Platform Superadmin</strong> · SaaS Operator</span>
+          <span class="badge" style="background:#f3e8ff;color:#9333ea">Control Plane</span>
+        </button>
+        <button type="button" class="quick-login-btn" onclick="quickFill('arjun@acmecloud.com', 'secret')">
+          <span><strong>🏢 Acme Cloud</strong> · Arjun Sharma (Owner)</span>
+          <span class="badge badge-blue">Tenant 1</span>
+        </button>
+        <button type="button" class="quick-login-btn" onclick="quickFill('roshan@apextech.com', 'secret')">
+          <span><strong>🏢 Apex Tech</strong> · Roshan Adhikari (Owner)</span>
+          <span class="badge badge-green">Tenant 2</span>
+        </button>
+        <button type="button" class="quick-login-btn" onclick="quickFill('aarav@himalayanlabs.com', 'secret')">
+          <span><strong>🏢 Himalayan Retail</strong> · Aarav M. (Owner)</span>
+          <span class="badge badge-orange">Tenant 3</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let currentMode = 'signin';
+
+    function setAuthMode(mode) {
+      currentMode = mode;
+      const isReg = mode === 'register';
+      document.getElementById('groupCompany').style.display = isReg ? 'block' : 'none';
+      document.getElementById('groupName').style.display = isReg ? 'block' : 'none';
+      document.getElementById('forgotLink').style.display = isReg ? 'none' : 'inline';
+      document.getElementById('authTitle').textContent = isReg ? 'Start 14-Day Free Trial' : 'Sign In to SalesOS';
+      document.getElementById('authSubtitle').textContent = isReg ? 'Provision your dedicated SaaS CRM workspace in 30 seconds' : 'Omnichannel CRM & Autonomous Sales Engine';
+      document.getElementById('submitBtn').textContent = isReg ? 'Create Workspace & Start Trial' : 'Sign In to Workspace';
+
+      document.getElementById('tabSignIn').style.borderBottomColor = isReg ? 'transparent' : 'var(--primary)';
+      document.getElementById('tabSignIn').style.fontWeight = isReg ? '600' : '700';
+      document.getElementById('tabSignIn').style.color = isReg ? 'var(--muted)' : 'var(--text)';
+
+      document.getElementById('tabRegister').style.borderBottomColor = isReg ? 'var(--primary)' : 'transparent';
+      document.getElementById('tabRegister').style.fontWeight = isReg ? '700' : '600';
+      document.getElementById('tabRegister').style.color = isReg ? 'var(--text)' : 'var(--muted)';
+      document.getElementById('loginError').textContent = '';
+    }
+
+    function quickFill(email, pw) {
+      setAuthMode('signin');
+      document.getElementById('email').value = email;
+      document.getElementById('password').value = pw;
+      document.getElementById('loginForm').requestSubmit();
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorEl = document.getElementById('loginError');
+      const submitBtn = document.getElementById('submitBtn');
+
+      errorEl.textContent = '';
+      submitBtn.disabled = true;
+
+      if (currentMode === 'register') {
+        const company_name = document.getElementById('companyName').value.trim();
+        const name = document.getElementById('fullName').value.trim();
+        if (!company_name) {
+          errorEl.textContent = 'Company / Workspace Name is required.';
+          submitBtn.disabled = false;
+          return;
+        }
+
+        submitBtn.textContent = 'Provisioning Workspace...';
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ company_name, name, email, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.user) {
+            submitBtn.textContent = '✓ Workspace Created! Redirecting...';
+            submitBtn.style.background = 'var(--green)';
+            setTimeout(() => { window.location.href = '/index.html'; }, 400);
+          } else {
+            errorEl.textContent = data.error || 'Registration failed.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Workspace & Start Trial';
+          }
+        } catch (err) {
+          errorEl.textContent = 'Network or server error during registration.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Workspace & Start Trial';
+        }
+      } else {
+        submitBtn.textContent = 'Authenticating...';
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+          if (res.ok && data.user) {
+            submitBtn.textContent = '✓ Success, redirecting...';
+            submitBtn.style.background = 'var(--green)';
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect');
+            setTimeout(() => {
+              if (redirect) {
+                window.location.href = redirect;
+              } else if (data.user.role === 'superadmin' || data.user.email === 'superadmin@salesos.io') {
+                window.location.href = '/superadmin.html';
+              } else {
+                window.location.href = '/index.html';
+              }
+            }, 350);
+          } else {
+            errorEl.textContent = data.error || 'Invalid email or password.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In to Workspace';
+          }
+        } catch (err) {
+          errorEl.textContent = 'Network or server error. Please retry.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In to Workspace';
+        }
+      }
+    }
+
+    function openForgotModal() {
+      const modal = document.getElementById('forgotModal');
+      const emailVal = document.getElementById('email').value.trim();
+      if (emailVal) {
+        document.getElementById('forgotEmail').value = emailVal;
+      }
+      modal.style.display = 'flex';
+      document.getElementById('forgotFeedback').textContent = '';
+      document.getElementById('forgotEmail').focus();
+    }
+
+    function closeForgotModal() {
+      document.getElementById('forgotModal').style.display = 'none';
+    }
+
+    async function handleForgotSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      const feedback = document.getElementById('forgotFeedback');
+      const btn = document.getElementById('forgotSubmitBtn');
+
+      btn.disabled = true;
+      btn.textContent = 'Sending Link...';
+      feedback.style.color = 'var(--text)';
+      feedback.textContent = 'Dispatching password reset instructions...';
+
+      try {
+        const res = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        feedback.style.color = '#059669';
+        feedback.textContent = '✓ If an account exists with that email, instructions have been sent!';
+        btn.textContent = '✓ Sent';
+        setTimeout(() => {
+          closeForgotModal();
+          btn.disabled = false;
+          btn.textContent = 'Send Recovery Link';
+        }, 2500);
+      } catch (err) {
+        feedback.style.color = 'var(--red)';
+        feedback.textContent = 'Failed to connect. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Send Recovery Link';
+      }
+    }
+  </script>
+
+  <!-- Forgot Password Recovery Modal -->
+  <div id="forgotModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#ffffff;width:100%;max-width:440px;border-radius:16px;padding:32px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);position:relative">
+      <button type="button" onclick="closeForgotModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer">&times;</button>
+      <div style="width:42px;height:42px;border-radius:10px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;color:#0284c7;font-size:20px;margin-bottom:16px">🔑</div>
+      <h3 style="margin:0 0 8px;font-size:18px;color:#0f172a">Reset Your Password</h3>
+      <p style="margin:0 0 20px;font-size:13px;color:#64748b;line-height:1.5">Enter your registered work email. We'll generate a secure password reset link.</p>
+      
+      <form id="forgotForm" onsubmit="handleForgotSubmit(event)">
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="forgotEmail">Work Email</label>
+          <input type="email" id="forgotEmail" class="form-control" placeholder="arjun@acmecloud.com" required>
+        </div>
+        <div id="forgotFeedback" style="font-size:12.5px;margin-bottom:16px;min-height:16px"></div>
+        <button type="submit" id="forgotSubmitBtn" class="btn btn-primary" style="width:100%;padding:11px;font-weight:600">
+          Send Recovery Link
+        </button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

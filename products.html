@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Products & Offerings</h1>
+            <p>Catalog pricing, license SKUs, automated packages, onboarding services, and AI add-ons.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadProducts()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateProductModal()">＋ Add Product</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Toolbar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="productSearchInput" placeholder="Search product name, SKU, package..." oninput="debounceSearch()" />
+              </div>
+
+              <select class="filter-select" id="categoryFilter" onchange="loadProducts()">
+                <option value="all">All Categories</option>
+                <option value="Software License">Software License</option>
+                <option value="AI Automation">AI Automation</option>
+                <option value="Services">Services & Implementation</option>
+                <option value="Connector Package">Connector Package</option>
+              </select>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Total Products: <strong id="productCount">0</strong>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product / SKU</th>
+                  <th>Category</th>
+                  <th>Price (NPR)</th>
+                  <th>Tax Rate</th>
+                  <th>Inventory / Stock</th>
+                  <th>Status</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody">
+                <tr>
+                  <td colspan="7">
+                    <div class="state-loading">
+                      <div class="spinner"></div>
+                      <p>Loading catalog...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Product Modal -->
+  <div class="modal-overlay" id="createProductModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Add New Product Offering</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createProductModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input type="text" id="prodName" class="form-control" placeholder="e.g. SalesOS Enterprise Plus" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">SKU Code *</label>
+          <input type="text" id="prodSku" class="form-control" placeholder="e.g. SOS-ENT-PLUS" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="prodCategory" class="form-control">
+            <option value="Software License">Software License</option>
+            <option value="AI Automation">AI Automation</option>
+            <option value="Services">Services</option>
+            <option value="Connector Package">Connector Package</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Price (NPR) *</label>
+            <input type="number" id="prodPrice" class="form-control" placeholder="75000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tax Rate (%)</label>
+            <input type="number" id="prodTax" class="form-control" value="13" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Available Units / Stock</label>
+          <input type="number" id="prodStock" class="form-control" value="999" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description & Scope</label>
+          <textarea id="prodDesc" class="form-control" placeholder="Detailed product specifications and deliverables..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createProductModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateProduct()">Add to Catalog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal-overlay" id="editProductModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Product</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('editProductModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editProdId" />
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input type="text" id="editProdName" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">SKU Code</label>
+          <input type="text" id="editProdSku" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="editProdCategory" class="form-control">
+            <option value="Software License">Software License</option>
+            <option value="AI Automation">AI Automation</option>
+            <option value="Services">Services</option>
+            <option value="Connector Package">Connector Package</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Price (NPR)</label>
+            <input type="number" id="editProdPrice" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tax Rate (%)</label>
+            <input type="number" id="editProdTax" class="form-control" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock Level</label>
+          <input type="number" id="editProdStock" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="editProdDesc" class="form-control"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('editProductModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitEditProduct()">Update Product</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Products', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Products' }]);
+
+    let allProducts = [];
+    let searchTimeout = null;
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadProducts, 250);
+    }
+
+    async function loadProducts() {
+      const q = document.getElementById('productSearchInput').value.trim();
+      const cat = document.getElementById('categoryFilter').value;
+
+      const params = new URLSearchParams();
+      if (q) params.set('search', q);
+
+      try {
+        const res = await fetch(`/api/products?${params.toString()}`);
+        if (!res.ok) throw new Error();
+        allProducts = await res.json();
+
+        if (cat !== 'all') {
+          allProducts = allProducts.filter(p => p.category === cat);
+        }
+
+        renderProducts();
+      } catch (e) {
+        SalesOS.showToast('Unable to load products', 'error');
+      }
+    }
+
+    function renderProducts() {
+      const tbody = document.getElementById('productsTableBody');
+      document.getElementById('productCount').textContent = allProducts.length;
+
+      if (!allProducts.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="7">
+            <div class="state-empty">
+              <div class="state-icon">▤</div>
+              <h3>No products found</h3>
+              <p>Add product packages, software tiers, or implementation services.</p>
+              <button class="btn btn-primary btn-sm" onclick="openCreateProductModal()">＋ Add Product</button>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allProducts.map(p => `
+        <tr>
+          <td>
+            <strong style="display:block;color:var(--ink)">${escapeHtml(p.name)}</strong>
+            <small style="font-family:monospace;color:var(--muted)">${escapeHtml(p.sku || 'SKU-NONE')}</small>
+          </td>
+          <td><span class="badge badge-purple">${escapeHtml(p.category || 'General')}</span></td>
+          <td><strong style="color:var(--blue)">${SalesOS.formatCurrency(p.price)}</strong></td>
+          <td><span>${p.tax_rate || 13}% VAT</span></td>
+          <td><span>${p.stock !== undefined ? p.stock : 'Unlimited'} units</span></td>
+          <td><span class="badge ${p.is_active !== false ? 'badge-green' : 'badge-gray'}">${p.is_active !== false ? 'Active' : 'Archived'}</span></td>
+          <td style="text-align:right">
+            <button class="btn btn-secondary btn-sm" onclick="openEditProductModalById('${escapeHtml(p.id)}')">✎ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${escapeHtml(p.id)}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">🗑</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openCreateProductModal() {
+      SalesOS.showModal('createProductModal');
+      document.getElementById('prodName').focus();
+    }
+
+    async function submitCreateProduct() {
+      const name = document.getElementById('prodName').value.trim();
+      const sku = document.getElementById('prodSku').value.trim();
+      const category = document.getElementById('prodCategory').value;
+      const price = Number(document.getElementById('prodPrice').value);
+      const tax_rate = Number(document.getElementById('prodTax').value);
+      const stock = Number(document.getElementById('prodStock').value);
+      const description = document.getElementById('prodDesc').value.trim();
+
+      if (!name || !sku || !price) {
+        SalesOS.showToast('Name, SKU and Price are required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, sku, category, price, tax_rate, stock, description, is_active: true })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createProductModal');
+          SalesOS.showToast('Product added to catalog');
+          loadProducts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error creating product', 'error');
+      }
+    }
+
+    function openEditProductModalById(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById('editProdId').value = p.id;
+      document.getElementById('editProdName').value = p.name;
+      document.getElementById('editProdSku').value = p.sku;
+      document.getElementById('editProdCategory').value = p.category || 'Software License';
+      document.getElementById('editProdPrice').value = p.price;
+      document.getElementById('editProdTax').value = p.tax_rate || 13;
+      document.getElementById('editProdStock').value = p.stock || 0;
+      document.getElementById('editProdDesc').value = p.description || '';
+
+      SalesOS.showModal('editProductModal');
+    }
+
+    async function submitEditProduct() {
+      const id = document.getElementById('editProdId').value;
+      const name = document.getElementById('editProdName').value.trim();
+      const sku = document.getElementById('editProdSku').value.trim();
+      const category = document.getElementById('editProdCategory').value;
+      const price = Number(document.getElementById('editProdPrice').value);
+      const tax_rate = Number(document.getElementById('editProdTax').value);
+      const stock = Number(document.getElementById('editProdStock').value);
+      const description = document.getElementById('editProdDesc').value.trim();
+
+      try {
+        const res = await fetch(`/api/products/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, sku, category, price, tax_rate, stock, description })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('editProductModal');
+          SalesOS.showToast('Product updated');
+          loadProducts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error updating product', 'error');
+      }
+    }
+
+    async function deleteProduct(id, name) {
+      if (!confirm(`Delete product "${name}"?`)) return;
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Product removed from catalog');
+          loadProducts();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting product', 'error');
+      }
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>

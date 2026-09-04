@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Tasks & Follow-ups · SalesOS</title>
+  <link rel="stylesheet" href="/app.css" />
+  <style>
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line-light);
+      transition: var(--transition);
+    }
+    .task-item:hover {
+      background: #fbfcfe;
+    }
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--blue);
+    }
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .task-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .task-title.completed {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .task-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-area">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1>Tasks & Actions</h1>
+            <p>Schedule client discovery meetings, contract reviews, AI follow-ups, and daily sales tasks.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="loadTasks()">↻ Refresh</button>
+            <button class="btn btn-primary" onclick="openCreateTaskModal()">＋ New Task</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Filter Tabs -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <select class="filter-select" id="taskStatusFilter" onchange="loadTasks()">
+                <option value="all">All Tasks</option>
+                <option value="pending">Pending Only</option>
+                <option value="due_today">Due Today</option>
+                <option value="completed">Completed</option>
+              </select>
+
+              <select class="filter-select" id="taskPriorityFilter" onchange="loadTasks()">
+                <option value="all">All Priorities</option>
+                <option value="urgent">Urgent Priority</option>
+                <option value="high">High Priority</option>
+                <option value="normal">Normal Priority</option>
+              </select>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              Tasks: <strong id="taskCount">0</strong>
+            </div>
+          </div>
+
+          <!-- Task List Container -->
+          <div id="taskListContainer">
+            <div class="state-loading">
+              <div class="spinner"></div>
+              <p>Loading tasks...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div class="modal-overlay" id="createTaskModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create Sales Task</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createTaskModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Task Title *</label>
+          <input type="text" id="taskTitle" class="form-control" placeholder="e.g. Follow up on proposal with Priya Shah" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Next Action</label>
+          <textarea id="taskDesc" class="form-control" placeholder="Specific notes, discussion topics, or deliverables..."></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="taskPriority" class="form-control">
+              <option value="urgent">🔴 Urgent</option>
+              <option value="high">🟠 High</option>
+              <option value="normal" selected>🔵 Normal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Due Date & Time</label>
+            <input type="date" id="taskDue" class="form-control" value="2026-09-05" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assigned Representative</label>
+          <select id="taskAssigned" class="form-control">
+            <option value="Arjun Sharma">Arjun Sharma (Owner)</option>
+            <option value="Sita Thapa">Sita Thapa (Manager)</option>
+            <option value="Bikram KC">Bikram KC (Sales Rep)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Related Opportunity / Account</label>
+          <input type="text" id="taskRelated" class="form-control" placeholder="e.g. Bright Ventures Sales Acceleration Suite" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createTaskModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateTask()">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    SalesOS.init('Tasks', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Tasks' }]);
+
+    let allTasks = [];
+
+    async function loadTasks() {
+      try {
+        const res = await fetch('/api/tasks');
+        if (!res.ok) throw new Error();
+        allTasks = await res.json();
+
+        const statusFilter = document.getElementById('taskStatusFilter').value;
+        const priorityFilter = document.getElementById('taskPriorityFilter').value;
+
+        let filtered = [...allTasks];
+        if (statusFilter === 'pending') filtered = filtered.filter(t => t.status !== 'completed');
+        if (statusFilter === 'completed') filtered = filtered.filter(t => t.status === 'completed');
+        if (priorityFilter !== 'all') filtered = filtered.filter(t => t.priority === priorityFilter);
+
+        renderTasks(filtered);
+      } catch (e) {
+        SalesOS.showToast('Unable to load tasks', 'error');
+      }
+    }
+
+    function renderTasks(tasks) {
+      const container = document.getElementById('taskListContainer');
+      document.getElementById('taskCount').textContent = tasks.length;
+
+      if (!tasks.length) {
+        container.innerHTML = `
+          <div class="state-empty">
+            <div class="state-icon">✓</div>
+            <h3>All clear! No tasks found</h3>
+            <p>You have zero outstanding follow-ups in this view.</p>
+            <button class="btn btn-primary btn-sm" onclick="openCreateTaskModal()">＋ Create Task</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = tasks.map(t => {
+        const isDone = t.status === 'completed';
+        const pBadge = (t.priority === 'urgent') ? 'badge-red' : (t.priority === 'high') ? 'badge-orange' : 'badge-blue';
+
+        return `
+          <div class="task-item">
+            <input type="checkbox" class="task-checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskStatus('${escapeHtml(t.id)}', this.checked)" />
+            <div class="task-content">
+              <div class="task-title ${isDone ? 'completed' : ''}">${escapeHtml(t.title)}</div>
+              <div class="task-sub">
+                <span class="badge ${pBadge}">${escapeHtml((t.priority || 'normal').toUpperCase())}</span>
+                <span>👤 ${escapeHtml(t.assigned_to || 'Assigned')}</span>
+                ${t.related_to ? `<span>🔗 ${escapeHtml(t.related_to)}</span>` : ''}
+                <span>📅 Due: ${t.due_at ? SalesOS.formatDate(t.due_at) : 'No deadline'}</span>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="deleteTask('${escapeHtml(t.id)}')">🗑</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleTaskStatus(id, isDone) {
+      try {
+        const status = isDone ? 'completed' : 'pending';
+        const res = await fetch(`/api/tasks/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          SalesOS.showToast(isDone ? 'Task marked complete! ✓' : 'Task restored to pending');
+          loadTasks();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error updating task', 'error');
+      }
+    }
+
+    function openCreateTaskModal() {
+      SalesOS.showModal('createTaskModal');
+      document.getElementById('taskTitle').focus();
+    }
+
+    async function submitCreateTask() {
+      const title = document.getElementById('taskTitle').value.trim();
+      const description = document.getElementById('taskDesc').value.trim();
+      const priority = document.getElementById('taskPriority').value;
+      const due_at = document.getElementById('taskDue').value;
+      const assigned_to = document.getElementById('taskAssigned').value;
+      const related_to = document.getElementById('taskRelated').value.trim();
+
+      if (!title) {
+        SalesOS.showToast('Task title is required', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, priority, due_at, assigned_to, related_to, status: 'pending' })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createTaskModal');
+          SalesOS.showToast('Task added successfully');
+          loadTasks();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error saving task', 'error');
+      }
+    }
+
+    async function deleteTask(id) {
+      if (!confirm('Delete this task?')) return;
+      try {
+        const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Task deleted');
+          loadTasks();
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting task', 'error');
+      }
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>

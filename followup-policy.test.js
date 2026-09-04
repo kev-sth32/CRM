@@ -1,0 +1,1 @@
+const assert=require('assert');const {canSendFollowup}=require('./followup-policy');assert.equal(canSendFollowup({optedOut:true}).allowed,false);assert.equal(canSendFollowup({handedOff:true}).reason,'human_handoff');assert.equal(canSendFollowup({}).allowed,true);console.log('Follow-up policy test passed');

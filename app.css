@@ -1171,6 +1171,19 @@ textarea.form-control {
   }
 }
 
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 38;
+}
+.sidebar-backdrop.active {
+  display: block;
+}
+
 /* ==========================================================================
    ENTERPRISE PARITY STYLES (Softphone, Forecast Ribbon, Dedupe, Blueprint)
    ========================================================================== */

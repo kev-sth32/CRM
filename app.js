@@ -16,6 +16,7 @@ const SalesOS = {
     { label: 'Campaigns', path: '/campaigns.html', icon: '◌', section: 'Autonomous AI' },
     { label: 'AI Agents & Approvals', path: '/approvals.html', icon: '✦', section: 'Autonomous AI', badge: '3', badgeClass: 'badge-orange' },
     { label: 'Automations', path: '/automations.html', icon: '⚙', section: 'Autonomous AI' },
+    { label: 'Channels & Ingestion', path: '/settings.html?tab=channels', icon: '🌐', section: 'Autonomous AI', badge: 'New', badgeClass: 'badge-green' },
     { label: 'Reports', path: '/reports.html', icon: '▥', section: 'Analytics & Manage' },
     { label: 'Settings', path: '/settings.html', icon: '⚙', section: 'Analytics & Manage' },
   ],
@@ -92,11 +93,7 @@ const SalesOS = {
           <span class="nav-icon">✨</span>
           <span>12-Step Setup Wizard</span>
         </a>
-        <a href="/settings.html" class="nav-item" style="color:var(--muted)">
-          <span class="nav-icon">⚙</span>
-          <span>Workspace Settings</span>
-        </a>
-        <a href="/superadmin.html" class="nav-item" style="color:#a855f7;font-weight:600">
+        <a href="/superadmin.html" class="nav-item" id="sidebarSuperadminLink" style="color:#a855f7;font-weight:600;display:${this.currentUser?.role === 'superadmin' ? 'flex' : 'none'}">
           <span class="nav-icon">⚡</span>
           <span>Platform Superadmin</span>
         </a>
@@ -104,6 +101,32 @@ const SalesOS = {
     `;
 
     sidebar.innerHTML = html;
+  },
+
+  toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    sidebar.classList.toggle('open');
+    let backdrop = document.getElementById('sidebarBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'sidebarBackdrop';
+      backdrop.className = 'sidebar-backdrop';
+      backdrop.onclick = () => SalesOS.closeSidebar();
+      document.body.appendChild(backdrop);
+    }
+    if (sidebar.classList.contains('open')) {
+      backdrop.classList.add('active');
+    } else {
+      backdrop.classList.remove('active');
+    }
+  },
+
+  closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('open');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (backdrop) backdrop.classList.remove('active');
   },
 
   renderTopbar(breadcrumbs = []) {
@@ -395,6 +418,10 @@ const SalesOS = {
     if (dropRole) dropRole.textContent = this.currentUser.role;
     if (avatarEl && this.currentUser.name) {
       avatarEl.textContent = this.currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    }
+    const superLink = document.getElementById('sidebarSuperadminLink');
+    if (superLink) {
+      superLink.style.display = this.currentUser?.role === 'superadmin' ? 'flex' : 'none';
     }
   },
 

@@ -439,9 +439,12 @@ const assert = require('assert');
   console.log('✓ 25. ESIGN Act contract immutability & non-repudiation defense (409 Conflict) verified');
 
   // 26. Verify AI Approval Authorization & State Gate
+  await new Promise(r => setTimeout(r, 400));
   const testApprovalId = `test-app-${Date.now()}`;
   const fs = require('fs');
-  const dObj = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  const path = require('path');
+  const dbFilePath = path.join(__dirname, 'data.json');
+  const dObj = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
   dObj.ai_approvals = dObj.ai_approvals || [];
   dObj.ai_approvals.push({
     id: testApprovalId,
@@ -450,8 +453,6 @@ const assert = require('assert');
     status: 'pending',
     created_at: new Date().toISOString()
   });
-  const path = require('path');
-  const dbFilePath = path.join(__dirname, 'data.json');
   const writeDbSync = (obj) => {
     fs.writeFileSync(dbFilePath, JSON.stringify(obj, null, 2), 'utf8');
   };

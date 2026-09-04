@@ -1601,7 +1601,15 @@ document.getElementById('salesos-inbound-lead-form').addEventListener('submit', 
       SalesOS.showToast('Webhook URL copied to clipboard!', 'success');
     }
 
-    loadSettings();
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedTab = urlParams.get('tab');
+    if (requestedTab) {
+      const tabBtn = document.querySelector(`button[onclick*="'${requestedTab}'"]`);
+      if (tabBtn) switchTab(requestedTab, tabBtn);
+      else loadSettings();
+    } else {
+      loadSettings();
+    }
   </script>
 </body>
 </html>

@@ -55,6 +55,7 @@
           <button class="settings-tab active" onclick="switchTab('general', this)">General & Localization</button>
           <button class="settings-tab" onclick="switchTab('ai_policy', this)">✦ AI Policy & Guardrails</button>
           <button class="settings-tab" onclick="switchTab('billing', this)">💳 Subscription & Billing</button>
+          <button class="settings-tab" onclick="switchTab('channels', this)">🌐 Channels & Website</button>
           <button class="settings-tab" onclick="switchTab('custom_fields', this)">🧩 Custom Fields</button>
           <button class="settings-tab" onclick="switchTab('webhooks', this)">⚡ Webhooks & Zapier</button>
           <button class="settings-tab" onclick="switchTab('fls', this)">🛡️ Field Security (FLS)</button>
@@ -566,6 +567,184 @@
 
           </div>
         </div>
+
+        <!-- Section: Channels & Website Self-Service Ingestion -->
+        <div class="settings-section" id="sec-channels">
+          <div style="max-width:960px">
+            <div style="margin-bottom:20px">
+              <h2 style="font-size:18px;font-weight:750;margin:0 0 6px">Channels & Website Ingestion</h2>
+              <p style="color:var(--muted);font-size:13.5px;margin:0">
+                Self-service lead capture. Connect your Facebook/Instagram ad forms, WhatsApp Business API, or copy-paste code to capture leads from your website into SalesOS automatically.
+              </p>
+            </div>
+
+            <!-- Sub-Navigation Pills -->
+            <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:12px">
+              <button class="btn btn-secondary btn-sm channel-pill active" id="pill-website" onclick="switchChannelSubTab('website')">🌐 Website Form & Chat</button>
+              <button class="btn btn-secondary btn-sm channel-pill" id="pill-meta" onclick="switchChannelSubTab('meta')">📱 Facebook & Instagram Ads</button>
+              <button class="btn btn-secondary btn-sm channel-pill" id="pill-whatsapp" onclick="switchChannelSubTab('whatsapp')">🟢 WhatsApp Business Cloud API</button>
+            </div>
+
+            <!-- Channel Panel 1: Website Form & Chat Generator -->
+            <div class="channel-panel" id="cpanel-website">
+              <!-- Card 1: Embeddable Website Lead Form -->
+              <div class="card" style="padding:24px;margin-bottom:20px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                  <div>
+                    <h3 style="font-size:16px;font-weight:750;margin:0">Interactive Website Lead Capture Form</h3>
+                    <p style="font-size:13px;color:var(--muted);margin:4px 0 0">Embed this form snippet anywhere on your website (WordPress, Webflow, Shopify, or custom HTML).</p>
+                  </div>
+                  <span class="badge badge-green">Zero Coding Required</span>
+                </div>
+
+                <!-- Customizer options -->
+                <div style="background:var(--bg-body);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);margin-bottom:16px">
+                  <strong style="font-size:12.5px;display:block;margin-bottom:8px">Select fields to include in your form:</strong>
+                  <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="wfName" checked onchange="updateGeneratedEmbedCode()"> Full Name</label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="wfEmail" checked onchange="updateGeneratedEmbedCode()"> Email Address</label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="wfPhone" checked onchange="updateGeneratedEmbedCode()"> Phone Number</label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="wfCompany" checked onchange="updateGeneratedEmbedCode()"> Company Name</label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="wfNotes" checked onchange="updateGeneratedEmbedCode()"> Message / Notes</label>
+                  </div>
+                </div>
+
+                <!-- Generated Code Box -->
+                <div style="position:relative">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <label class="form-label" style="margin:0">Embed HTML & JavaScript Snippet</label>
+                    <button class="btn btn-secondary btn-sm" onclick="copySnippet('embedCodeBox')">📋 Copy Embed Code</button>
+                  </div>
+                  <textarea id="embedCodeBox" class="form-control" rows="8" readonly style="font-family:monospace;font-size:12px;background:var(--bg-body);color:var(--ink)"></textarea>
+                </div>
+
+                <!-- Action row -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+                  <span style="font-size:12.5px;color:var(--muted)">Target Endpoint: <code id="siteEndpointPreview">/api/leads</code></span>
+                  <button class="btn btn-primary btn-sm" onclick="testChannelInbound('website')">🚀 Send Test Website Lead</button>
+                </div>
+              </div>
+
+              <!-- Card 2: Website Live Chat Ingestion -->
+              <div class="card" style="padding:24px">
+                <h3 style="font-size:16px;font-weight:750;margin:0 0 4px">Website Live Chat Webhook</h3>
+                <p style="font-size:13px;color:var(--muted);margin:0 0 16px">Point your custom website chat widget or visitor messaging system to SalesOS.</p>
+
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:14px">
+                  <div>
+                    <label class="form-label">Inbound Chat Webhook URL</label>
+                    <input type="text" id="webChatWebhookUrl" class="form-control" readonly style="font-family:monospace;font-size:12.5px">
+                  </div>
+                  <div style="padding-top:22px">
+                    <button class="btn btn-secondary" onclick="copyInputValue('webChatWebhookUrl')">📋 Copy URL</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Channel Panel 2: Meta (Facebook & Instagram) Lead Ads -->
+            <div class="channel-panel" id="cpanel-meta" style="display:none">
+              <div class="card" style="padding:24px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                  <div>
+                    <h3 style="font-size:16px;font-weight:750;margin:0">Meta Lead Ads (Facebook & Instagram)</h3>
+                    <p style="font-size:13px;color:var(--muted);margin:4px 0 0">Automatically sync leads from Facebook and Instagram Instant Form campaigns.</p>
+                  </div>
+                  <span class="badge badge-blue">HMAC-SHA256 Protected</span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:16px">
+                  <div>
+                    <label class="form-label">Meta Webhook Callback URL</label>
+                    <input type="text" id="metaWebhookUrl" class="form-control" readonly style="font-family:monospace;font-size:12.5px">
+                  </div>
+                  <div style="padding-top:22px">
+                    <button class="btn btn-secondary" onclick="copyInputValue('metaWebhookUrl')">📋 Copy URL</button>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                  <div class="form-group">
+                    <label class="form-label">Verify Token</label>
+                    <input type="text" id="metaVerifyToken" class="form-control" value="meta_crm_leadgen_secret_token">
+                    <small style="color:var(--muted)">Enter this exact token in the Meta App Developer Webhook settings.</small>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Connected Facebook Page / Campaign Name</label>
+                    <input type="text" id="metaPageName" class="form-control" placeholder="e.g. Acme Nepal Official">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Meta App Secret (for HMAC-SHA256 Signature Verification)</label>
+                  <input type="password" id="metaAppSecret" class="form-control" placeholder="••••••••••••••••••••••••">
+                  <small style="color:var(--muted)">Encrypted at rest using AES-256-GCM envelope encryption.</small>
+                </div>
+
+                <!-- 3-Step Setup Instructions -->
+                <div style="background:var(--bg-body);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);margin:18px 0;font-size:13px">
+                  <strong style="display:block;margin-bottom:6px">Quick 3-Step Setup in Meta for Developers:</strong>
+                  <ol style="margin:0;padding-left:18px;line-height:1.6;color:var(--ink)">
+                    <li>Go to <a href="https://developers.facebook.com" target="_blank" style="color:var(--blue)">developers.facebook.com</a> &gt; Your App &gt; Webhooks &gt; <strong>Page / Leadgen</strong>.</li>
+                    <li>Paste your <strong>Callback URL</strong> and <strong>Verify Token</strong> from above and click <strong>Verify and Save</strong>.</li>
+                    <li>Subscribe to the <strong>leadgen</strong> field for your page.</li>
+                  </ol>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)">
+                  <button class="btn btn-secondary" onclick="testChannelInbound('meta')">🧪 Simulate Meta Lead Ingestion</button>
+                  <button class="btn btn-primary" onclick="saveChannelsSettings()">Save Meta Settings</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Channel Panel 3: WhatsApp Business Cloud API -->
+            <div class="channel-panel" id="cpanel-whatsapp" style="display:none">
+              <div class="card" style="padding:24px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                  <div>
+                    <h3 style="font-size:16px;font-weight:750;margin:0">WhatsApp Business (Meta Cloud API)</h3>
+                    <p style="font-size:13px;color:var(--muted);margin:4px 0 0">Receive WhatsApp inquiries straight into your Omnichannel Inbox.</p>
+                  </div>
+                  <span class="badge badge-green">Live Chat Sync</span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:16px">
+                  <div>
+                    <label class="form-label">WhatsApp Webhook Callback URL</label>
+                    <input type="text" id="waWebhookUrl" class="form-control" readonly style="font-family:monospace;font-size:12.5px">
+                  </div>
+                  <div style="padding-top:22px">
+                    <button class="btn btn-secondary" onclick="copyInputValue('waWebhookUrl')">📋 Copy URL</button>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                  <div class="form-group">
+                    <label class="form-label">Verify Token</label>
+                    <input type="text" id="waVerifyToken" class="form-control" value="salesos-whatsapp-verify">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">WhatsApp Phone Number ID</label>
+                    <input type="text" id="waPhoneNumberId" class="form-control" placeholder="e.g. 109827364512345">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Permanent System User Access Token</label>
+                  <input type="password" id="waAccessToken" class="form-control" placeholder="EAAxxxxxxx••••••••">
+                  <small style="color:var(--muted)">Encrypted at rest using AES-256-GCM envelope encryption.</small>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)">
+                  <button class="btn btn-secondary" onclick="testChannelInbound('whatsapp')">🧪 Simulate WhatsApp Message</button>
+                  <button class="btn btn-primary" onclick="saveChannelsSettings()">Save WhatsApp Settings</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -677,6 +856,7 @@
         loadWebhooks();
         loadWebhookDeliveries();
       }
+      if (tabId === 'channels') loadChannelsSettings();
       if (tabId === 'fls') loadFlsSettings();
       if (tabId === 'sso') loadSsoSettings();
     }
@@ -1209,6 +1389,216 @@
       } catch (e) {
         SalesOS.showToast('Network error saving SSO', 'error');
       }
+    }
+
+    // =========================================================================
+    // Self-Service Channels & Website Ingestion Logic
+    // =========================================================================
+    let currentActiveTenantId = 'tenant-1';
+
+    function switchChannelSubTab(channel) {
+      document.querySelectorAll('.channel-pill').forEach(p => {
+        p.classList.remove('active', 'btn-primary');
+        p.classList.add('btn-secondary');
+      });
+      document.querySelectorAll('.channel-panel').forEach(p => p.style.display = 'none');
+
+      const pill = document.getElementById(`pill-${channel}`);
+      if (pill) {
+        pill.classList.add('active', 'btn-primary');
+        pill.classList.remove('btn-secondary');
+      }
+      const panel = document.getElementById(`cpanel-${channel}`);
+      if (panel) {
+        panel.style.display = 'block';
+      }
+    }
+
+    function updateGeneratedEmbedCode() {
+      const origin = window.location.origin || 'http://127.0.0.1:3000';
+      const incName = document.getElementById('wfName')?.checked;
+      const incEmail = document.getElementById('wfEmail')?.checked;
+      const incPhone = document.getElementById('wfPhone')?.checked;
+      const incCompany = document.getElementById('wfCompany')?.checked;
+      const incNotes = document.getElementById('wfNotes')?.checked;
+
+      let fieldsHtml = '';
+      if (incName) fieldsHtml += '  <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;margin-bottom:4px;font-weight:600;">Full Name</label><input type="text" name="name" placeholder="Your Full Name" required style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px;" /></div>\n';
+      if (incEmail) fieldsHtml += '  <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;margin-bottom:4px;font-weight:600;">Email Address</label><input type="email" name="email" placeholder="Your Email Address" required style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px;" /></div>\n';
+      if (incPhone) fieldsHtml += '  <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;margin-bottom:4px;font-weight:600;">Phone Number</label><input type="tel" name="phone" placeholder="Phone (e.g. 9841000000)" required style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px;" /></div>\n';
+      if (incCompany) fieldsHtml += '  <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;margin-bottom:4px;font-weight:600;">Company</label><input type="text" name="company" placeholder="Company Name" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px;" /></div>\n';
+      if (incNotes) fieldsHtml += '  <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;margin-bottom:4px;font-weight:600;">How can we help?</label><textarea name="notes" placeholder="Tell us about your requirements..." rows="3" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px;"></textarea></div>\n';
+
+      const code = `<!-- SalesOS Inbound Lead Form -->
+<form id="salesos-inbound-lead-form" style="max-width:440px;margin:0 auto;font-family:sans-serif;padding:20px;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff;">
+  <h3 style="margin-top:0;font-size:18px;color:#0f172a;">Contact Us</h3>
+${fieldsHtml}  <button type="submit" id="salesos-submit-btn" style="width:100%;padding:12px;background:#2563eb;color:#ffffff;font-size:14px;font-weight:600;border:none;border-radius:6px;cursor:pointer;">Send Inquiry</button>
+  <p id="salesos-status" style="font-size:13px;margin-top:10px;text-align:center;display:none;"></p>
+</form>
+
+<script>
+document.getElementById('salesos-inbound-lead-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('salesos-submit-btn');
+  const status = document.getElementById('salesos-status');
+  btn.disabled = true;
+  btn.innerText = 'Submitting...';
+
+  const formData = new FormData(this);
+  const payload = {
+    name: formData.get('name') || 'Website Visitor',
+    email: formData.get('email') || '',
+    phone: formData.get('phone') || '',
+    company: formData.get('company') || 'Website Inquiry',
+    notes: formData.get('notes') || '',
+    source: 'website_inquiry',
+    status: 'new',
+    tenant_id: '${currentActiveTenantId}'
+  };
+
+  try {
+    const res = await fetch('${origin}/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      status.style.display = 'block';
+      status.style.color = '#16a34a';
+      status.innerText = 'Thank you! We received your message and will reach out shortly.';
+      this.reset();
+    } else {
+      throw new Error('Error submitting form');
+    }
+  } catch(err) {
+    status.style.display = 'block';
+    status.style.color = '#dc2626';
+    status.innerText = 'Submission failed. Please check network and try again.';
+  } finally {
+    btn.disabled = false;
+    btn.innerText = 'Send Inquiry';
+  }
+});
+<\/script>`;
+
+      const box = document.getElementById('embedCodeBox');
+      if (box) box.value = code;
+    }
+
+    async function loadChannelsSettings() {
+      try {
+        const origin = window.location.origin || 'http://127.0.0.1:3000';
+        const res = await fetch('/api/settings/channels');
+        if (res.ok) {
+          const data = await res.json();
+          currentActiveTenantId = data.website?.tenant_id || 'tenant-1';
+
+          // Website
+          if (document.getElementById('siteEndpointPreview')) {
+            document.getElementById('siteEndpointPreview').innerText = `${origin}/api/leads`;
+          }
+          if (document.getElementById('webChatWebhookUrl')) {
+            document.getElementById('webChatWebhookUrl').value = data.website?.chat_webhook_url || `${origin}/api/webhooks/website_chat?tenant_id=${currentActiveTenantId}`;
+          }
+
+          // Meta
+          if (document.getElementById('metaWebhookUrl')) {
+            document.getElementById('metaWebhookUrl').value = data.meta?.webhook_url || `${origin}/api/webhooks/meta-lead-gen?tenant_id=${currentActiveTenantId}`;
+          }
+          if (document.getElementById('metaVerifyToken')) {
+            document.getElementById('metaVerifyToken').value = data.meta?.verify_token || 'meta_crm_leadgen_secret_token';
+          }
+          if (document.getElementById('metaPageName') && data.meta?.page_name) {
+            document.getElementById('metaPageName').value = data.meta.page_name;
+          }
+          if (document.getElementById('metaAppSecret') && data.meta?.app_secret_configured) {
+            document.getElementById('metaAppSecret').placeholder = '•••••••••••••••• (Encrypted)';
+          }
+
+          // WhatsApp
+          if (document.getElementById('waWebhookUrl')) {
+            document.getElementById('waWebhookUrl').value = data.whatsapp?.webhook_url || `${origin}/api/webhooks/whatsapp?tenant_id=${currentActiveTenantId}`;
+          }
+          if (document.getElementById('waVerifyToken')) {
+            document.getElementById('waVerifyToken').value = data.whatsapp?.verify_token || 'salesos-whatsapp-verify';
+          }
+          if (document.getElementById('waPhoneNumberId') && data.whatsapp?.phone_number_id) {
+            document.getElementById('waPhoneNumberId').value = data.whatsapp.phone_number_id;
+          }
+          if (document.getElementById('waAccessToken') && data.whatsapp?.token_configured) {
+            document.getElementById('waAccessToken').placeholder = '•••••••••••••••• (Encrypted)';
+          }
+        }
+      } catch (e) {
+        console.error('Error loading channels settings', e);
+      }
+      updateGeneratedEmbedCode();
+    }
+
+    async function saveChannelsSettings() {
+      SalesOS.showToast('Saving channel credentials...');
+      const meta = {
+        verify_token: document.getElementById('metaVerifyToken').value.trim(),
+        page_name: document.getElementById('metaPageName').value.trim(),
+        app_secret: document.getElementById('metaAppSecret').value.trim() || undefined,
+        is_active: true
+      };
+
+      const whatsapp = {
+        verify_token: document.getElementById('waVerifyToken').value.trim(),
+        phone_number_id: document.getElementById('waPhoneNumberId').value.trim(),
+        access_token: document.getElementById('waAccessToken').value.trim() || undefined,
+        is_active: true
+      };
+
+      try {
+        const res = await fetch('/api/settings/channels', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ meta, whatsapp })
+        });
+        if (res.ok) {
+          SalesOS.showToast('Channel settings saved successfully!', 'success');
+        } else {
+          SalesOS.showToast('Failed to save channel settings', 'error');
+        }
+      } catch(e) {
+        SalesOS.showToast('Network error saving channel settings', 'error');
+      }
+    }
+
+    async function testChannelInbound(channel) {
+      SalesOS.showToast(`Simulating inbound ${channel} lead...`);
+      try {
+        const res = await fetch('/api/settings/channels/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channel })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          SalesOS.showToast(`✅ ${data.message}`, 'success');
+        } else {
+          SalesOS.showToast('Test simulation failed', 'error');
+        }
+      } catch(e) {
+        SalesOS.showToast('Error running channel test', 'error');
+      }
+    }
+
+    function copySnippet(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.select();
+      navigator.clipboard.writeText(el.value);
+      SalesOS.showToast('Embed code copied to clipboard!', 'success');
+    }
+
+    function copyInputValue(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      navigator.clipboard.writeText(el.value);
+      SalesOS.showToast('Webhook URL copied to clipboard!', 'success');
     }
 
     loadSettings();

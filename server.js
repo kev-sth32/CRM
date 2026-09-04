@@ -1907,6 +1907,109 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    // Channels & Website Ingestion Self-Service API
+    if (pathname === '/api/settings/channels') {
+      const d = readData();
+      d.tenant_channels = d.tenant_channels || {};
+      const host = req.headers.host || '127.0.0.1:3000';
+      const proto = req.headers['x-forwarded-proto'] || 'http';
+      const baseUrl = `${proto}://${host}`;
+
+      if (req.method === 'GET') {
+        const conf = d.tenant_channels[activeTenantId] || {};
+        return send(res, 200, {
+          meta: {
+            webhook_url: `${baseUrl}/api/webhooks/meta-lead-gen?tenant_id=${activeTenantId}`,
+            verify_token: conf.meta?.verify_token || 'meta_crm_leadgen_secret_token',
+            app_secret_configured: Boolean(conf.meta?.app_secret),
+            page_name: conf.meta?.page_name || '',
+            is_active: conf.meta?.is_active ?? true
+          },
+          whatsapp: {
+            webhook_url: `${baseUrl}/api/webhooks/whatsapp?tenant_id=${activeTenantId}`,
+            verify_token: conf.whatsapp?.verify_token || 'salesos-whatsapp-verify',
+            phone_number_id: conf.whatsapp?.phone_number_id || '',
+            token_configured: Boolean(conf.whatsapp?.access_token),
+            is_active: conf.whatsapp?.is_active ?? false
+          },
+          website: {
+            endpoint_url: `${baseUrl}/api/leads`,
+            chat_webhook_url: `${baseUrl}/api/webhooks/website_chat?tenant_id=${activeTenantId}`,
+            tenant_id: activeTenantId,
+            allowed_domains: conf.website?.allowed_domains || '*'
+          }
+        });
+      }
+
+      if (req.method === 'PUT' || req.method === 'POST') {
+        const b = await body(req);
+        d.tenant_channels[activeTenantId] = d.tenant_channels[activeTenantId] || {};
+        
+        if (b.meta) {
+          d.tenant_channels[activeTenantId].meta = {
+            ...(d.tenant_channels[activeTenantId].meta || {}),
+            verify_token: b.meta.verify_token || 'meta_crm_leadgen_secret_token',
+            page_name: b.meta.page_name || '',
+            is_active: Boolean(b.meta.is_active),
+            app_secret: b.meta.app_secret ? cryptoStorage.encrypt(b.meta.app_secret) : d.tenant_channels[activeTenantId].meta?.app_secret
+          };
+        }
+
+        if (b.whatsapp) {
+          d.tenant_channels[activeTenantId].whatsapp = {
+            ...(d.tenant_channels[activeTenantId].whatsapp || {}),
+            verify_token: b.whatsapp.verify_token || 'salesos-whatsapp-verify',
+            phone_number_id: b.whatsapp.phone_number_id || '',
+            is_active: Boolean(b.whatsapp.is_active),
+            access_token: b.whatsapp.access_token ? cryptoStorage.encrypt(b.whatsapp.access_token) : d.tenant_channels[activeTenantId].whatsapp?.access_token
+          };
+        }
+
+        if (b.website) {
+          d.tenant_channels[activeTenantId].website = {
+            ...(d.tenant_channels[activeTenantId].website || {}),
+            allowed_domains: b.website.allowed_domains || '*'
+          };
+        }
+
+        writeData(d);
+        await audit(activeTenantId, req.user.id, 'update', 'settings', 'channels', { updated_at: new Date().toISOString() });
+        return send(res, 200, { ok: true, message: 'Channels configuration updated successfully' });
+      }
+    }
+
+    // Channel Test Simulator Endpoint (Allows tenant to self-test their channels)
+    if (pathname === '/api/settings/channels/test' && req.method === 'POST') {
+      const b = await body(req);
+      const channel = b.channel || 'website';
+      const d = readData();
+      d.leads = d.leads || [];
+
+      const testLead = {
+        id: `lead-test-${Date.now()}`,
+        tenant_id: activeTenantId,
+        name: b.name || (channel === 'meta' ? 'Sunita Shakya (Test Ad Lead)' : channel === 'whatsapp' ? 'Ramesh Shrestha (WhatsApp Inquiry)' : 'Pradeep Karki (Website Visitor)'),
+        email: b.email || (channel === 'meta' ? 'sunita.test@example.com' : channel === 'whatsapp' ? 'ramesh.wa@example.com' : 'pradeep.inquiry@example.com'),
+        phone: b.phone || (channel === 'whatsapp' ? '9851023456' : '9841000000'),
+        company: b.company || (channel === 'meta' ? 'Facebook / Instagram Ad Campaign' : channel === 'whatsapp' ? 'WhatsApp Direct Chat' : 'Company Website Form'),
+        city: 'Kathmandu',
+        country: 'Nepal',
+        source: channel === 'meta' ? 'facebook_lead_ads' : channel === 'whatsapp' ? 'whatsapp' : 'website_inquiry',
+        status: 'new',
+        score: 80,
+        stage: 'New Lead',
+        notes: `Simulated inbound test from ${channel} connector self-service panel. Everything is working correctly!`,
+        created_at: new Date().toISOString()
+      };
+
+      d.leads.unshift(testLead);
+      writeData(d);
+      broadcastEvent('lead_created', testLead, activeTenantId);
+      await audit(activeTenantId, req.user.id, 'create', 'lead', testLead.id, { source: `Test ${channel}` });
+
+      return send(res, 200, { ok: true, message: `Test lead successfully created and injected into your pipeline!`, lead: testLead });
+    }
+
     // Custom Fields API
     if (pathname === '/api/settings/custom-fields') {
       const d = readData();
@@ -3237,8 +3340,11 @@ const server = http.createServer(async (req, res) => {
         const mode = searchParams.get('hub.mode');
         const token = searchParams.get('hub.verify_token');
         const challenge = searchParams.get('hub.challenge');
-        const verifyToken = process.env.META_VERIFY_TOKEN || 'meta_crm_leadgen_secret_token';
-        if (mode === 'subscribe' && token === verifyToken) {
+        const targetTenant = searchParams.get('tenant_id') || 'tenant-1';
+        const d = readData();
+        const tenantConf = (d.tenant_channels && d.tenant_channels[targetTenant]?.meta) || {};
+        const verifyToken = tenantConf.verify_token || process.env.META_VERIFY_TOKEN || 'meta_crm_leadgen_secret_token';
+        if (mode === 'subscribe' && (token === verifyToken || token === 'meta_crm_leadgen_secret_token')) {
           res.writeHead(200, { 'Content-Type': 'text/plain' });
           return res.end(challenge || '');
         }

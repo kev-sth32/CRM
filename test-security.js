@@ -450,18 +450,13 @@ const assert = require('assert');
     status: 'pending',
     created_at: new Date().toISOString()
   });
+  const path = require('path');
+  const dbFilePath = path.join(__dirname, 'data.json');
   const writeDbSync = (obj) => {
-    const tmp = `data.json.tmp.${Date.now()}.${Math.floor(Math.random() * 10000)}`;
-    try {
-      fs.writeFileSync(tmp, JSON.stringify(obj, null, 2), 'utf8');
-      fs.renameSync(tmp, 'data.json');
-    } catch (err) {
-      try { fs.unlinkSync(tmp); } catch (_) {}
-      fs.writeFileSync('data.json', JSON.stringify(obj, null, 2), 'utf8');
-    }
+    fs.writeFileSync(dbFilePath, JSON.stringify(obj, null, 2), 'utf8');
   };
   writeDbSync(dObj);
-  await new Promise(r => setTimeout(r, 120));
+  await new Promise(r => setTimeout(r, 250));
 
   // Tenant 1 attempts to execute Tenant 2 approval (must be rejected)
   const rCrossExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
@@ -471,12 +466,12 @@ const assert = require('assert');
   assert.equal(rCrossExec.status, 403, 'Cross-tenant execution of AI approvals must be rejected with 403 Forbidden');
 
   // Update to Tenant 1 approval with pending status
-  const dObj2 = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  const dObj2 = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
   const appItem = dObj2.ai_approvals.find(a => a.id === testApprovalId);
   appItem.tenant_id = 'tenant-1';
   appItem.status = 'pending';
   writeDbSync(dObj2);
-  await new Promise(r => setTimeout(r, 120));
+  await new Promise(r => setTimeout(r, 250));
 
   const rUnapprovedExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
     method: 'POST',
@@ -485,11 +480,11 @@ const assert = require('assert');
   assert.equal(rUnapprovedExec.status, 400, 'Executing unapproved action must be rejected with 400 Bad Request');
 
   // Approve and execute
-  const dObj3 = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  const dObj3 = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
   const appItem3 = dObj3.ai_approvals.find(a => a.id === testApprovalId);
   appItem3.status = 'approved';
   writeDbSync(dObj3);
-  await new Promise(r => setTimeout(r, 120));
+  await new Promise(r => setTimeout(r, 250));
   const rValidExec = await fetch(`${base}/api/ai-approvals/${testApprovalId}/execute`, {
     method: 'POST',
     headers: { 'Cookie': sessionCookie }

@@ -175,6 +175,116 @@
       "tenant_id": "tenant-1",
       "is_active": true,
       "created_at": "2026-09-04T20:38:05.133Z"
+    },
+    {
+      "id": "usr-1788583613781",
+      "tenant_id": "tenant-1788583613781",
+      "name": "Rohan Sharma",
+      "email": "founder-1788583613765@newstartup.io",
+      "role": "owner",
+      "password_hash": "scrypt:0643a119caee571047ca675e50106192:ed5ffb7fff9e4b7779fe5709dc8e5b373adcfc6560700c8e72be71f918f06280a2b9dcff09004028fd7bd4406ff3b754bc0c9a6bcc1e03fc0046c24ab62099f0",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:53.814Z",
+      "reset_token": "8f3768a1d027efb18562845da12f647045b99ed0d10393fc89265fda49d81ac6",
+      "reset_expires": "2026-09-05T05:46:57.196Z"
+    },
+    {
+      "id": "usr-1788583617334",
+      "tenant_id": "tenant-1788583617334",
+      "name": "Spam Corp 0 Admin",
+      "email": "spam_1788583617328_0@spam.com",
+      "role": "owner",
+      "password_hash": "scrypt:11825d572577db56bc84be6ce9ecb782:dc69320284396028329bdd1312157170915afeaeaab930c68670339c0387cecd3edeb232087272cdd1c8f95192ae210b03a101c9eb54f73fe97b916169a22d15",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:57.371Z"
+    },
+    {
+      "id": "usr-1788583617396",
+      "tenant_id": "tenant-1788583617396",
+      "name": "Spam Corp 1 Admin",
+      "email": "spam_1788583617379_1@spam.com",
+      "role": "owner",
+      "password_hash": "scrypt:c59089f7a989fb184aea5d0725ae0d3a:ec136f1bf9a47a8364ee6570d71b6908511a71e2ccc1fe0cad0490e00039b74f24f8052a74ac832e547d341272a78b9328a16cc27b4cb1ed74d739f04f52bf38",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:57.431Z"
+    },
+    {
+      "id": "usr-1788583617460",
+      "tenant_id": "tenant-1788583617460",
+      "name": "Spam Corp 2 Admin",
+      "email": "spam_1788583617440_2@spam.com",
+      "role": "owner",
+      "password_hash": "scrypt:f00e02622dd41f4374794c520bede405:0317b01e60d727100b1fcf4e0dd8e0dccd0833be19b7023f57dd9eceaef7706f77ac6a09976a616854b758b1b5df5c4f3edceccc86b7ebc43dab14b29cd06200",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:57.494Z"
+    },
+    {
+      "id": "usr-1788583617507",
+      "tenant_id": "tenant-1788583617507",
+      "name": "Spam Corp 3 Admin",
+      "email": "spam_1788583617504_3@spam.com",
+      "role": "owner",
+      "password_hash": "scrypt:6475a569008ca9e8bdd8aa909cf79bb5:4208e93c00571fea728f70ae8e5091bed768a9134f00f67d81733f7c017791ed7fb42660dbb9e8191d5210ac267fe387734be253b9f7dffb2478c16fc6c71509",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:57.542Z"
+    },
+    {
+      "id": "usr-1788583617554",
+      "tenant_id": "tenant-1788583617554",
+      "name": "Spam Corp 4 Admin",
+      "email": "spam_1788583617550_4@spam.com",
+      "role": "owner",
+      "password_hash": "scrypt:aa268cea8e0b7ba5da7e5173f5ae1ab2:960b5e9dc0ae9858a5fcc454bbd331e822655baac7222574119e0ab5ce16dd4ab4d72a443a92a99dc8b45e360fc6a3d4f780f6923129ae4f8b71d5fb2fe34860",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:57.586Z"
+    },
+    {
+      "id": "usr-rep-1788583617761",
+      "tenant_id": "tenant-1",
+      "name": "Junior Rep",
+      "email": "rep-1788583617759@acmecloud.com",
+      "role": "rep",
+      "password_hash": "scrypt:0a7ba7eddef92e6832c8ee899ae25e5a:f43ee3fedabee164c0bf746b68570964759e13ab5a0548f6bbc29256242017a05b7516e7679422b8d6798c706a514ce141fceb5101b620da9546eaf506d7d07c",
+      "is_active": true
+    },
+    {
+      "id": "usr-1788583634829",
+      "name": "Devon Vance",
+      "email": "scim-user-1788583634823@acmeenterprise.com",
+      "role": "salesperson",
+      "tenant_id": "tenant-1",
+      "is_active": true,
+      "created_at": "2026-09-05T04:47:14.829Z"
+    },
+    {
+      "id": "usr-1788583672179",
+      "tenant_id": "tenant-1788583672179",
+      "name": "Rohan Sharma",
+      "email": "founder-1788583672165@newstartup.io",
+      "role": "owner",
+      "password_hash": "scrypt:242412bda20ffb203d062bbabb31ea03:9839bc477ef930f8f217cc377525fce3bc991e410200904e9a9c504fb64280518fd4d7d4fe5c8257d51985032dcffdfbc51db8a15c52ce80aec5edb94b1eb61e",
+      "is_active": true,
+      "created_at": "2026-09-05T04:47:52.247Z",
+      "reset_token": "10f886bed9252ec19dbd7c7908f8f9e12dd2660c4310c828785e138bcb039fdd",
+      "reset_expires": "2026-09-05T05:47:56.009Z"
+    },
+    {
+      "id": "usr-rep-1788583676341",
+      "tenant_id": "tenant-1",
+      "name": "Junior Rep",
+      "email": "rep-1788583676338@acmecloud.com",
+      "role": "rep",
+      "password_hash": "scrypt:82e4093b3e78378c6328b1a7c437925d:320d3d8d8619644756b904bd5abda8523d5c4c7708401f3d42bb705acab050316ba9085e79ebef9ae0e9fb8d00b2bc321fc6607260ed82656a7870281644086b",
+      "is_active": true
+    },
+    {
+      "id": "usr-1788583693551",
+      "name": "Devon Vance",
+      "email": "scim-user-1788583693538@acmeenterprise.com",
+      "role": "salesperson",
+      "tenant_id": "tenant-1",
+      "is_active": true,
+      "created_at": "2026-09-05T04:48:13.551Z"
     }
   ],
   "tenants": [
@@ -329,9 +439,484 @@
       "mrr": 0,
       "ai_tokens_used": 0,
       "created_at": "2026-09-04T20:37:47.316Z"
+    },
+    {
+      "id": "tenant-1788583613781",
+      "name": "Nexus Ventures",
+      "slug": "nexus-ventures",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:53.781Z"
+    },
+    {
+      "id": "tenant-1788583617334",
+      "name": "Spam Corp 0",
+      "slug": "spam-corp-0",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:57.334Z"
+    },
+    {
+      "id": "tenant-1788583617396",
+      "name": "Spam Corp 1",
+      "slug": "spam-corp-1",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:57.396Z"
+    },
+    {
+      "id": "tenant-1788583617460",
+      "name": "Spam Corp 2",
+      "slug": "spam-corp-2",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:57.460Z"
+    },
+    {
+      "id": "tenant-1788583617507",
+      "name": "Spam Corp 3",
+      "slug": "spam-corp-3",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:57.507Z"
+    },
+    {
+      "id": "tenant-1788583617554",
+      "name": "Spam Corp 4",
+      "slug": "spam-corp-4",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:46:57.554Z"
+    },
+    {
+      "id": "tenant-1788583672179",
+      "name": "Nexus Ventures",
+      "slug": "nexus-ventures",
+      "plan": "Trial",
+      "status": "Active",
+      "currency": "NPR",
+      "users_count": 1,
+      "leads_count": 0,
+      "mrr": 0,
+      "ai_tokens_used": 0,
+      "created_at": "2026-09-05T04:47:52.179Z"
     }
   ],
   "leads": [
+    {
+      "id": "lead-test-1788583694373",
+      "tenant_id": "tenant-1",
+      "name": "Sunita Shakya (Test Ad Lead)",
+      "email": "sunita.test@example.com",
+      "phone": "9841000000",
+      "company": "Facebook / Instagram Ad Campaign",
+      "city": "Kathmandu",
+      "country": "Nepal",
+      "source": "facebook_lead_ads",
+      "status": "new",
+      "score": 80,
+      "stage": "New Lead",
+      "notes": "Simulated inbound test from meta connector self-service panel. Everything is working correctly!",
+      "created_at": "2026-09-05T04:48:14.373Z"
+    },
+    {
+      "id": "lead-meta-1788583693815",
+      "tenant_id": "tenant-1",
+      "name": "Anup Pokharel",
+      "email": "anup.pokharel@techhimalaya.np",
+      "phone": "+977-9801234567",
+      "company": "Himalayan Agro Exporters",
+      "city": "Nepal",
+      "source": "facebook_lead_ads",
+      "source_meta": {
+        "ad_id": "ad_b2b_growth_camp",
+        "form_id": "form_kathmandu_sme_01",
+        "platform": "instagram",
+        "created_time": 1725450000
+      },
+      "stage": "New lead",
+      "score": 82,
+      "owner_name": "Arjun Sharma",
+      "notes": "Automated inbound lead via Meta Lead Ads form (form_kathmandu_sme_01). Ad ID: ad_b2b_growth_camp.",
+      "created_at": "2026-09-05T04:48:13.815Z"
+    },
+    {
+      "id": "lead-1788583693613",
+      "tenant_id": "tenant-1",
+      "name": "John Miller",
+      "company": "Apex Solutions",
+      "email": "jmiller@apexsolutions.com",
+      "phone": "+1 (555) 0199",
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:48:13.613Z",
+      "is_deleted": true,
+      "merged_into_id": "lead-1788583693598",
+      "updated_at": "2026-09-05T04:48:13.675Z"
+    },
+    {
+      "id": "lead-1788583693598",
+      "tenant_id": "tenant-1",
+      "name": "Jonathan Miller",
+      "company": "Apex Solutions Corp",
+      "email": "jmiller@apexsolutions.com",
+      "phone": "+1 (555) 0199",
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:48:13.598Z",
+      "updated_at": "2026-09-05T04:48:13.675Z",
+      "notes": "[System]: Merged with duplicate ID lead-1788583693613 on 2026-09-05T04:48:13.675Z"
+    },
+    {
+      "id": "lead-1788583676114",
+      "tenant_id": "tenant-1",
+      "name": "Tamper Attempt Lead",
+      "company": "",
+      "email": null,
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:47:56.114Z",
+      "updated_at": "2026-09-05T04:47:56.140Z"
+    },
+    {
+      "id": "lead-1788583672926",
+      "tenant_id": "tenant-1",
+      "name": "[GDPR-ERASED]",
+      "company": "[GDPR-ERASED]",
+      "email": "erased-lead-1788583672926@purged.invalid",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Purged",
+      "assigned_to": "Unassigned",
+      "status": "gdpr_erased",
+      "created": "2026-09-05T04:47:52.926Z",
+      "notes": null,
+      "gdpr_erasure": {
+        "certificate_id": "GDPR-PURGE-lead-1788583672926-MTNWJEKH",
+        "erased_at": "2026-09-05T04:47:52.961Z",
+        "legal_basis": "EU GDPR Article 17 Right to Erasure",
+        "executed_by": "usr-1"
+      },
+      "opted_out": true,
+      "opted_out_at": "2026-09-05T04:47:53.011Z"
+    },
+    {
+      "id": "lead-1788583664565",
+      "tenant_id": "tenant-1",
+      "name": "Ultra Secret Tenant 1 Enterprise Deal",
+      "company": "T1 Only Corp",
+      "email": "secret@t1.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:47:44.565Z"
+    },
+    {
+      "id": "lead-1788583664299",
+      "tenant_id": "tenant-2",
+      "name": "Tenant 2 Lead",
+      "company": "Tenant 2 Corp",
+      "email": "t2@corp.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:47:44.299Z"
+    },
+    {
+      "id": "lead-1788583664268",
+      "tenant_id": "tenant-1",
+      "name": "Tenant 1 Lead",
+      "company": "Tenant 1 Corp",
+      "email": "t1@corp.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:47:44.268Z"
+    },
+    {
+      "id": "lead-1788583657344",
+      "tenant_id": "tenant-1",
+      "name": "E2E Test Prospect",
+      "company": "E2E Corp",
+      "email": "e2e@test.com",
+      "phone": null,
+      "stage": "Qualified",
+      "score": 55,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:47:37.344Z",
+      "qualification": "warm",
+      "signals": [
+        {
+          "rule": "budget_confirmed",
+          "points": 30,
+          "reason": "Verified organization"
+        },
+        {
+          "rule": "email_provided",
+          "points": 25,
+          "reason": "Valid email contact"
+        }
+      ],
+      "updated_at": "2026-09-05T04:47:37.408Z"
+    },
+    {
+      "id": "lead-1788583657041",
+      "tenant_id": "tenant-1",
+      "name": "Automated Test Lead",
+      "company": "Test Tenant",
+      "email": null,
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:47:37.041Z"
+    },
+    {
+      "id": "lead-test-1788583635905",
+      "tenant_id": "tenant-1",
+      "name": "Sunita Shakya (Test Ad Lead)",
+      "email": "sunita.test@example.com",
+      "phone": "9841000000",
+      "company": "Facebook / Instagram Ad Campaign",
+      "city": "Kathmandu",
+      "country": "Nepal",
+      "source": "facebook_lead_ads",
+      "status": "new",
+      "score": 80,
+      "stage": "New Lead",
+      "notes": "Simulated inbound test from meta connector self-service panel. Everything is working correctly!",
+      "created_at": "2026-09-05T04:47:15.905Z"
+    },
+    {
+      "id": "lead-meta-1788583635160",
+      "tenant_id": "tenant-1",
+      "name": "Anup Pokharel",
+      "email": "anup.pokharel@techhimalaya.np",
+      "phone": "+977-9801234567",
+      "company": "Himalayan Agro Exporters",
+      "city": "Nepal",
+      "source": "facebook_lead_ads",
+      "source_meta": {
+        "ad_id": "ad_b2b_growth_camp",
+        "form_id": "form_kathmandu_sme_01",
+        "platform": "instagram",
+        "created_time": 1725450000
+      },
+      "stage": "New lead",
+      "score": 82,
+      "owner_name": "Arjun Sharma",
+      "notes": "Automated inbound lead via Meta Lead Ads form (form_kathmandu_sme_01). Ad ID: ad_b2b_growth_camp.",
+      "created_at": "2026-09-05T04:47:15.160Z"
+    },
+    {
+      "id": "lead-1788583634940",
+      "tenant_id": "tenant-1",
+      "name": "John Miller",
+      "company": "Apex Solutions",
+      "email": "jmiller@apexsolutions.com",
+      "phone": "+1 (555) 0199",
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:47:14.940Z",
+      "is_deleted": true,
+      "merged_into_id": "lead-1788583634917",
+      "updated_at": "2026-09-05T04:47:14.994Z"
+    },
+    {
+      "id": "lead-1788583634917",
+      "tenant_id": "tenant-1",
+      "name": "Jonathan Miller",
+      "company": "Apex Solutions Corp",
+      "email": "jmiller@apexsolutions.com",
+      "phone": "+1 (555) 0199",
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:47:14.917Z",
+      "updated_at": "2026-09-05T04:47:14.994Z",
+      "notes": "[System]: Merged with duplicate ID lead-1788583634940 on 2026-09-05T04:47:14.994Z"
+    },
+    {
+      "id": "lead-1788583617303",
+      "tenant_id": "tenant-1",
+      "name": "Tamper Attempt Lead",
+      "company": "",
+      "email": null,
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "active",
+      "created": "2026-09-05T04:46:57.303Z",
+      "updated_at": "2026-09-05T04:46:57.318Z"
+    },
+    {
+      "id": "lead-1788583614234",
+      "tenant_id": "tenant-1",
+      "name": "[GDPR-ERASED]",
+      "company": "[GDPR-ERASED]",
+      "email": "erased-lead-1788583614234@purged.invalid",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Purged",
+      "assigned_to": "Unassigned",
+      "status": "gdpr_erased",
+      "created": "2026-09-05T04:46:54.234Z",
+      "notes": null,
+      "gdpr_erasure": {
+        "certificate_id": "GDPR-PURGE-lead-1788583614234-MTNWI59I",
+        "erased_at": "2026-09-05T04:46:54.246Z",
+        "legal_basis": "EU GDPR Article 17 Right to Erasure",
+        "executed_by": "usr-1"
+      },
+      "opted_out": true,
+      "opted_out_at": "2026-09-05T04:46:54.279Z"
+    },
+    {
+      "id": "lead-1788583606062",
+      "tenant_id": "tenant-1",
+      "name": "Ultra Secret Tenant 1 Enterprise Deal",
+      "company": "T1 Only Corp",
+      "email": "secret@t1.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:46:46.062Z"
+    },
+    {
+      "id": "lead-1788583605787",
+      "tenant_id": "tenant-2",
+      "name": "Tenant 2 Lead",
+      "company": "Tenant 2 Corp",
+      "email": "t2@corp.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:46:45.787Z"
+    },
+    {
+      "id": "lead-1788583605755",
+      "tenant_id": "tenant-1",
+      "name": "Tenant 1 Lead",
+      "company": "Tenant 1 Corp",
+      "email": "t1@corp.com",
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:46:45.755Z"
+    },
+    {
+      "id": "lead-1788583598780",
+      "tenant_id": "tenant-1",
+      "name": "E2E Test Prospect",
+      "company": "E2E Corp",
+      "email": "e2e@test.com",
+      "phone": null,
+      "stage": "Qualified",
+      "score": 55,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:46:38.780Z",
+      "qualification": "warm",
+      "signals": [
+        {
+          "rule": "budget_confirmed",
+          "points": 30,
+          "reason": "Verified organization"
+        },
+        {
+          "rule": "email_provided",
+          "points": 25,
+          "reason": "Valid email contact"
+        }
+      ],
+      "updated_at": "2026-09-05T04:46:38.855Z"
+    },
+    {
+      "id": "lead-1788583598371",
+      "tenant_id": "tenant-1",
+      "name": "Automated Test Lead",
+      "company": "Test Tenant",
+      "email": null,
+      "phone": null,
+      "stage": "New lead",
+      "score": null,
+      "source": "Direct",
+      "assigned_to": "Unassigned",
+      "status": "deleted",
+      "created": "2026-09-05T04:46:38.372Z"
+    },
     {
       "id": "lead-test-1788554286307",
       "tenant_id": "tenant-1",
@@ -826,6 +1411,1028 @@
     }
   ],
   "webhook_deliveries": [
+    {
+      "id": "deliv-1788583675364-283",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 3000,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583672131",
+        "access_token": "240eef0468202738c878a9cc83a9bbc7d1063959d3485e37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-022-JDXF",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:47:52.132Z",
+        "signed_at": "2026-09-05T04:47:52.336Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+          "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:47:52.336Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:47:55.364Z"
+    },
+    {
+      "id": "deliv-1788583674581-888",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2216,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583672131",
+        "access_token": "240eef0468202738c878a9cc83a9bbc7d1063959d3485e37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-022-JDXF",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:47:52.132Z",
+        "signed_at": "2026-09-05T04:47:52.336Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+          "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:47:52.336Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:47:54.581Z"
+    },
+    {
+      "id": "deliv-1788583674569-179",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2205,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583672131",
+        "access_token": "240eef0468202738c878a9cc83a9bbc7d1063959d3485e37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-022-JDXF",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:47:52.132Z",
+        "signed_at": "2026-09-05T04:47:52.336Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+          "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:47:52.336Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:47:54.569Z"
+    },
+    {
+      "id": "deliv-1788583674557-939",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788583614203",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2191,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583672131",
+        "access_token": "240eef0468202738c878a9cc83a9bbc7d1063959d3485e37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-022-JDXF",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:47:52.132Z",
+        "signed_at": "2026-09-05T04:47:52.336Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+          "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:47:52.336Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:47:54.557Z"
+    },
+    {
+      "id": "deliv-1788583667516-153",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2183,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583665246",
+        "access_token": "3474cc1957120d95b40cd62d661ba8a29a0a454698ec7b37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-021-J8M6",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583665206",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:47:45.246Z",
+        "signed_at": "2026-09-05T04:47:45.294Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+          "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:47:45.294Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:47:47.516Z"
+    },
+    {
+      "id": "deliv-1788583667505-585",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788583614203",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2192,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583665206",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:47:45.206Z",
+        "updated_at": "2026-09-05T04:47:45.294Z"
+      },
+      "created_at": "2026-09-05T04:47:47.505Z"
+    },
+    {
+      "id": "deliv-1788583667494-306",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2158,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583665246",
+        "access_token": "3474cc1957120d95b40cd62d661ba8a29a0a454698ec7b37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-021-J8M6",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583665206",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:47:45.246Z",
+        "signed_at": "2026-09-05T04:47:45.294Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+          "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:47:45.294Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:47:47.494Z"
+    },
+    {
+      "id": "deliv-1788583667479-741",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2164,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583665206",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:47:45.206Z",
+        "updated_at": "2026-09-05T04:47:45.294Z"
+      },
+      "created_at": "2026-09-05T04:47:47.479Z"
+    },
+    {
+      "id": "deliv-1788583667465-412",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2127,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583665246",
+        "access_token": "3474cc1957120d95b40cd62d661ba8a29a0a454698ec7b37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-021-J8M6",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583665206",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:47:45.246Z",
+        "signed_at": "2026-09-05T04:47:45.294Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+          "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:47:45.294Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:47:47.465Z"
+    },
+    {
+      "id": "deliv-1788583667449-276",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2132,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583665206",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:47:45.206Z",
+        "updated_at": "2026-09-05T04:47:45.294Z"
+      },
+      "created_at": "2026-09-05T04:47:47.449Z"
+    },
+    {
+      "id": "deliv-1788583667436-919",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788583614203",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2096,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583665246",
+        "access_token": "3474cc1957120d95b40cd62d661ba8a29a0a454698ec7b37",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-021-J8M6",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583665206",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:47:45.246Z",
+        "signed_at": "2026-09-05T04:47:45.294Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+          "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:47:45.294Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:47:47.436Z"
+    },
+    {
+      "id": "deliv-1788583667421-180",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2106,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583665206",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:47:45.206Z",
+        "updated_at": "2026-09-05T04:47:45.294Z"
+      },
+      "created_at": "2026-09-05T04:47:47.421Z"
+    },
+    {
+      "id": "deliv-1788583615992-873",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2104,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583613735",
+        "access_token": "4cb90b761fbe8d4e777d68b2b965cd49bdc36aba6d315566",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-016-I4VB",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:46:53.735Z",
+        "signed_at": "2026-09-05T04:46:53.875Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-016-I4VB-MTNWI4Z7",
+          "content_hash": "17e808117c30e393f728d2e6abe5933cc50e1e366097b5393e7b7cbe78091cb9",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:46:53.875Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:46:55.992Z"
+    },
+    {
+      "id": "deliv-1788583615982-159",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2092,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583613735",
+        "access_token": "4cb90b761fbe8d4e777d68b2b965cd49bdc36aba6d315566",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-016-I4VB",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:46:53.735Z",
+        "signed_at": "2026-09-05T04:46:53.875Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-016-I4VB-MTNWI4Z7",
+          "content_hash": "17e808117c30e393f728d2e6abe5933cc50e1e366097b5393e7b7cbe78091cb9",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:46:53.875Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:46:55.982Z"
+    },
+    {
+      "id": "deliv-1788583615833-36",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 1946,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583613735",
+        "access_token": "4cb90b761fbe8d4e777d68b2b965cd49bdc36aba6d315566",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-016-I4VB",
+        "title": "Customer Public Proposal Test",
+        "deal_id": null,
+        "deal_title": "",
+        "customer_name": "Alpha Customer Ltd",
+        "customer_email": "",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 50000,
+        "discount_pct": 0,
+        "discount_amount": 0,
+        "tax_rate": null,
+        "tax_amount": null,
+        "total": null,
+        "line_items": [
+          {
+            "name": "Implementation",
+            "sku": "CUSTOM",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Payment due within 30 days of quote acceptance.",
+        "created_at": "2026-09-05T04:46:53.735Z",
+        "signed_at": "2026-09-05T04:46:53.875Z",
+        "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-016-I4VB-MTNWI4Z7",
+          "content_hash": "17e808117c30e393f728d2e6abe5933cc50e1e366097b5393e7b7cbe78091cb9",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+          "signed_at": "2026-09-05T04:46:53.875Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+        "signer_email": ""
+      },
+      "created_at": "2026-09-05T04:46:55.833Z"
+    },
+    {
+      "id": "deliv-1788583611072-2",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 4237,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583606733",
+        "access_token": "0075d7a55d9dc5de1b94c0e036d593b64b399e1ac5761714",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-015-HZGT",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583606709",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:46:46.733Z",
+        "signed_at": "2026-09-05T04:46:46.766Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-015-HZGT-MTNWHZHQ",
+          "content_hash": "92a5f98d9ce135e4db2e23a7c76412fdfc6b531ce005e1f0c1ef267fbab7954c",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:46:46.766Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:46:51.072Z"
+    },
+    {
+      "id": "deliv-1788583609484-408",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2684,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583606709",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:46:46.709Z",
+        "updated_at": "2026-09-05T04:46:46.766Z"
+      },
+      "created_at": "2026-09-05T04:46:49.484Z"
+    },
+    {
+      "id": "deliv-1788583609327-447",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2496,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583606733",
+        "access_token": "0075d7a55d9dc5de1b94c0e036d593b64b399e1ac5761714",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-015-HZGT",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583606709",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:46:46.733Z",
+        "signed_at": "2026-09-05T04:46:46.766Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-015-HZGT-MTNWHZHQ",
+          "content_hash": "92a5f98d9ce135e4db2e23a7c76412fdfc6b531ce005e1f0c1ef267fbab7954c",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:46:46.766Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:46:49.327Z"
+    },
+    {
+      "id": "deliv-1788583609313-535",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553289722",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2513,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583606709",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:46:46.709Z",
+        "updated_at": "2026-09-05T04:46:46.766Z"
+      },
+      "created_at": "2026-09-05T04:46:49.313Z"
+    },
+    {
+      "id": "deliv-1788583609296-141",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788554263635",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "quote_signed",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2464,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "quote-1788583606733",
+        "access_token": "0075d7a55d9dc5de1b94c0e036d593b64b399e1ac5761714",
+        "tenant_id": "tenant-1",
+        "quote_number": "QT-2026-015-HZGT",
+        "title": "Commercial Proposal for Everest FinTech",
+        "deal_id": "oppo-1788583606709",
+        "deal_title": "CPQ Enterprise Deal",
+        "customer_name": "Everest FinTech Labs",
+        "customer_email": "procurement@everestfintech.np",
+        "status": "Signed",
+        "currency": "USD",
+        "tax_mode": "exclusive",
+        "subtotal": 230000,
+        "discount_pct": 10,
+        "discount_amount": 23000,
+        "tax_rate": 13,
+        "tax_amount": 26910,
+        "total": 233910,
+        "line_items": [
+          {
+            "name": "SalesOS Growth Plan (Annual)",
+            "sku": "SOS-GROWTH",
+            "qty": 5,
+            "price": 36000,
+            "total": 180000
+          },
+          {
+            "name": "Custom API Webhook Connector Setup",
+            "sku": "SOS-SETUP",
+            "qty": 1,
+            "price": 50000,
+            "total": 50000
+          }
+        ],
+        "terms": "Net 30 days. Full cloud deployment included.",
+        "created_at": "2026-09-05T04:46:46.733Z",
+        "signed_at": "2026-09-05T04:46:46.766Z",
+        "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+        "evidence_bundle": {
+          "certificate_id": "ESIGN-QT-2026-015-HZGT-MTNWHZHQ",
+          "content_hash": "92a5f98d9ce135e4db2e23a7c76412fdfc6b531ce005e1f0c1ef267fbab7954c",
+          "signer_ip": "127.0.0.1",
+          "user_agent": "node",
+          "signed_at": "2026-09-05T04:46:46.766Z",
+          "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+        },
+        "signer_name": "Sanjeev Shrestha (CTO)",
+        "signer_email": "procurement@everestfintech.np"
+      },
+      "created_at": "2026-09-05T04:46:49.296Z"
+    },
+    {
+      "id": "deliv-1788583609286-582",
+      "tenant_id": "tenant-1",
+      "webhook_id": "wh-1788553263189",
+      "webhook_name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "event": "deal_won",
+      "status": "dlq",
+      "attempts": 3,
+      "http_status": 404,
+      "response_time_ms": 2500,
+      "error": "HTTP 404: Not Found",
+      "payload": {
+        "id": "oppo-1788583606709",
+        "tenant_id": "tenant-1",
+        "title": "CPQ Enterprise Deal",
+        "name": "CPQ Enterprise Deal",
+        "company": "Everest FinTech Labs",
+        "stage": "Closed Won",
+        "amount": 450000,
+        "created_at": "2026-09-05T04:46:46.709Z",
+        "updated_at": "2026-09-05T04:46:46.766Z"
+      },
+      "created_at": "2026-09-05T04:46:49.286Z"
+    },
     {
       "id": "deliv-1788554265968-291",
       "tenant_id": "tenant-1",
@@ -2520,6 +4127,2496 @@
     }
   ],
   "audit_logs": [
+    {
+      "id": "aud-1788583694613-29",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "knowledge",
+      "entity_id": "kb-1788583694576",
+      "details": {},
+      "created_at": "2026-09-05T04:48:14.613Z"
+    },
+    {
+      "id": "aud-1788583694581-990",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "knowledge",
+      "entity_id": "kb-1788583694576",
+      "details": {
+        "title": "Automated Test Policy 1788583694570",
+        "chunks": 3
+      },
+      "created_at": "2026-09-05T04:48:14.581Z"
+    },
+    {
+      "id": "aud-1788583694550-785",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:48:14.550Z"
+    },
+    {
+      "id": "aud-1788583694376-757",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-test-1788583694373",
+      "details": {
+        "source": "Test meta"
+      },
+      "created_at": "2026-09-05T04:48:14.376Z"
+    },
+    {
+      "id": "aud-1788583694351-78",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "channels",
+      "details": {
+        "updated_at": "2026-09-05T04:48:14.351Z"
+      },
+      "created_at": "2026-09-05T04:48:14.351Z"
+    },
+    {
+      "id": "aud-1788583694302-751",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:48:14.302Z"
+    },
+    {
+      "id": "aud-1788583694064-393",
+      "tenant_id": "tenant-1",
+      "user_id": "system_esewa",
+      "user_name": "System / Operator",
+      "action": "payment_reconciled",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583694042",
+      "details": {
+        "amount": 107350,
+        "txn_id": "ESEWA-TXN-774411",
+        "deal_advanced": true
+      },
+      "created_at": "2026-09-05T04:48:14.064Z"
+    },
+    {
+      "id": "aud-1788583694047-640",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583694042",
+      "details": {
+        "quote_number": "QT-2026-026-JUU2",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:48:14.047Z"
+    },
+    {
+      "id": "aud-1788583694031-505",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583694026",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:48:14.031Z"
+    },
+    {
+      "id": "aud-1788583694010-330",
+      "tenant_id": "tenant-1",
+      "user_id": "system_fonepay",
+      "user_name": "System / Operator",
+      "action": "payment_reconciled",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583693988",
+      "details": {
+        "amount": 135600,
+        "txn_id": "FP-TEST-TXN-8811",
+        "deal_advanced": true
+      },
+      "created_at": "2026-09-05T04:48:14.010Z"
+    },
+    {
+      "id": "aud-1788583693991-872",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583693988",
+      "details": {
+        "quote_number": "QT-2026-025-JUSK",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:48:13.991Z"
+    },
+    {
+      "id": "aud-1788583693976-89",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583693972",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:48:13.976Z"
+    },
+    {
+      "id": "aud-1788583693821-94",
+      "tenant_id": "tenant-1",
+      "user_id": "system_meta_webhook",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-meta-1788583693815",
+      "details": {
+        "source": "Meta Lead Ads"
+      },
+      "created_at": "2026-09-05T04:48:13.821Z"
+    },
+    {
+      "id": "aud-1788583693678-604",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "merge",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583693598",
+      "details": {
+        "duplicate_id": "lead-1788583693613",
+        "reparented_count": 0
+      },
+      "created_at": "2026-09-05T04:48:13.678Z"
+    },
+    {
+      "id": "aud-1788583693616-105",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583693613",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:48:13.616Z"
+    },
+    {
+      "id": "aud-1788583693601-335",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583693598",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:48:13.601Z"
+    },
+    {
+      "id": "aud-1788583693581-973",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "outbound_call_completed",
+      "entity_type": "telephony_call",
+      "entity_id": "call-1788583693562-8iwvi",
+      "details": {
+        "duration": 142,
+        "disposition": "Meeting Scheduled"
+      },
+      "created_at": "2026-09-05T04:48:13.581Z"
+    },
+    {
+      "id": "aud-1788583693562-318",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "outbound_call_initiated",
+      "entity_type": "telephony_call",
+      "entity_id": "call-1788583693562-8iwvi",
+      "details": {
+        "to_number": "+14155552671"
+      },
+      "created_at": "2026-09-05T04:48:13.562Z"
+    },
+    {
+      "id": "aud-1788583693554-149",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "scim_provision",
+      "entity_type": "user",
+      "entity_id": "usr-1788583693551",
+      "details": {
+        "email": "scim-user-1788583693538@acmeenterprise.com"
+      },
+      "created_at": "2026-09-05T04:48:13.554Z"
+    },
+    {
+      "id": "aud-1788583693533-395",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "configure_sso",
+      "entity_type": "tenant_sso",
+      "entity_id": "tenant-1",
+      "details": {
+        "enabled": true,
+        "provider": "okta"
+      },
+      "created_at": "2026-09-05T04:48:13.533Z"
+    },
+    {
+      "id": "aud-1788583693517-161",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "configure_fls",
+      "entity_type": "fls_rule",
+      "entity_id": "fls-1788583693517",
+      "details": {
+        "entity": "lead",
+        "field": "confidential_notes",
+        "role": "salesperson",
+        "permission": "hidden"
+      },
+      "created_at": "2026-09-05T04:48:13.517Z"
+    },
+    {
+      "id": "aud-1788583693474-645",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "save_splits",
+      "entity_type": "opportunity_split",
+      "entity_id": "oppo-1788583693364",
+      "details": {
+        "count": 2
+      },
+      "created_at": "2026-09-05T04:48:13.474Z"
+    },
+    {
+      "id": "aud-1788583693430-805",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "set_quota",
+      "entity_type": "forecast_quota",
+      "entity_id": "q-1788583693430",
+      "details": {
+        "user_id": "usr-1",
+        "target": 250000
+      },
+      "created_at": "2026-09-05T04:48:13.430Z"
+    },
+    {
+      "id": "aud-1788583693409-356",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583693364",
+      "details": {
+        "fields": [
+          "stage",
+          "expected_close_date",
+          "next_step",
+          "checklist"
+        ]
+      },
+      "created_at": "2026-09-05T04:48:13.409Z"
+    },
+    {
+      "id": "aud-1788583693367-524",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583693364",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:48:13.367Z"
+    },
+    {
+      "id": "aud-1788583693338-419",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:48:13.338Z"
+    },
+    {
+      "id": "aud-1788583693167-999",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583693162",
+      "details": {
+        "quote_number": "QT-2026-024-JU5M",
+        "total": 11300,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:48:13.167Z"
+    },
+    {
+      "id": "aud-1788583693136-321",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583693131",
+      "details": {
+        "quote_number": "QT-2026-023-JU4R",
+        "total": 9900,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:48:13.136Z"
+    },
+    {
+      "id": "aud-1788583693101-729",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:48:13.101Z"
+    },
+    {
+      "id": "aud-1788583686637-150",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583686633",
+      "details": {
+        "name": "DLQ Test Webhook",
+        "url": "http://127.0.0.1:56311/webhook-target"
+      },
+      "created_at": "2026-09-05T04:48:06.637Z"
+    },
+    {
+      "id": "aud-1788583686603-940",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "ai_evaluation",
+      "entity_id": "eval-1788583686599",
+      "details": {
+        "rating": "good"
+      },
+      "created_at": "2026-09-05T04:48:06.603Z"
+    },
+    {
+      "id": "aud-1788583686557-2",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:48:06.557Z"
+    },
+    {
+      "id": "aud-1788583680087-715",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "ai_evaluation",
+      "entity_id": "eval-1788583680084",
+      "details": {
+        "rating": "good"
+      },
+      "created_at": "2026-09-05T04:48:00.087Z"
+    },
+    {
+      "id": "aud-1788583679968-980",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "apply",
+      "entity_type": "industry_template",
+      "entity_id": "real_estate",
+      "details": {
+        "template": "Real Estate & Property Development"
+      },
+      "created_at": "2026-09-05T04:47:59.969Z"
+    },
+    {
+      "id": "aud-1788583679932-789",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "complete",
+      "entity_type": "onboarding",
+      "entity_id": "tenant-1",
+      "details": {
+        "industry": "saas"
+      },
+      "created_at": "2026-09-05T04:47:59.932Z"
+    },
+    {
+      "id": "aud-1788583679886-629",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:59.886Z"
+    },
+    {
+      "id": "aud-1788583676483-686",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583676479",
+      "details": {
+        "id": "cf-1788583676479",
+        "tenant_id": "tenant-1",
+        "entity": "contacts",
+        "label": "Confidential Field",
+        "field_name": "confidential_field",
+        "type": "text",
+        "options": [],
+        "required": false,
+        "created_at": "2026-09-05T04:47:56.479Z"
+      },
+      "created_at": "2026-09-05T04:47:56.484Z"
+    },
+    {
+      "id": "aud-1788583676438-545",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-rep-1788583676341",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:56.438Z"
+    },
+    {
+      "id": "aud-1788583676278-588",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "general",
+      "details": {
+        "company_name": "Himalayan Isolated 2",
+        "currency": "EUR"
+      },
+      "created_at": "2026-09-05T04:47:56.278Z"
+    },
+    {
+      "id": "aud-1788583676265-595",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "general",
+      "details": {
+        "company_name": "Acme Cloud Isolated 1",
+        "currency": "USD"
+      },
+      "created_at": "2026-09-05T04:47:56.265Z"
+    },
+    {
+      "id": "aud-1788583676239-352",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:56.239Z"
+    },
+    {
+      "id": "aud-1788583676143-741",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583676114",
+      "details": {
+        "fields": []
+      },
+      "created_at": "2026-09-05T04:47:56.143Z"
+    },
+    {
+      "id": "aud-1788583676119-667",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583676114",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:56.119Z"
+    },
+    {
+      "id": "aud-1788583676017-844",
+      "tenant_id": "tenant-1788583672179",
+      "user_id": "usr-1788583672179",
+      "user_name": "System / Operator",
+      "action": "password_reset_requested",
+      "entity_type": "user",
+      "entity_id": "usr-1788583672179",
+      "details": {
+        "email": "founder-1788583672165@newstartup.io"
+      },
+      "created_at": "2026-09-05T04:47:56.017Z"
+    },
+    {
+      "id": "aud-1788583675882-224",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "execute",
+      "entity_type": "ai_approval",
+      "entity_id": "test-app-1788583675002",
+      "details": {
+        "action": "send_discount_email"
+      },
+      "created_at": "2026-09-05T04:47:55.882Z"
+    },
+    {
+      "id": "aud-1788583673016-554",
+      "tenant_id": "tenant-1",
+      "user_id": "system",
+      "user_name": "System / Operator",
+      "action": "lead_unsubscribed",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583672926",
+      "details": {
+        "email": "erased-lead-1788583672926@purged.invalid"
+      },
+      "created_at": "2026-09-05T04:47:53.016Z"
+    },
+    {
+      "id": "aud-1788583672969-553",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "gdpr_erasure_executed",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583672926",
+      "details": {
+        "certificate_id": "GDPR-PURGE-lead-1788583672926-MTNWJEKH",
+        "erased_at": "2026-09-05T04:47:52.961Z"
+      },
+      "created_at": "2026-09-05T04:47:52.969Z"
+    },
+    {
+      "id": "aud-1788583672938-745",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583672926",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:52.938Z"
+    },
+    {
+      "id": "aud-1788583672893-465",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583672890",
+      "details": {
+        "name": "Valid Production Slack Hook",
+        "url": "https://hooks.slack.com/services/T00/B00/X00"
+      },
+      "created_at": "2026-09-05T04:47:52.893Z"
+    },
+    {
+      "id": "aud-1788583672738-515",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "export_workspace_data",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1",
+      "details": {
+        "record_counts": {
+          "leads": 39,
+          "deals": 9,
+          "contacts": 0,
+          "quotes": 22
+        }
+      },
+      "created_at": "2026-09-05T04:47:52.738Z"
+    },
+    {
+      "id": "aud-1788583672706-28",
+      "tenant_id": "tenant-1788583672179",
+      "user_id": "usr-1788583672179",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:52.706Z"
+    },
+    {
+      "id": "aud-1788583672516-953",
+      "tenant_id": "tenant-1788583672179",
+      "user_id": "usr-1788583672179",
+      "user_name": "System / Operator",
+      "action": "password_reset_completed",
+      "entity_type": "user",
+      "entity_id": "usr-1788583672179",
+      "details": {},
+      "created_at": "2026-09-05T04:47:52.516Z"
+    },
+    {
+      "id": "aud-1788583672399-794",
+      "tenant_id": "tenant-1788583672179",
+      "user_id": "usr-1788583672179",
+      "user_name": "System / Operator",
+      "action": "password_reset_requested",
+      "entity_type": "user",
+      "entity_id": "usr-1788583672179",
+      "details": {
+        "email": "founder-1788583672165@newstartup.io"
+      },
+      "created_at": "2026-09-05T04:47:52.399Z"
+    },
+    {
+      "id": "aud-1788583672345-554",
+      "tenant_id": "tenant-1",
+      "user_id": "customer",
+      "user_name": "System / Operator",
+      "action": "sign",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583672131",
+      "details": {
+        "signer": "Dr. John Doe (Chief Procurement Officer)",
+        "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+        "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+        "signer_ip": "127.0.0.1"
+      },
+      "created_at": "2026-09-05T04:47:52.345Z"
+    },
+    {
+      "id": "aud-1788583672253-838",
+      "tenant_id": "tenant-1788583672179",
+      "user_id": "usr-1788583672179",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583672179",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:47:52.253Z"
+    },
+    {
+      "id": "aud-1788583672141-753",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583672131",
+      "details": {
+        "quote_number": "QT-2026-022-JDXF",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:52.141Z"
+    },
+    {
+      "id": "aud-1788583672058-487",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "lead_email_sent",
+      "entity_type": "lead",
+      "entity_id": "lead-test-1788583635905",
+      "details": {
+        "subject": "Enterprise Proposal for Facebook / Instagram Ad Campaign",
+        "to": "sunita.test@example.com",
+        "mode": "sandbox"
+      },
+      "created_at": "2026-09-05T04:47:52.058Z"
+    },
+    {
+      "id": "aud-1788583672010-426",
+      "tenant_id": "platform",
+      "user_id": "usr-superadmin",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:52.010Z"
+    },
+    {
+      "id": "aud-1788583671909-866",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:51.909Z"
+    },
+    {
+      "id": "aud-1788583665615-238",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583665206",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:45.615Z"
+    },
+    {
+      "id": "aud-1788583665556-527",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583665491",
+      "details": {},
+      "created_at": "2026-09-05T04:47:45.556Z"
+    },
+    {
+      "id": "aud-1788583665499-377",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583665491",
+      "details": {
+        "name": "Automated Test Webhook",
+        "url": "https://httpbin.org/post"
+      },
+      "created_at": "2026-09-05T04:47:45.499Z"
+    },
+    {
+      "id": "aud-1788583665428-489",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583665361",
+      "details": {},
+      "created_at": "2026-09-05T04:47:45.428Z"
+    },
+    {
+      "id": "aud-1788583665372-96",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583665361",
+      "details": {
+        "id": "cf-1788583665361",
+        "tenant_id": "tenant-1",
+        "entity": "deals",
+        "label": "Security Clearance Level",
+        "field_name": "sec_clearance",
+        "type": "select",
+        "options": [
+          "Level 1",
+          "Level 2",
+          "Level 3"
+        ],
+        "required": true,
+        "created_at": "2026-09-05T04:47:45.361Z"
+      },
+      "created_at": "2026-09-05T04:47:45.372Z"
+    },
+    {
+      "id": "aud-1788583665314-264",
+      "tenant_id": "tenant-1",
+      "user_id": "customer",
+      "user_name": "System / Operator",
+      "action": "sign",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583665246",
+      "details": {
+        "signer": "Sanjeev Shrestha (CTO)",
+        "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+        "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+        "signer_ip": "127.0.0.1"
+      },
+      "created_at": "2026-09-05T04:47:45.314Z"
+    },
+    {
+      "id": "aud-1788583665258-539",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583665246",
+      "details": {
+        "quote_number": "QT-2026-021-J8M6",
+        "total": 233910,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:45.258Z"
+    },
+    {
+      "id": "aud-1788583665218-939",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583665206",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:45.218Z"
+    },
+    {
+      "id": "aud-1788583665177-105",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:45.177Z"
+    },
+    {
+      "id": "aud-1788583664960-639",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664299",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:44.960Z"
+    },
+    {
+      "id": "aud-1788583664925-947",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664268",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:44.925Z"
+    },
+    {
+      "id": "aud-1788583664905-642",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664565",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:44.905Z"
+    },
+    {
+      "id": "aud-1788583664568-645",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664565",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:44.568Z"
+    },
+    {
+      "id": "aud-1788583664307-282",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664299",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:44.307Z"
+    },
+    {
+      "id": "aud-1788583664274-44",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583664268",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:44.274Z"
+    },
+    {
+      "id": "aud-1788583664243-754",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:44.244Z"
+    },
+    {
+      "id": "aud-1788583664173-41",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:44.173Z"
+    },
+    {
+      "id": "aud-1788583657815-20",
+      "tenant_id": "platform",
+      "user_id": "usr-superadmin",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:37.815Z"
+    },
+    {
+      "id": "aud-1788583657708-270",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:37.708Z"
+    },
+    {
+      "id": "aud-1788583657445-968",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657344",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:37.445Z"
+    },
+    {
+      "id": "aud-1788583657415-962",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657344",
+      "details": {
+        "fields": [
+          "stage"
+        ]
+      },
+      "created_at": "2026-09-05T04:47:37.415Z"
+    },
+    {
+      "id": "aud-1788583657380-201",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "qualify",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657344",
+      "details": {
+        "score": 55,
+        "qualification": "warm",
+        "signals": [
+          {
+            "rule": "budget_confirmed",
+            "points": 30,
+            "reason": "Verified organization"
+          },
+          {
+            "rule": "email_provided",
+            "points": 25,
+            "reason": "Valid email contact"
+          }
+        ]
+      },
+      "created_at": "2026-09-05T04:47:37.380Z"
+    },
+    {
+      "id": "aud-1788583657351-416",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657344",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:37.351Z"
+    },
+    {
+      "id": "aud-1788583657306-701",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:37.306Z"
+    },
+    {
+      "id": "aud-1788583657092-433",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657041",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:47:37.092Z"
+    },
+    {
+      "id": "aud-1788583657045-252",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583657041",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:37.045Z"
+    },
+    {
+      "id": "aud-1788583657025-120",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:37.025Z"
+    },
+    {
+      "id": "aud-1788583636191-932",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "knowledge",
+      "entity_id": "kb-1788583636160",
+      "details": {},
+      "created_at": "2026-09-05T04:47:16.191Z"
+    },
+    {
+      "id": "aud-1788583636167-84",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "knowledge",
+      "entity_id": "kb-1788583636160",
+      "details": {
+        "title": "Automated Test Policy 1788583636151",
+        "chunks": 3
+      },
+      "created_at": "2026-09-05T04:47:16.167Z"
+    },
+    {
+      "id": "aud-1788583636115-509",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:16.116Z"
+    },
+    {
+      "id": "aud-1788583635909-531",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-test-1788583635905",
+      "details": {
+        "source": "Test meta"
+      },
+      "created_at": "2026-09-05T04:47:15.909Z"
+    },
+    {
+      "id": "aud-1788583635885-40",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "channels",
+      "details": {
+        "updated_at": "2026-09-05T04:47:15.885Z"
+      },
+      "created_at": "2026-09-05T04:47:15.885Z"
+    },
+    {
+      "id": "aud-1788583635823-753",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:15.823Z"
+    },
+    {
+      "id": "aud-1788583635474-839",
+      "tenant_id": "tenant-1",
+      "user_id": "system_esewa",
+      "user_name": "System / Operator",
+      "action": "payment_reconciled",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583635442",
+      "details": {
+        "amount": 107350,
+        "txn_id": "ESEWA-TXN-774411",
+        "deal_advanced": true
+      },
+      "created_at": "2026-09-05T04:47:15.474Z"
+    },
+    {
+      "id": "aud-1788583635451-267",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583635442",
+      "details": {
+        "quote_number": "QT-2026-020-ILM9",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:15.451Z"
+    },
+    {
+      "id": "aud-1788583635421-965",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583635416",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:15.421Z"
+    },
+    {
+      "id": "aud-1788583635388-775",
+      "tenant_id": "tenant-1",
+      "user_id": "system_fonepay",
+      "user_name": "System / Operator",
+      "action": "payment_reconciled",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583635355",
+      "details": {
+        "amount": 135600,
+        "txn_id": "FP-TEST-TXN-8811",
+        "deal_advanced": true
+      },
+      "created_at": "2026-09-05T04:47:15.388Z"
+    },
+    {
+      "id": "aud-1788583635363-484",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583635355",
+      "details": {
+        "quote_number": "QT-2026-019-ILJV",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:15.363Z"
+    },
+    {
+      "id": "aud-1788583635336-96",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-tenant-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583635330",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:15.336Z"
+    },
+    {
+      "id": "aud-1788583635171-594",
+      "tenant_id": "tenant-1",
+      "user_id": "system_meta_webhook",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-meta-1788583635160",
+      "details": {
+        "source": "Meta Lead Ads"
+      },
+      "created_at": "2026-09-05T04:47:15.171Z"
+    },
+    {
+      "id": "aud-1788583635001-756",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "merge",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583634917",
+      "details": {
+        "duplicate_id": "lead-1788583634940",
+        "reparented_count": 0
+      },
+      "created_at": "2026-09-05T04:47:15.001Z"
+    },
+    {
+      "id": "aud-1788583634946-7",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583634940",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:14.946Z"
+    },
+    {
+      "id": "aud-1788583634922-49",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583634917",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:14.922Z"
+    },
+    {
+      "id": "aud-1788583634900-17",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "outbound_call_completed",
+      "entity_type": "telephony_call",
+      "entity_id": "call-1788583634848-auxyi",
+      "details": {
+        "duration": 142,
+        "disposition": "Meeting Scheduled"
+      },
+      "created_at": "2026-09-05T04:47:14.900Z"
+    },
+    {
+      "id": "aud-1788583634850-675",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "outbound_call_initiated",
+      "entity_type": "telephony_call",
+      "entity_id": "call-1788583634848-auxyi",
+      "details": {
+        "to_number": "+14155552671"
+      },
+      "created_at": "2026-09-05T04:47:14.850Z"
+    },
+    {
+      "id": "aud-1788583634834-715",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "scim_provision",
+      "entity_type": "user",
+      "entity_id": "usr-1788583634829",
+      "details": {
+        "email": "scim-user-1788583634823@acmeenterprise.com"
+      },
+      "created_at": "2026-09-05T04:47:14.835Z"
+    },
+    {
+      "id": "aud-1788583634812-827",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "configure_sso",
+      "entity_type": "tenant_sso",
+      "entity_id": "tenant-1",
+      "details": {
+        "enabled": true,
+        "provider": "okta"
+      },
+      "created_at": "2026-09-05T04:47:14.812Z"
+    },
+    {
+      "id": "aud-1788583634781-711",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "configure_fls",
+      "entity_type": "fls_rule",
+      "entity_id": "fls-1788583634781",
+      "details": {
+        "entity": "lead",
+        "field": "confidential_notes",
+        "role": "salesperson",
+        "permission": "hidden"
+      },
+      "created_at": "2026-09-05T04:47:14.781Z"
+    },
+    {
+      "id": "aud-1788583634722-913",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "save_splits",
+      "entity_type": "opportunity_split",
+      "entity_id": "oppo-1788583634585",
+      "details": {
+        "count": 2
+      },
+      "created_at": "2026-09-05T04:47:14.722Z"
+    },
+    {
+      "id": "aud-1788583634687-722",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "set_quota",
+      "entity_type": "forecast_quota",
+      "entity_id": "q-1788583634687",
+      "details": {
+        "user_id": "usr-1",
+        "target": 250000
+      },
+      "created_at": "2026-09-05T04:47:14.687Z"
+    },
+    {
+      "id": "aud-1788583634652-894",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583634585",
+      "details": {
+        "fields": [
+          "stage",
+          "expected_close_date",
+          "next_step",
+          "checklist"
+        ]
+      },
+      "created_at": "2026-09-05T04:47:14.652Z"
+    },
+    {
+      "id": "aud-1788583634593-330",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583634585",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:47:14.593Z"
+    },
+    {
+      "id": "aud-1788583634553-767",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:14.553Z"
+    },
+    {
+      "id": "aud-1788583634335-122",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583634328",
+      "details": {
+        "quote_number": "QT-2026-018-IKRC",
+        "total": 11300,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:14.335Z"
+    },
+    {
+      "id": "aud-1788583634307-606",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583634302",
+      "details": {
+        "quote_number": "QT-2026-017-IKQL",
+        "total": 9900,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:47:14.307Z"
+    },
+    {
+      "id": "aud-1788583634258-137",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:14.258Z"
+    },
+    {
+      "id": "aud-1788583627696-637",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583627692",
+      "details": {
+        "name": "DLQ Test Webhook",
+        "url": "http://127.0.0.1:60122/webhook-target"
+      },
+      "created_at": "2026-09-05T04:47:07.696Z"
+    },
+    {
+      "id": "aud-1788583627646-489",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "ai_evaluation",
+      "entity_id": "eval-1788583627641",
+      "details": {
+        "rating": "good"
+      },
+      "created_at": "2026-09-05T04:47:07.646Z"
+    },
+    {
+      "id": "aud-1788583627607-346",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:07.607Z"
+    },
+    {
+      "id": "aud-1788583621287-248",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "ai_evaluation",
+      "entity_id": "eval-1788583621284",
+      "details": {
+        "rating": "good"
+      },
+      "created_at": "2026-09-05T04:47:01.287Z"
+    },
+    {
+      "id": "aud-1788583621195-960",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "apply",
+      "entity_type": "industry_template",
+      "entity_id": "real_estate",
+      "details": {
+        "template": "Real Estate & Property Development"
+      },
+      "created_at": "2026-09-05T04:47:01.195Z"
+    },
+    {
+      "id": "aud-1788583621152-423",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "complete",
+      "entity_type": "onboarding",
+      "entity_id": "tenant-1",
+      "details": {
+        "industry": "saas"
+      },
+      "created_at": "2026-09-05T04:47:01.152Z"
+    },
+    {
+      "id": "aud-1788583621125-236",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:47:01.125Z"
+    },
+    {
+      "id": "aud-1788583617853-766",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583617851",
+      "details": {
+        "id": "cf-1788583617851",
+        "tenant_id": "tenant-1",
+        "entity": "contacts",
+        "label": "Confidential Field",
+        "field_name": "confidential_field",
+        "type": "text",
+        "options": [],
+        "required": false,
+        "created_at": "2026-09-05T04:46:57.851Z"
+      },
+      "created_at": "2026-09-05T04:46:57.853Z"
+    },
+    {
+      "id": "aud-1788583617838-147",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-rep-1788583617761",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:57.838Z"
+    },
+    {
+      "id": "aud-1788583617692-449",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "general",
+      "details": {
+        "company_name": "Himalayan Isolated 2",
+        "currency": "EUR"
+      },
+      "created_at": "2026-09-05T04:46:57.692Z"
+    },
+    {
+      "id": "aud-1788583617681-775",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "settings",
+      "entity_id": "general",
+      "details": {
+        "company_name": "Acme Cloud Isolated 1",
+        "currency": "USD"
+      },
+      "created_at": "2026-09-05T04:46:57.681Z"
+    },
+    {
+      "id": "aud-1788583617666-884",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:57.666Z"
+    },
+    {
+      "id": "aud-1788583617589-235",
+      "tenant_id": "tenant-1788583617554",
+      "user_id": "usr-1788583617554",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583617554",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:57.589Z"
+    },
+    {
+      "id": "aud-1788583617544-551",
+      "tenant_id": "tenant-1788583617507",
+      "user_id": "usr-1788583617507",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583617507",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:57.544Z"
+    },
+    {
+      "id": "aud-1788583617497-440",
+      "tenant_id": "tenant-1788583617460",
+      "user_id": "usr-1788583617460",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583617460",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:57.497Z"
+    },
+    {
+      "id": "aud-1788583617433-670",
+      "tenant_id": "tenant-1788583617396",
+      "user_id": "usr-1788583617396",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583617396",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:57.433Z"
+    },
+    {
+      "id": "aud-1788583617373-465",
+      "tenant_id": "tenant-1788583617334",
+      "user_id": "usr-1788583617334",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583617334",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:57.373Z"
+    },
+    {
+      "id": "aud-1788583617321-555",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583617303",
+      "details": {
+        "fields": []
+      },
+      "created_at": "2026-09-05T04:46:57.321Z"
+    },
+    {
+      "id": "aud-1788583617305-193",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583617303",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:57.305Z"
+    },
+    {
+      "id": "aud-1788583617203-716",
+      "tenant_id": "tenant-1788583613781",
+      "user_id": "usr-1788583613781",
+      "user_name": "System / Operator",
+      "action": "password_reset_requested",
+      "entity_type": "user",
+      "entity_id": "usr-1788583613781",
+      "details": {
+        "email": "founder-1788583613765@newstartup.io"
+      },
+      "created_at": "2026-09-05T04:46:57.203Z"
+    },
+    {
+      "id": "aud-1788583617105-801",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "execute",
+      "entity_type": "ai_approval",
+      "entity_id": "test-app-1788583616255",
+      "details": {
+        "action": "send_discount_email"
+      },
+      "created_at": "2026-09-05T04:46:57.105Z"
+    },
+    {
+      "id": "aud-1788583614281-909",
+      "tenant_id": "tenant-1",
+      "user_id": "system",
+      "user_name": "System / Operator",
+      "action": "lead_unsubscribed",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583614234",
+      "details": {
+        "email": "erased-lead-1788583614234@purged.invalid"
+      },
+      "created_at": "2026-09-05T04:46:54.281Z"
+    },
+    {
+      "id": "aud-1788583614251-732",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "gdpr_erasure_executed",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583614234",
+      "details": {
+        "certificate_id": "GDPR-PURGE-lead-1788583614234-MTNWI59I",
+        "erased_at": "2026-09-05T04:46:54.246Z"
+      },
+      "created_at": "2026-09-05T04:46:54.251Z"
+    },
+    {
+      "id": "aud-1788583614237-391",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583614234",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:54.237Z"
+    },
+    {
+      "id": "aud-1788583614205-616",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583614203",
+      "details": {
+        "name": "Valid Production Slack Hook",
+        "url": "https://hooks.slack.com/services/T00/B00/X00"
+      },
+      "created_at": "2026-09-05T04:46:54.205Z"
+    },
+    {
+      "id": "aud-1788583614096-678",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "export_workspace_data",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1",
+      "details": {
+        "record_counts": {
+          "leads": 29,
+          "deals": 6,
+          "contacts": 0,
+          "quotes": 16
+        }
+      },
+      "created_at": "2026-09-05T04:46:54.096Z"
+    },
+    {
+      "id": "aud-1788583614081-593",
+      "tenant_id": "tenant-1788583613781",
+      "user_id": "usr-1788583613781",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:54.081Z"
+    },
+    {
+      "id": "aud-1788583613975-697",
+      "tenant_id": "tenant-1788583613781",
+      "user_id": "usr-1788583613781",
+      "user_name": "System / Operator",
+      "action": "password_reset_completed",
+      "entity_type": "user",
+      "entity_id": "usr-1788583613781",
+      "details": {},
+      "created_at": "2026-09-05T04:46:53.975Z"
+    },
+    {
+      "id": "aud-1788583613912-749",
+      "tenant_id": "tenant-1788583613781",
+      "user_id": "usr-1788583613781",
+      "user_name": "System / Operator",
+      "action": "password_reset_requested",
+      "entity_type": "user",
+      "entity_id": "usr-1788583613781",
+      "details": {
+        "email": "founder-1788583613765@newstartup.io"
+      },
+      "created_at": "2026-09-05T04:46:53.912Z"
+    },
+    {
+      "id": "aud-1788583613878-237",
+      "tenant_id": "tenant-1",
+      "user_id": "customer",
+      "user_name": "System / Operator",
+      "action": "sign",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583613735",
+      "details": {
+        "signer": "Dr. John Doe (Chief Procurement Officer)",
+        "certificate_id": "ESIGN-QT-2026-016-I4VB-MTNWI4Z7",
+        "content_hash": "17e808117c30e393f728d2e6abe5933cc50e1e366097b5393e7b7cbe78091cb9",
+        "signer_ip": "127.0.0.1"
+      },
+      "created_at": "2026-09-05T04:46:53.878Z"
+    },
+    {
+      "id": "aud-1788583613818-812",
+      "tenant_id": "tenant-1788583613781",
+      "user_id": "usr-1788583613781",
+      "user_name": "System / Operator",
+      "action": "registered",
+      "entity_type": "tenant",
+      "entity_id": "tenant-1788583613781",
+      "details": {
+        "plan": "Trial"
+      },
+      "created_at": "2026-09-05T04:46:53.818Z"
+    },
+    {
+      "id": "aud-1788583613738-643",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583613735",
+      "details": {
+        "quote_number": "QT-2026-016-I4VB",
+        "total": null,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:46:53.738Z"
+    },
+    {
+      "id": "aud-1788583613555-80",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "lead_email_sent",
+      "entity_type": "lead",
+      "entity_id": "lead-test-1788554286307",
+      "details": {
+        "subject": "Enterprise Proposal for Facebook / Instagram Ad Campaign",
+        "to": "sunita.test@example.com",
+        "mode": "sandbox"
+      },
+      "created_at": "2026-09-05T04:46:53.555Z"
+    },
+    {
+      "id": "aud-1788583613506-359",
+      "tenant_id": "platform",
+      "user_id": "usr-superadmin",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:53.506Z"
+    },
+    {
+      "id": "aud-1788583613411-521",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:53.411Z"
+    },
+    {
+      "id": "aud-1788583606989-34",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583606709",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:46.989Z"
+    },
+    {
+      "id": "aud-1788583606952-356",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583606921",
+      "details": {},
+      "created_at": "2026-09-05T04:46:46.952Z"
+    },
+    {
+      "id": "aud-1788583606925-638",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "webhook",
+      "entity_id": "wh-1788583606921",
+      "details": {
+        "name": "Automated Test Webhook",
+        "url": "https://httpbin.org/post"
+      },
+      "created_at": "2026-09-05T04:46:46.925Z"
+    },
+    {
+      "id": "aud-1788583606893-930",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583606848",
+      "details": {},
+      "created_at": "2026-09-05T04:46:46.893Z"
+    },
+    {
+      "id": "aud-1788583606853-855",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "custom_field",
+      "entity_id": "cf-1788583606848",
+      "details": {
+        "id": "cf-1788583606848",
+        "tenant_id": "tenant-1",
+        "entity": "deals",
+        "label": "Security Clearance Level",
+        "field_name": "sec_clearance",
+        "type": "select",
+        "options": [
+          "Level 1",
+          "Level 2",
+          "Level 3"
+        ],
+        "required": true,
+        "created_at": "2026-09-05T04:46:46.848Z"
+      },
+      "created_at": "2026-09-05T04:46:46.853Z"
+    },
+    {
+      "id": "aud-1788583606802-711",
+      "tenant_id": "tenant-1",
+      "user_id": "customer",
+      "user_name": "System / Operator",
+      "action": "sign",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583606733",
+      "details": {
+        "signer": "Sanjeev Shrestha (CTO)",
+        "certificate_id": "ESIGN-QT-2026-015-HZGT-MTNWHZHQ",
+        "content_hash": "92a5f98d9ce135e4db2e23a7c76412fdfc6b531ce005e1f0c1ef267fbab7954c",
+        "signer_ip": "127.0.0.1"
+      },
+      "created_at": "2026-09-05T04:46:46.802Z"
+    },
+    {
+      "id": "aud-1788583606738-85",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "quote",
+      "entity_id": "quote-1788583606733",
+      "details": {
+        "quote_number": "QT-2026-015-HZGT",
+        "total": 233910,
+        "access_token": "[REDACTED]"
+      },
+      "created_at": "2026-09-05T04:46:46.738Z"
+    },
+    {
+      "id": "aud-1788583606713-619",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "opportunitie",
+      "entity_id": "oppo-1788583606709",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:46.713Z"
+    },
+    {
+      "id": "aud-1788583606686-759",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:46.686Z"
+    },
+    {
+      "id": "aud-1788583606454-327",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583605787",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:46.454Z"
+    },
+    {
+      "id": "aud-1788583606437-312",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583605755",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:46.437Z"
+    },
+    {
+      "id": "aud-1788583606419-402",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583606062",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:46.419Z"
+    },
+    {
+      "id": "aud-1788583606069-673",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583606062",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:46.069Z"
+    },
+    {
+      "id": "aud-1788583605790-866",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583605787",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:45.790Z"
+    },
+    {
+      "id": "aud-1788583605758-958",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583605755",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:45.758Z"
+    },
+    {
+      "id": "aud-1788583605740-973",
+      "tenant_id": "tenant-2",
+      "user_id": "usr-2",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:45.740Z"
+    },
+    {
+      "id": "aud-1788583605661-953",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:45.662Z"
+    },
+    {
+      "id": "aud-1788583599239-491",
+      "tenant_id": "platform",
+      "user_id": "usr-superadmin",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:39.239Z"
+    },
+    {
+      "id": "aud-1788583599154-669",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:39.154Z"
+    },
+    {
+      "id": "aud-1788583598884-118",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598780",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:38.884Z"
+    },
+    {
+      "id": "aud-1788583598858-247",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "update",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598780",
+      "details": {
+        "fields": [
+          "stage"
+        ]
+      },
+      "created_at": "2026-09-05T04:46:38.858Z"
+    },
+    {
+      "id": "aud-1788583598815-28",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "qualify",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598780",
+      "details": {
+        "score": 55,
+        "qualification": "warm",
+        "signals": [
+          {
+            "rule": "budget_confirmed",
+            "points": 30,
+            "reason": "Verified organization"
+          },
+          {
+            "rule": "email_provided",
+            "points": 25,
+            "reason": "Valid email contact"
+          }
+        ]
+      },
+      "created_at": "2026-09-05T04:46:38.815Z"
+    },
+    {
+      "id": "aud-1788583598785-357",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598780",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:38.785Z"
+    },
+    {
+      "id": "aud-1788583598728-626",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:38.730Z"
+    },
+    {
+      "id": "aud-1788583598426-306",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598371",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T04:46:38.426Z"
+    },
+    {
+      "id": "aud-1788583598375-311",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "create",
+      "entity_type": "lead",
+      "entity_id": "lead-1788583598371",
+      "details": {
+        "source": "api"
+      },
+      "created_at": "2026-09-05T04:46:38.375Z"
+    },
+    {
+      "id": "aud-1788583598328-923",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:46:38.328Z"
+    },
+    {
+      "id": "aud-1788582571514-498",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:29:31.514Z"
+    },
+    {
+      "id": "aud-1788582475841-38",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T04:27:55.842Z"
+    },
+    {
+      "id": "aud-1788570626718-615",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T01:10:26.720Z"
+    },
     {
       "id": "aud-1788554286698-551",
       "tenant_id": "tenant-1",
@@ -5334,6 +9431,94 @@
   ],
   "activities": [
     {
+      "id": "act-1788583693574",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "type": "call",
+      "title": "Outbound Call to Sarah Connor (+14155552671)",
+      "lead_id": "lead-1",
+      "contact_id": null,
+      "duration_seconds": 142,
+      "disposition": "Meeting Scheduled",
+      "notes": "Customer agreed to deep-dive demo next Monday.",
+      "recording_url": "https://cdn.salesos.io/recordings/call-1788583693562-8iwvi.mp3",
+      "created_at": "2026-09-05T04:48:13.574Z"
+    },
+    {
+      "id": "act-call-1788583680055",
+      "tenant_id": "tenant-1",
+      "type": "call",
+      "subject": "Phone Call (outbound) — Negative Sentiment",
+      "description": "Call completed (36 words). Sentiment: Negative. Key topics: Budget / Price Sensitivity.",
+      "duration_seconds": 245,
+      "recording_url": "https://cdn.salesos.io/recordings/call-998.mp3",
+      "objections": [
+        "Budget / Price Sensitivity"
+      ],
+      "buying_signals": [
+        "Requested formal pricing proposal"
+      ],
+      "action_items": [
+        "Schedule follow-up call with stakeholder"
+      ],
+      "performed_by": "Telephony AI Agent",
+      "created_at": "2026-09-05T04:48:00.055Z"
+    },
+    {
+      "id": "act-1788583672054",
+      "lead_id": "lead-test-1788583635905",
+      "tenant_id": "tenant-1",
+      "type": "email_outbound",
+      "subject": "Enterprise Proposal for Facebook / Instagram Ad Campaign",
+      "description": "Here is the formal proposal for your review.",
+      "performed_by": "Arjun Sharma",
+      "created_at": "2026-09-05T04:47:52.054Z"
+    },
+    {
+      "id": "act-1788583634889",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "type": "call",
+      "title": "Outbound Call to Sarah Connor (+14155552671)",
+      "lead_id": "lead-1",
+      "contact_id": null,
+      "duration_seconds": 142,
+      "disposition": "Meeting Scheduled",
+      "notes": "Customer agreed to deep-dive demo next Monday.",
+      "recording_url": "https://cdn.salesos.io/recordings/call-1788583634848-auxyi.mp3",
+      "created_at": "2026-09-05T04:47:14.889Z"
+    },
+    {
+      "id": "act-call-1788583621248",
+      "tenant_id": "tenant-1",
+      "type": "call",
+      "subject": "Phone Call (outbound) — Negative Sentiment",
+      "description": "Call completed (36 words). Sentiment: Negative. Key topics: Budget / Price Sensitivity.",
+      "duration_seconds": 245,
+      "recording_url": "https://cdn.salesos.io/recordings/call-998.mp3",
+      "objections": [
+        "Budget / Price Sensitivity"
+      ],
+      "buying_signals": [
+        "Requested formal pricing proposal"
+      ],
+      "action_items": [
+        "Schedule follow-up call with stakeholder"
+      ],
+      "performed_by": "Telephony AI Agent",
+      "created_at": "2026-09-05T04:47:01.248Z"
+    },
+    {
+      "id": "act-1788583613550",
+      "lead_id": "lead-test-1788554286307",
+      "tenant_id": "tenant-1",
+      "type": "email_outbound",
+      "subject": "Enterprise Proposal for Facebook / Instagram Ad Campaign",
+      "description": "Here is the formal proposal for your review.",
+      "performed_by": "Arjun Sharma",
+      "created_at": "2026-09-05T04:46:53.550Z"
+    },
+    {
       "id": "act-1788554285191",
       "tenant_id": "tenant-1",
       "user_id": "usr-1",
@@ -5433,6 +9618,506 @@
     }
   ],
   "quotes": [
+    {
+      "id": "quote-1788583694042",
+      "access_token": "7f03142179edc28100c6fe01f0362540518813a3b62861b4",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-026-JUU2",
+      "title": "Resort Guest Engine Quote",
+      "deal_id": "oppo-1788583694026",
+      "deal_title": "Pokhara Resort AI Automation",
+      "customer_name": "Lakeside Grand Resort",
+      "customer_email": "gm@lakesideresort.np",
+      "status": "Paid",
+      "currency": "NPR",
+      "tax_mode": "exclusive",
+      "subtotal": 0,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:48:14.042Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null,
+      "payment_details": {
+        "provider": "esewa",
+        "quote_id": "quote-1788583694042",
+        "transaction_id": "ESEWA-TXN-774411",
+        "amount": 107350,
+        "status": "completed",
+        "currency": "NPR",
+        "verified": true,
+        "raw_payload": {
+          "quote_id": "quote-1788583694042",
+          "pid": "quote-1788583694042",
+          "amt": 107350,
+          "status": "COMPLETE",
+          "refId": "ESEWA-TXN-774411"
+        },
+        "received_at": "2026-09-05T04:48:14.056Z"
+      },
+      "paid_at": "2026-09-05T04:48:14.059Z"
+    },
+    {
+      "id": "quote-1788583693988",
+      "access_token": "ee646d9ecdd244091ec7e75fbd48a633bdf9298d226e4a53",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-025-JUSK",
+      "title": "Commercial Quote for Retail POS",
+      "deal_id": "oppo-1788583693972",
+      "deal_title": "Kathmandu Retail POS Migration",
+      "customer_name": "Bhatbhateni Agro Supply",
+      "customer_email": "finance@bhatbhateni.np",
+      "status": "Paid",
+      "currency": "NPR",
+      "tax_mode": "exclusive",
+      "subtotal": 0,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:48:13.988Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null,
+      "payment_details": {
+        "provider": "fonepay",
+        "quote_id": "quote-1788583693988",
+        "transaction_id": "FP-TEST-TXN-8811",
+        "amount": 135600,
+        "status": "completed",
+        "currency": "NPR",
+        "verified": true,
+        "raw_payload": {
+          "quote_id": "quote-1788583693988",
+          "PRN": "quote-1788583693988",
+          "amount": 135600,
+          "status": "SUCCESS",
+          "UID": "FP-TEST-TXN-8811",
+          "BID": "NABIL_BANK_NP"
+        },
+        "received_at": "2026-09-05T04:48:14.004Z"
+      },
+      "paid_at": "2026-09-05T04:48:14.007Z"
+    },
+    {
+      "id": "quote-1788583693162",
+      "access_token": "8a1c5294bc2e55deb6877cf289e6c73706e56f4a8f059c82",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-024-JU5M",
+      "title": "European Subsidiary Retainer (EUR)",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Daimler Mobility Berlin",
+      "customer_email": "billing@daimler.de",
+      "status": "Draft",
+      "currency": "EUR",
+      "tax_mode": "inclusive",
+      "subtotal": 11300,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": 13,
+      "tax_amount": 1300,
+      "total": 11300,
+      "line_items": [
+        {
+          "name": "Consulting Retainer",
+          "sku": "CUSTOM",
+          "qty": 1,
+          "price": 11300,
+          "total": 11300
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:48:13.162Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null
+    },
+    {
+      "id": "quote-1788583693131",
+      "access_token": "c142c4c0acda342605cd121ec7e2f53f3e9b5369e7086bc5",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-023-JU4R",
+      "title": "Global Enterprise Deal (USD)",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Stripe International",
+      "customer_email": "procurement@stripe.com",
+      "status": "Draft",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 10000,
+      "discount_pct": 10,
+      "discount_amount": 1000,
+      "tax_rate": 10,
+      "tax_amount": 900,
+      "total": 9900,
+      "line_items": [
+        {
+          "name": "SalesOS Global License",
+          "sku": "CUSTOM",
+          "qty": 2,
+          "price": 5000,
+          "total": 10000
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:48:13.131Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null
+    },
+    {
+      "id": "quote-1788583672131",
+      "access_token": "240eef0468202738c878a9cc83a9bbc7d1063959d3485e37",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-022-JDXF",
+      "title": "Customer Public Proposal Test",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Alpha Customer Ltd",
+      "customer_email": "",
+      "status": "Signed",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 50000,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [
+        {
+          "name": "Implementation",
+          "sku": "CUSTOM",
+          "qty": 1,
+          "price": 50000,
+          "total": 50000
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:47:52.132Z",
+      "signed_at": "2026-09-05T04:47:52.336Z",
+      "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+      "evidence_bundle": {
+        "certificate_id": "ESIGN-QT-2026-022-JDXF-MTNWJE34",
+        "content_hash": "59d19cf2a1e6a2789ecb16d20a23dbbb1b2ca7d30da433029bb3ea02b9ea3671",
+        "signer_ip": "127.0.0.1",
+        "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+        "signed_at": "2026-09-05T04:47:52.336Z",
+        "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+      },
+      "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+      "signer_email": ""
+    },
+    {
+      "id": "quote-1788583665246",
+      "access_token": "3474cc1957120d95b40cd62d661ba8a29a0a454698ec7b37",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-021-J8M6",
+      "title": "Commercial Proposal for Everest FinTech",
+      "deal_id": "oppo-1788583665206",
+      "deal_title": "CPQ Enterprise Deal",
+      "customer_name": "Everest FinTech Labs",
+      "customer_email": "procurement@everestfintech.np",
+      "status": "Signed",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 230000,
+      "discount_pct": 10,
+      "discount_amount": 23000,
+      "tax_rate": 13,
+      "tax_amount": 26910,
+      "total": 233910,
+      "line_items": [
+        {
+          "name": "SalesOS Growth Plan (Annual)",
+          "sku": "SOS-GROWTH",
+          "qty": 5,
+          "price": 36000,
+          "total": 180000
+        },
+        {
+          "name": "Custom API Webhook Connector Setup",
+          "sku": "SOS-SETUP",
+          "qty": 1,
+          "price": 50000,
+          "total": 50000
+        }
+      ],
+      "terms": "Net 30 days. Full cloud deployment included.",
+      "created_at": "2026-09-05T04:47:45.246Z",
+      "signed_at": "2026-09-05T04:47:45.294Z",
+      "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+      "evidence_bundle": {
+        "certificate_id": "ESIGN-QT-2026-021-J8M6-MTNWJ8NI",
+        "content_hash": "9e066b8fbc42815f2f7d81608d28d7b0c637d77deea3e3c560d4c09649774fdf",
+        "signer_ip": "127.0.0.1",
+        "user_agent": "node",
+        "signed_at": "2026-09-05T04:47:45.294Z",
+        "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+      },
+      "signer_name": "Sanjeev Shrestha (CTO)",
+      "signer_email": "procurement@everestfintech.np"
+    },
+    {
+      "id": "quote-1788583635442",
+      "access_token": "3732fe979573a731643d10b334a78c5e1d4795f190fa5e00",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-020-ILM9",
+      "title": "Resort Guest Engine Quote",
+      "deal_id": "oppo-1788583635416",
+      "deal_title": "Pokhara Resort AI Automation",
+      "customer_name": "Lakeside Grand Resort",
+      "customer_email": "gm@lakesideresort.np",
+      "status": "Paid",
+      "currency": "NPR",
+      "tax_mode": "exclusive",
+      "subtotal": 0,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:47:15.442Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null,
+      "payment_details": {
+        "provider": "esewa",
+        "quote_id": "quote-1788583635442",
+        "transaction_id": "ESEWA-TXN-774411",
+        "amount": 107350,
+        "status": "completed",
+        "currency": "NPR",
+        "verified": true,
+        "raw_payload": {
+          "quote_id": "quote-1788583635442",
+          "pid": "quote-1788583635442",
+          "amt": 107350,
+          "status": "COMPLETE",
+          "refId": "ESEWA-TXN-774411"
+        },
+        "received_at": "2026-09-05T04:47:15.467Z"
+      },
+      "paid_at": "2026-09-05T04:47:15.470Z"
+    },
+    {
+      "id": "quote-1788583635355",
+      "access_token": "62664ee5ca93a3fcd456537475766ecb2ac3ad0b01520f6b",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-019-ILJV",
+      "title": "Commercial Quote for Retail POS",
+      "deal_id": "oppo-1788583635330",
+      "deal_title": "Kathmandu Retail POS Migration",
+      "customer_name": "Bhatbhateni Agro Supply",
+      "customer_email": "finance@bhatbhateni.np",
+      "status": "Paid",
+      "currency": "NPR",
+      "tax_mode": "exclusive",
+      "subtotal": 0,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:47:15.355Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null,
+      "payment_details": {
+        "provider": "fonepay",
+        "quote_id": "quote-1788583635355",
+        "transaction_id": "FP-TEST-TXN-8811",
+        "amount": 135600,
+        "status": "completed",
+        "currency": "NPR",
+        "verified": true,
+        "raw_payload": {
+          "quote_id": "quote-1788583635355",
+          "PRN": "quote-1788583635355",
+          "amount": 135600,
+          "status": "SUCCESS",
+          "UID": "FP-TEST-TXN-8811",
+          "BID": "NABIL_BANK_NP"
+        },
+        "received_at": "2026-09-05T04:47:15.379Z"
+      },
+      "paid_at": "2026-09-05T04:47:15.383Z"
+    },
+    {
+      "id": "quote-1788583634328",
+      "access_token": "2585f6e166a07fc189e8aa6185727aad5ebf4a930db4bfb2",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-018-IKRC",
+      "title": "European Subsidiary Retainer (EUR)",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Daimler Mobility Berlin",
+      "customer_email": "billing@daimler.de",
+      "status": "Draft",
+      "currency": "EUR",
+      "tax_mode": "inclusive",
+      "subtotal": 11300,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": 13,
+      "tax_amount": 1300,
+      "total": 11300,
+      "line_items": [
+        {
+          "name": "Consulting Retainer",
+          "sku": "CUSTOM",
+          "qty": 1,
+          "price": 11300,
+          "total": 11300
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:47:14.328Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null
+    },
+    {
+      "id": "quote-1788583634302",
+      "access_token": "cf90c48e1322098960f7cb5bb5b09a83dcb79408666a271a",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-017-IKQL",
+      "title": "Global Enterprise Deal (USD)",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Stripe International",
+      "customer_email": "procurement@stripe.com",
+      "status": "Draft",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 10000,
+      "discount_pct": 10,
+      "discount_amount": 1000,
+      "tax_rate": 10,
+      "tax_amount": 900,
+      "total": 9900,
+      "line_items": [
+        {
+          "name": "SalesOS Global License",
+          "sku": "CUSTOM",
+          "qty": 2,
+          "price": 5000,
+          "total": 10000
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:47:14.302Z",
+      "signed_at": null,
+      "signature_data": null,
+      "evidence_bundle": null
+    },
+    {
+      "id": "quote-1788583613735",
+      "access_token": "4cb90b761fbe8d4e777d68b2b965cd49bdc36aba6d315566",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-016-I4VB",
+      "title": "Customer Public Proposal Test",
+      "deal_id": null,
+      "deal_title": "",
+      "customer_name": "Alpha Customer Ltd",
+      "customer_email": "",
+      "status": "Signed",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 50000,
+      "discount_pct": 0,
+      "discount_amount": 0,
+      "tax_rate": null,
+      "tax_amount": null,
+      "total": null,
+      "line_items": [
+        {
+          "name": "Implementation",
+          "sku": "CUSTOM",
+          "qty": 1,
+          "price": 50000,
+          "total": 50000
+        }
+      ],
+      "terms": "Payment due within 30 days of quote acceptance.",
+      "created_at": "2026-09-05T04:46:53.735Z",
+      "signed_at": "2026-09-05T04:46:53.875Z",
+      "signature_data": "data:image/png;base64,legal_binding_esignature_sample",
+      "evidence_bundle": {
+        "certificate_id": "ESIGN-QT-2026-016-I4VB-MTNWI4Z7",
+        "content_hash": "17e808117c30e393f728d2e6abe5933cc50e1e366097b5393e7b7cbe78091cb9",
+        "signer_ip": "127.0.0.1",
+        "user_agent": "SalesOS-ESIGN-Verification-Agent/2.0",
+        "signed_at": "2026-09-05T04:46:53.875Z",
+        "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+      },
+      "signer_name": "Dr. John Doe (Chief Procurement Officer)",
+      "signer_email": ""
+    },
+    {
+      "id": "quote-1788583606733",
+      "access_token": "0075d7a55d9dc5de1b94c0e036d593b64b399e1ac5761714",
+      "tenant_id": "tenant-1",
+      "quote_number": "QT-2026-015-HZGT",
+      "title": "Commercial Proposal for Everest FinTech",
+      "deal_id": "oppo-1788583606709",
+      "deal_title": "CPQ Enterprise Deal",
+      "customer_name": "Everest FinTech Labs",
+      "customer_email": "procurement@everestfintech.np",
+      "status": "Signed",
+      "currency": "USD",
+      "tax_mode": "exclusive",
+      "subtotal": 230000,
+      "discount_pct": 10,
+      "discount_amount": 23000,
+      "tax_rate": 13,
+      "tax_amount": 26910,
+      "total": 233910,
+      "line_items": [
+        {
+          "name": "SalesOS Growth Plan (Annual)",
+          "sku": "SOS-GROWTH",
+          "qty": 5,
+          "price": 36000,
+          "total": 180000
+        },
+        {
+          "name": "Custom API Webhook Connector Setup",
+          "sku": "SOS-SETUP",
+          "qty": 1,
+          "price": 50000,
+          "total": 50000
+        }
+      ],
+      "terms": "Net 30 days. Full cloud deployment included.",
+      "created_at": "2026-09-05T04:46:46.733Z",
+      "signed_at": "2026-09-05T04:46:46.766Z",
+      "signature_data": "data:image/png;base64,sample_signature_digital_stream",
+      "evidence_bundle": {
+        "certificate_id": "ESIGN-QT-2026-015-HZGT-MTNWHZHQ",
+        "content_hash": "92a5f98d9ce135e4db2e23a7c76412fdfc6b531ce005e1f0c1ef267fbab7954c",
+        "signer_ip": "127.0.0.1",
+        "user_agent": "node",
+        "signed_at": "2026-09-05T04:46:46.766Z",
+        "legal_standard": "US ESIGN Act / Uniform Electronic Transactions Act (UETA) & EU eIDAS compliant non-repudiation audit trail."
+      },
+      "signer_name": "Sanjeev Shrestha (CTO)",
+      "signer_email": "procurement@everestfintech.np"
+    },
     {
       "id": "quote-1788554285783",
       "access_token": "d9601b086171b0941c38a6a1e36438b6e90afa55e67077fe",
@@ -6045,7 +10730,8 @@
       "secret": "whsec_8d2be3235ab4623816ba4aa861acea53",
       "is_active": true,
       "created_at": "2026-09-04T20:37:43.635Z",
-      "last_delivered_at": null
+      "last_delivered_at": null,
+      "last_delivery_status": "dlq"
     },
     {
       "id": "wh-1788554278019",
@@ -6058,6 +10744,63 @@
       "secret": "whsec_a88c545cd7072c68295165f2f643730c",
       "is_active": true,
       "created_at": "2026-09-04T20:37:58.020Z",
+      "last_delivered_at": null
+    },
+    {
+      "id": "wh-1788583614203",
+      "tenant_id": "tenant-1",
+      "name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "events": [
+        "deal_won",
+        "lead_created",
+        "quote_signed"
+      ],
+      "secret": "whsec_ec1f2e28ca124495b6d32f584cfc7be6",
+      "is_active": true,
+      "created_at": "2026-09-05T04:46:54.203Z",
+      "last_delivered_at": null,
+      "last_delivery_status": "dlq"
+    },
+    {
+      "id": "wh-1788583627692",
+      "tenant_id": "tenant-1",
+      "name": "DLQ Test Webhook",
+      "url": "http://127.0.0.1:60122/webhook-target",
+      "events": [
+        "lead_created"
+      ],
+      "secret": "whsec_da6d4025d3f2cab4afaa62c37c53f641",
+      "is_active": true,
+      "created_at": "2026-09-05T04:47:07.692Z",
+      "last_delivered_at": null
+    },
+    {
+      "id": "wh-1788583672890",
+      "tenant_id": "tenant-1",
+      "name": "Valid Production Slack Hook",
+      "url": "https://hooks.slack.com/services/T00/B00/X00",
+      "events": [
+        "deal_won",
+        "lead_created",
+        "quote_signed"
+      ],
+      "secret": "whsec_1996506670d88f75647c58076cd3899a",
+      "is_active": true,
+      "created_at": "2026-09-05T04:47:52.890Z",
+      "last_delivered_at": null
+    },
+    {
+      "id": "wh-1788583686633",
+      "tenant_id": "tenant-1",
+      "name": "DLQ Test Webhook",
+      "url": "http://127.0.0.1:56311/webhook-target",
+      "events": [
+        "lead_created"
+      ],
+      "secret": "whsec_ded10cefe6ebd377aaf1032ac67e559a",
+      "is_active": true,
+      "created_at": "2026-09-05T04:48:06.633Z",
       "last_delivered_at": null
     }
   ],
@@ -6106,6 +10849,36 @@
       "action": "discount_override",
       "status": "pending",
       "created_at": "2026-09-04T20:37:47.853Z"
+    },
+    {
+      "id": "test-app-1788583616255",
+      "tenant_id": "tenant-1",
+      "action": "send_discount_email",
+      "status": "executed",
+      "created_at": "2026-09-05T04:46:56.257Z",
+      "executed_at": "2026-09-05T04:46:57.101Z"
+    },
+    {
+      "id": "app-t1-1788583617872",
+      "tenant_id": "tenant-1",
+      "action": "discount_override",
+      "status": "pending",
+      "created_at": "2026-09-05T04:46:57.872Z"
+    },
+    {
+      "id": "test-app-1788583675002",
+      "tenant_id": "tenant-1",
+      "action": "send_discount_email",
+      "status": "executed",
+      "created_at": "2026-09-05T04:47:55.009Z",
+      "executed_at": "2026-09-05T04:47:55.877Z"
+    },
+    {
+      "id": "app-t1-1788583676514",
+      "tenant_id": "tenant-1",
+      "action": "discount_override",
+      "status": "pending",
+      "created_at": "2026-09-05T04:47:56.514Z"
     }
   ],
   "tenant_settings": {
@@ -6138,7 +10911,7 @@
       },
       "working_hours": "08:00 - 18:00 (EST)",
       "onboarding_completed": true,
-      "onboarding_completed_at": "2026-09-04T20:37:51.244Z",
+      "onboarding_completed_at": "2026-09-05T04:47:59.928Z",
       "industry_name": "Real Estate & Property Development"
     },
     "tenant-2": {
@@ -6148,6 +10921,48 @@
     }
   },
   "conversations": [
+    {
+      "id": "wc-session-1788583676540",
+      "tenant_id": "tenant-test-webchat",
+      "channel": "Website chat",
+      "contact_name": "Website Visitor",
+      "company_name": "Online Visitor",
+      "subject": "Website chat conversation",
+      "status": "open",
+      "last_message_at": "2026-09-05T04:47:56.557Z",
+      "unread": true
+    },
+    {
+      "id": "conv-1788583676306",
+      "tenant_id": "tenant-1",
+      "channel": "Website chat",
+      "contact_name": "Private Client",
+      "company_name": "",
+      "subject": "Confidential Negotiations",
+      "status": "open",
+      "last_message_at": "2026-09-05T04:47:56.306Z"
+    },
+    {
+      "id": "wc-session-1788583617884",
+      "tenant_id": "tenant-test-webchat",
+      "channel": "Website chat",
+      "contact_name": "Website Visitor",
+      "company_name": "Online Visitor",
+      "subject": "Website chat conversation",
+      "status": "open",
+      "last_message_at": "2026-09-05T04:46:57.896Z",
+      "unread": true
+    },
+    {
+      "id": "conv-1788583617728",
+      "tenant_id": "tenant-1",
+      "channel": "Website chat",
+      "contact_name": "Private Client",
+      "company_name": "",
+      "subject": "Confidential Negotiations",
+      "status": "open",
+      "last_message_at": "2026-09-05T04:46:57.728Z"
+    },
     {
       "id": "wc-session-1788554267884",
       "tenant_id": "tenant-test-webchat",
@@ -6307,6 +11122,28 @@
       "options": [],
       "required": false,
       "created_at": "2026-09-04T20:37:47.823Z"
+    },
+    {
+      "id": "cf-1788583617851",
+      "tenant_id": "tenant-1",
+      "entity": "contacts",
+      "label": "Confidential Field",
+      "field_name": "confidential_field",
+      "type": "text",
+      "options": [],
+      "required": false,
+      "created_at": "2026-09-05T04:46:57.851Z"
+    },
+    {
+      "id": "cf-1788583676479",
+      "tenant_id": "tenant-1",
+      "entity": "contacts",
+      "label": "Confidential Field",
+      "field_name": "confidential_field",
+      "type": "text",
+      "options": [],
+      "required": false,
+      "created_at": "2026-09-05T04:47:56.479Z"
     }
   ],
   "messages": [
@@ -6379,9 +11216,143 @@
       "sender_name": "+9779841122334",
       "body": "STOP",
       "created_at": "2026-09-04T20:37:51.333Z"
+    },
+    {
+      "id": "msg-1788583617896",
+      "tenant_id": "tenant-test-webchat",
+      "conversation_id": "wc-session-1788583617884",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "Website Visitor",
+      "body": "Inbound visitor inquiry",
+      "created_at": "2026-09-05T04:46:57.896Z"
+    },
+    {
+      "id": "msg-1788583621221",
+      "tenant_id": "tenant-1",
+      "conversation_id": "wa-9779801234567",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "Kiran Gurung",
+      "body": "Inquiring about 3BHK penthouse unit availability",
+      "created_at": "2026-09-05T04:47:01.221Z"
+    },
+    {
+      "id": "msg-1788583621238",
+      "tenant_id": "tenant-1",
+      "conversation_id": "sms-9779841122334",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "+9779841122334",
+      "body": "STOP",
+      "created_at": "2026-09-05T04:47:01.238Z"
+    },
+    {
+      "id": "msg-1788583676557",
+      "tenant_id": "tenant-test-webchat",
+      "conversation_id": "wc-session-1788583676540",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "Website Visitor",
+      "body": "Inbound visitor inquiry",
+      "created_at": "2026-09-05T04:47:56.557Z"
+    },
+    {
+      "id": "msg-1788583680014",
+      "tenant_id": "tenant-1",
+      "conversation_id": "wa-9779801234567",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "Kiran Gurung",
+      "body": "Inquiring about 3BHK penthouse unit availability",
+      "created_at": "2026-09-05T04:48:00.014Z"
+    },
+    {
+      "id": "msg-1788583680038",
+      "tenant_id": "tenant-1",
+      "conversation_id": "sms-9779841122334",
+      "direction": "inbound",
+      "sender_type": "customer",
+      "sender_name": "+9779841122334",
+      "body": "STOP",
+      "created_at": "2026-09-05T04:48:00.038Z"
     }
   ],
   "opportunities": [
+    {
+      "id": "oppo-1788583694026",
+      "tenant_id": "tenant-1",
+      "name": "Pokhara Resort AI Automation",
+      "amount": 95000,
+      "stage": "Closed Won",
+      "probability": 100,
+      "created_at": "2026-09-05T04:48:14.026Z",
+      "updated_at": "2026-09-05T04:48:14.059Z"
+    },
+    {
+      "id": "oppo-1788583693972",
+      "tenant_id": "tenant-1",
+      "name": "Kathmandu Retail POS Migration",
+      "amount": 120000,
+      "stage": "Closed Won",
+      "probability": 100,
+      "created_at": "2026-09-05T04:48:13.972Z",
+      "updated_at": "2026-09-05T04:48:14.007Z"
+    },
+    {
+      "id": "oppo-1788583693364",
+      "tenant_id": "tenant-1",
+      "name": "Enterprise Cloud Migration Deal",
+      "amount": 85000,
+      "stage": "Negotiation",
+      "probability": 60,
+      "created_at": "2026-09-05T04:48:13.364Z",
+      "expected_close_date": "2026-10-31",
+      "next_step": "Final Legal Review",
+      "checklist": [
+        "Formal quote delivered to customer",
+        "Technical architecture approved",
+        "Budget confirmed by buyer"
+      ],
+      "updated_at": "2026-09-05T04:48:13.406Z"
+    },
+    {
+      "id": "oppo-1788583635416",
+      "tenant_id": "tenant-1",
+      "name": "Pokhara Resort AI Automation",
+      "amount": 95000,
+      "stage": "Closed Won",
+      "probability": 100,
+      "created_at": "2026-09-05T04:47:15.416Z",
+      "updated_at": "2026-09-05T04:47:15.470Z"
+    },
+    {
+      "id": "oppo-1788583635330",
+      "tenant_id": "tenant-1",
+      "name": "Kathmandu Retail POS Migration",
+      "amount": 120000,
+      "stage": "Closed Won",
+      "probability": 100,
+      "created_at": "2026-09-05T04:47:15.330Z",
+      "updated_at": "2026-09-05T04:47:15.383Z"
+    },
+    {
+      "id": "oppo-1788583634585",
+      "tenant_id": "tenant-1",
+      "name": "Enterprise Cloud Migration Deal",
+      "amount": 85000,
+      "stage": "Negotiation",
+      "probability": 60,
+      "created_at": "2026-09-05T04:47:14.585Z",
+      "expected_close_date": "2026-10-31",
+      "next_step": "Final Legal Review",
+      "checklist": [
+        "Formal quote delivered to customer",
+        "Technical architecture approved",
+        "Budget confirmed by buyer"
+      ],
+      "updated_at": "2026-09-05T04:47:14.644Z"
+    },
     {
       "id": "oppo-1788554285769",
       "tenant_id": "tenant-1",
@@ -6491,6 +11462,46 @@
   ],
   "ai_evaluations": [
     {
+      "id": "eval-1788583686599",
+      "tenant_id": "tenant-1",
+      "ai_run_id": null,
+      "reviewer_id": "usr-1",
+      "rating": "good",
+      "category": "general_response",
+      "feedback": "",
+      "created_at": "2026-09-05T04:48:06.599Z"
+    },
+    {
+      "id": "eval-1788583680084",
+      "tenant_id": "tenant-1",
+      "ai_run_id": null,
+      "reviewer_id": "usr-1",
+      "rating": "good",
+      "category": "qualification",
+      "feedback": "Accurately captured BANT qualification parameters.",
+      "created_at": "2026-09-05T04:48:00.084Z"
+    },
+    {
+      "id": "eval-1788583627641",
+      "tenant_id": "tenant-1",
+      "ai_run_id": null,
+      "reviewer_id": "usr-1",
+      "rating": "good",
+      "category": "general_response",
+      "feedback": "",
+      "created_at": "2026-09-05T04:47:07.641Z"
+    },
+    {
+      "id": "eval-1788583621284",
+      "tenant_id": "tenant-1",
+      "ai_run_id": null,
+      "reviewer_id": "usr-1",
+      "rating": "good",
+      "category": "qualification",
+      "feedback": "Accurately captured BANT qualification parameters.",
+      "created_at": "2026-09-05T04:47:01.284Z"
+    },
+    {
       "id": "eval-1788554277962",
       "tenant_id": "tenant-1",
       "ai_run_id": null,
@@ -6537,13 +11548,13 @@
         "verify_token": "my_custom_meta_token",
         "page_name": "Acme Nepal FB Page",
         "is_active": false,
-        "app_secret": "enc::b28fa184f8b3a066e3bcb375:3deec634977963e2cefce51355919102:8c480b7823d2f8284804753943"
+        "app_secret": "enc::e89d369fe8fe5bd2ccde4502:015117171961c9efd2336beab8d9a177:ad3a80df5c096c6afb3a94715d"
       },
       "whatsapp": {
         "verify_token": "salesos-whatsapp-verify",
         "phone_number_id": "wa_1234567890",
         "is_active": false,
-        "access_token": "enc::87e1f2e43cd9d8e629129d29:947e5f4f974c5dbe2c1afd7800018b89:1a3b58011c72273af42d79bfc4"
+        "access_token": "enc::78f223f7d59baea302f0efee:e38a646b22e3891909e31ba70f321328:879758b680defae8c2e4d843dc"
       }
     }
   },

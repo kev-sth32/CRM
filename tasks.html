@@ -279,7 +279,12 @@
       }
     }
 
-    loadTasks();
+    loadTasks().then(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new') {
+        openCreateTaskModal();
+      }
+    });
   </script>
 </body>
 </html>

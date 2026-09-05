@@ -759,9 +759,13 @@ const SalesOS = {
 
   initTheme() {
     if (typeof window === 'undefined') return;
-    const saved = localStorage.getItem('salesos_theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
+    // Default to clean enterprise Light mode unless explicitly switched by user
+    let theme = localStorage.getItem('salesos_theme');
+    const isExplicit = localStorage.getItem('salesos_theme_explicit') === 'true';
+    if (!isExplicit || !theme) {
+      theme = 'light';
+      localStorage.setItem('salesos_theme', 'light');
+    }
     document.documentElement.setAttribute('data-theme', theme);
     const icon = document.getElementById('themeToggleIcon');
     if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
@@ -773,6 +777,7 @@ const SalesOS = {
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('salesos_theme', next);
+    localStorage.setItem('salesos_theme_explicit', 'true');
     const icon = document.getElementById('themeToggleIcon');
     if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
     this.showToast(`Switched to ${next === 'dark' ? 'Dark' : 'Light'} mode`, 'info', 1500);

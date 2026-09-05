@@ -107,7 +107,7 @@
           </div>
           <div>
             <span style="color:var(--muted);display:block">Website</span>
-            <a id="drawerCompanyWebsite" href="#" target="_blank" style="color:var(--blue)">—</a>
+            <a id="drawerCompanyWebsite" href="javascript:void(0)" target="_blank" style="color:var(--blue)">—</a>
           </div>
           <div>
             <span style="color:var(--muted);display:block">Telephone</span>
@@ -481,7 +481,13 @@
       }
     }
 
-    loadCompanies();
+    loadCompanies().then(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const highlightId = urlParams.get('highlight');
+      if (highlightId) {
+        openCompanyDrawerById(highlightId);
+      }
+    });
   </script>
 </body>
 </html>

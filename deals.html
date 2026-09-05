@@ -1224,7 +1224,12 @@
       }
     }
 
-    loadDeals();
+    loadDeals().then(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new') {
+        openCreateDealModal();
+      }
+    });
   </script>
 </body>
 </html>

@@ -307,10 +307,43 @@
     async function loadQuoteDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const quoteParam = urlParams.get('token') || urlParams.get('id');
+      const productParam = urlParams.get('product');
 
-      if (!quoteParam) {
-        alert('Missing quote security token parameter.');
+      if (!quoteParam && !productParam) {
+        alert('Missing quote security token or product parameter.');
         return;
+      }
+
+      if (productParam && !quoteParam) {
+        try {
+          const res = await fetch(`/api/products/${productParam}/flyer-data`);
+          if (res.ok) {
+            const data = await res.json();
+            const f = data.flyer;
+            quoteData = {
+              id: f.id,
+              quote_number: `PROPOSAL-${f.sku || 'PRD'}`,
+              title: f.name,
+              deal_title: 'Direct Digital Catalog Proposal',
+              customer_name: 'Valued Prospective Client',
+              customer_email: '',
+              currency: 'NPR',
+              subtotal: f.unit_price,
+              discount_amount: 0,
+              tax_amount: f.vat_amount,
+              total: f.gross_total,
+              status: 'Sent',
+              created_at: new Date().toISOString(),
+              valid_until: new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString(),
+              scope_notes: f.description || 'Commercial specifications & warranty coverage.',
+              line_items: [
+                { description: f.name, quantity: 1, unit_price: f.unit_price, total: f.unit_price }
+              ]
+            };
+            renderQuoteView(quoteData);
+            return;
+          }
+        } catch (_) {}
       }
 
       try {

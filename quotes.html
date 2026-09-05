@@ -265,6 +265,10 @@
       ]);
       loadQuotes();
       loadDealsForSelect();
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new') {
+        openCreateQuoteModal();
+      }
     });
 
     async function loadQuotes() {

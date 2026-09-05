@@ -575,6 +575,11 @@
       }
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+      document.getElementById('contactSearchInput').value = searchParam;
+    }
     loadContacts();
   </script>
 </body>

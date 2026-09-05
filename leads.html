@@ -946,6 +946,8 @@
       } catch (e) {
         SalesOS.showToast('Network error during merge', 'error');
       }
+    }
+
     // AI WhatsApp Pitch Handlers
     function openWhatsAppPitchModal() {
       if (!selectedLead) {
@@ -1000,7 +1002,21 @@
       SalesOS.showToast('Opening WhatsApp with AI pitch...', 'info');
     }
 
-    loadLeads();
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+      document.getElementById('leadSearchInput').value = searchParam;
+    }
+
+    loadLeads().then(() => {
+      const highlightId = urlParams.get('highlight');
+      if (highlightId) {
+        openLeadDrawerById(highlightId);
+      }
+      if (urlParams.get('action') === 'new') {
+        openCreateLeadModal();
+      }
+    });
   </script>
 </body>
 </html>

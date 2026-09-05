@@ -17,6 +17,7 @@ const SalesOS = {
     { label: 'AI Agents & Approvals', path: '/approvals.html', icon: '✦', section: 'Autonomous AI', badge: '3', badgeClass: 'badge-orange' },
     { label: 'Automations', path: '/automations.html', icon: '⚙', section: 'Autonomous AI' },
     { label: 'Channels & Ingestion', path: '/settings.html?tab=channels', icon: '🌐', section: 'Autonomous AI', badge: 'New', badgeClass: 'badge-green' },
+    { label: 'Knowledge Base', path: '/settings.html?tab=knowledge', icon: '📚', section: 'Autonomous AI' },
     { label: 'Reports', path: '/reports.html', icon: '▥', section: 'Analytics & Manage' },
     { label: 'Settings', path: '/settings.html', icon: '⚙', section: 'Analytics & Manage' },
   ],
@@ -25,6 +26,8 @@ const SalesOS = {
     this.initTheme();
     this.checkSession();
     this.renderSidebar(activeRouteName);
+    this.initSidebarCollapse();
+    this.refreshSidebarBadges();
     this.renderTopbar(breadcrumbs);
     this.renderModals();
     this.setupGlobalEvents();
@@ -73,7 +76,7 @@ const SalesOS = {
         (route.path === '/index.html' && (currentPath === '/' || currentPath === ''));
 
       html += `
-        <a href="${route.path}" class="nav-item ${isActive ? 'active' : ''}" id="nav-${route.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">
+        <a href="${route.path}" class="nav-item ${isActive ? 'active' : ''}" id="nav-${route.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" title="${this.escapeHtml(route.label)}">
           <span class="nav-icon">${route.icon}</span>
           <span>${route.label}</span>
           ${route.badge ? `<span class="nav-badge ${route.badgeClass || ''}">${route.badge}</span>` : ''}
@@ -89,18 +92,71 @@ const SalesOS = {
           <p>Handled 68% of inbound conversations autonomously this week.</p>
           <a href="/approvals.html">Review AI actions →</a>
         </div>
-        <a href="/onboarding.html" class="nav-item" style="color:var(--blue);font-weight:600">
+        <a href="/onboarding.html" class="nav-item" style="color:var(--blue);font-weight:600" title="12-Step Setup Wizard">
           <span class="nav-icon">✨</span>
           <span>12-Step Setup Wizard</span>
         </a>
-        <a href="/superadmin.html" class="nav-item" id="sidebarSuperadminLink" style="color:#a855f7;font-weight:600;display:${this.currentUser?.role === 'superadmin' ? 'flex' : 'none'}">
+        <a href="/superadmin.html" class="nav-item" id="sidebarSuperadminLink" style="color:#a855f7;font-weight:600;display:${this.currentUser?.role === 'superadmin' ? 'flex' : 'none'}" title="Platform Superadmin">
           <span class="nav-icon">⚡</span>
           <span>Platform Superadmin</span>
         </a>
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="SalesOS.toggleSidebarCollapse()" title="Toggle Sidebar (Ctrl+\)">
+          <span class="collapse-icon">«</span>
+          <span class="collapse-text">Collapse Rail</span>
+        </button>
       </div>
     `;
 
     sidebar.innerHTML = html;
+  },
+
+  initSidebarCollapse() {
+    if (typeof window === 'undefined') return;
+    const isCollapsed = localStorage.getItem('salesos_sidebar_collapsed') === 'true';
+    const sidebar = document.getElementById('sidebar');
+    const btnIcon = document.querySelector('.collapse-icon');
+    if (sidebar && isCollapsed) {
+      sidebar.classList.add('collapsed');
+      if (btnIcon) btnIcon.textContent = '»';
+    }
+  },
+
+  toggleSidebarCollapse() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    sidebar.classList.toggle('collapsed');
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    localStorage.setItem('salesos_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+    const btnIcon = document.querySelector('.collapse-icon');
+    if (btnIcon) btnIcon.textContent = isCollapsed ? '»' : '«';
+  },
+
+  async refreshSidebarBadges() {
+    try {
+      // 1. Fetch AI pending approvals count
+      const rApp = await fetch('/api/ai-approvals');
+      if (rApp.ok) {
+        const apps = await rApp.json();
+        const pendingCount = Array.isArray(apps) ? apps.filter(a => a.status === 'pending').length : 0;
+        const appBadge = document.querySelector('#nav-ai-agents---approvals .nav-badge');
+        if (appBadge) {
+          appBadge.textContent = pendingCount;
+          appBadge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+        }
+      }
+
+      // 2. Fetch unread conversations count
+      const rConv = await fetch('/api/conversations');
+      if (rConv.ok) {
+        const convs = await rConv.json();
+        const unreadCount = Array.isArray(convs) ? convs.filter(c => c.unread).length : 0;
+        const inboxBadge = document.querySelector('#nav-inbox .nav-badge');
+        if (inboxBadge) {
+          inboxBadge.textContent = unreadCount;
+          inboxBadge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+        }
+      }
+    } catch (_) {}
   },
 
   toggleSidebar() {
@@ -312,12 +368,13 @@ const SalesOS = {
           search.select();
         }
       }
-    });
-  },
 
-  toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.toggle('open');
+      // Global keyboard shortcut: Ctrl+\ or Cmd+\ toggles sidebar rail collapse
+      if ((e.ctrlKey || e.metaKey) && e.key === '\\') {
+        e.preventDefault();
+        SalesOS.toggleSidebarCollapse();
+      }
+    });
   },
 
   toggleUserDropdown(event) {

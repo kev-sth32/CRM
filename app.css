@@ -194,8 +194,87 @@ body {
   top: 0;
   height: 100vh;
   z-index: 40;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 1px 0 3px rgba(0, 0, 0, 0.02);
+  overflow-x: hidden;
+}
+
+/* Collapsed Icon Rail (68px width) */
+.sidebar.collapsed {
+  width: 68px;
+}
+.sidebar.collapsed .brand {
+  padding: 20px 14px 18px;
+  justify-content: center;
+}
+.sidebar.collapsed .brand-text,
+.sidebar.collapsed .tenant-info,
+.sidebar.collapsed .tenant-badge span:last-child,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .nav-item span:nth-child(2),
+.sidebar.collapsed .nav-badge,
+.sidebar.collapsed .agent-mini-card,
+.sidebar.collapsed .sidebar-footer .nav-item span:nth-child(2),
+.sidebar.collapsed .collapse-text {
+  display: none !important;
+}
+.sidebar.collapsed .tenant-badge {
+  margin: 0 10px 18px;
+  padding: 8px;
+  justify-content: center;
+}
+.sidebar.collapsed .nav-links {
+  padding: 0 8px;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 10px 0;
+  gap: 0;
+}
+.sidebar.collapsed .nav-icon {
+  width: 24px;
+  font-size: 17px;
+  margin: 0 auto;
+}
+.sidebar.collapsed .sidebar-footer {
+  padding: 10px 8px 14px;
+}
+.sidebar.collapsed .sidebar-footer .nav-item {
+  justify-content: center;
+}
+
+/* Collapse Toggle Button */
+.sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: var(--transition);
+  font-family: inherit;
+}
+.sidebar-collapse-btn:hover {
+  background: var(--bg);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.sidebar.collapsed .sidebar-collapse-btn {
+  justify-content: center;
+  padding: 8px 0;
+}
+.collapse-icon {
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
 
 .brand {

@@ -2055,6 +2055,70 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, { ok: true });
     }
 
+    // Knowledge Base API (RAG Documents & Chunking)
+    if (pathname === '/api/knowledge') {
+      const d = readData();
+      d.knowledge = d.knowledge || [
+        {
+          id: 'kb-1',
+          tenant_id: activeTenantId,
+          title: 'Standard Payment Terms & Fonepay QR Policy',
+          category: 'Finance',
+          content: 'All sales quotes include 13% statutory Nepal VAT. Invoices can be settled via Fonepay dynamic QR code or eSewa mobile wallet with instant deal progression to Closed Won.',
+          chunks_count: 1,
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 'kb-2',
+          tenant_id: activeTenantId,
+          title: 'Sales Discount Approval Guardrails',
+          category: 'Sales',
+          content: 'Discounts over 15% require formal human approval from the Sales Director before quotes can be signed or sent to prospective customers.',
+          chunks_count: 1,
+          created_at: new Date().toISOString()
+        }
+      ];
+
+      if (req.method === 'GET') {
+        const docs = d.knowledge.filter(k => !k.tenant_id || k.tenant_id === activeTenantId);
+        return send(res, 200, docs);
+      }
+
+      if (req.method === 'POST') {
+        const b = await body(req);
+        if (!b.title || !b.content) return send(res, 400, { error: 'title and content are required' });
+        const { chunkText } = require('./knowledge-processor');
+        const chunks = chunkText(b.content, { size: 600, overlap: 80 });
+
+        const newDoc = {
+          id: `kb-${Date.now()}`,
+          tenant_id: activeTenantId,
+          title: b.title.trim(),
+          category: b.category || 'General',
+          content: b.content.trim(),
+          chunks_count: chunks.length || 1,
+          created_at: new Date().toISOString()
+        };
+
+        d.knowledge.unshift(newDoc);
+        writeData(d);
+        await audit(activeTenantId, req.user.id, 'create', 'knowledge', newDoc.id, { title: newDoc.title, chunks: newDoc.chunks_count });
+        return send(res, 201, newDoc);
+      }
+    }
+
+    if (pathname.startsWith('/api/knowledge/') && req.method === 'DELETE') {
+      const id = pathname.split('/')[3];
+      const d = readData();
+      d.knowledge = d.knowledge || [];
+      const idx = d.knowledge.findIndex(k => k.id === id && (req.user.role === 'superadmin' || !k.tenant_id || k.tenant_id === activeTenantId));
+      if (idx === -1) return send(res, 404, { error: 'Knowledge document not found' });
+      d.knowledge.splice(idx, 1);
+      writeData(d);
+      await audit(activeTenantId, req.user.id, 'delete', 'knowledge', id, {});
+      return send(res, 200, { ok: true });
+    }
+
     // Webhooks API (Zapier / Make / Webhook Dispatcher)
     if (pathname === '/api/settings/webhooks') {
       const d = readData();

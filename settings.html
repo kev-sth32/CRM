@@ -11,6 +11,8 @@
       gap: 6px;
       border-bottom: 1px solid var(--line);
       margin-bottom: 24px;
+      overflow-x: auto;
+      white-space: nowrap;
     }
     .settings-tab {
       padding: 10px 16px;
@@ -56,6 +58,7 @@
           <button class="settings-tab" onclick="switchTab('ai_policy', this)">✦ AI Policy & Guardrails</button>
           <button class="settings-tab" onclick="switchTab('billing', this)">💳 Subscription & Billing</button>
           <button class="settings-tab" onclick="switchTab('channels', this)">🌐 Channels & Website</button>
+          <button class="settings-tab" onclick="switchTab('knowledge', this)">📚 Knowledge Base & Docs</button>
           <button class="settings-tab" onclick="switchTab('custom_fields', this)">🧩 Custom Fields</button>
           <button class="settings-tab" onclick="switchTab('webhooks', this)">⚡ Webhooks & Zapier</button>
           <button class="settings-tab" onclick="switchTab('fls', this)">🛡️ Field Security (FLS)</button>
@@ -745,6 +748,65 @@
 
           </div>
         </div>
+
+        <!-- Section: Knowledge Base & RAG Documents -->
+        <div class="settings-section" id="sec-knowledge">
+          <div style="max-width:960px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <div>
+                <h2 style="font-size:18px;font-weight:750;margin:0 0 6px">Knowledge Base & RAG Documents</h2>
+                <p style="color:var(--muted);font-size:13.5px;margin:0">
+                  Upload policies, standard operating procedures, pricing catalogs, and FAQs. AI Copilot dynamically retrieves and cites verified facts during customer conversations and deal generation.
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="openAddKnowledgeModal()">＋ Add Document</button>
+            </div>
+
+            <!-- Stats Metric Cards -->
+            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;margin-bottom:24px">
+              <div class="card" style="padding:16px">
+                <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Total Documents</div>
+                <div style="font-size:24px;font-weight:800;color:var(--ink);margin-top:4px" id="kbDocCount">0</div>
+              </div>
+              <div class="card" style="padding:16px">
+                <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">RAG Text Chunks</div>
+                <div style="font-size:24px;font-weight:800;color:var(--blue);margin-top:4px" id="kbChunkCount">0</div>
+              </div>
+              <div class="card" style="padding:16px">
+                <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Retrieval Strategy</div>
+                <div style="font-size:14.5px;font-weight:700;color:var(--ink);margin-top:8px">Semantic (Overlap 80)</div>
+              </div>
+              <div class="card" style="padding:16px">
+                <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Policy Grounding</div>
+                <div style="font-size:14.5px;font-weight:700;color:var(--green);margin-top:8px">🛡️ Active & Enforced</div>
+              </div>
+            </div>
+
+            <!-- Document List Card -->
+            <div class="card" style="overflow:hidden">
+              <div style="padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+                <h3 style="font-size:15px;font-weight:700;margin:0">Indexed Knowledge Documents</h3>
+                <span class="badge badge-blue" id="kbIndexedBadge">0 Active Documents</span>
+              </div>
+              <div class="table-responsive">
+                <table class="table" style="margin:0">
+                  <thead>
+                    <tr>
+                      <th style="width:38%">Document Title</th>
+                      <th style="width:15%">Category</th>
+                      <th style="width:15%">Chunks Indexed</th>
+                      <th style="width:17%">Date Created</th>
+                      <th style="width:15%;text-align:right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="knowledgeDocsTableBody">
+                    <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading knowledge documents...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -835,6 +897,64 @@
     </div>
   </div>
 
+  <!-- Modal: Add Knowledge Document -->
+  <div class="modal-overlay" id="addKnowledgeModal">
+    <div class="modal-box" style="max-width:560px">
+      <div class="modal-header">
+        <h3 style="margin:0">＋ Add Knowledge Document</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('addKnowledgeModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="addKnowledgeForm" onsubmit="handleAddKnowledgeSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Document Title</label>
+            <input type="text" id="kbDocTitle" class="form-control" placeholder="e.g. 2026 SaaS Pricing & VAT Policy" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="kbDocCategory" class="form-control">
+              <option value="Sales">Sales & Pricing</option>
+              <option value="Finance">Finance & Tax (Nepal VAT)</option>
+              <option value="Support">Customer Support & FAQs</option>
+              <option value="Product">Product Documentation</option>
+              <option value="Compliance">Compliance & Legal</option>
+              <option value="General">General Knowledge</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Document Content (Policies, Guidelines, SOPs)</label>
+            <textarea id="kbDocContent" class="form-control" rows="8" placeholder="Paste policy details, pricing tables, refund terms, or business rules here. The processor will automatically chunk this text for semantic RAG vector retrieval..." required></textarea>
+            <small style="color:var(--muted);display:block;margin-top:6px">Chunks are automatically produced with 600-character windows and 80-character boundary overlaps.</small>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('addKnowledgeModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Index Document & Chunk</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: View Knowledge Document Preview -->
+  <div class="modal-overlay" id="viewKnowledgeModal">
+    <div class="modal-box" style="max-width:640px">
+      <div class="modal-header">
+        <h3 style="margin:0" id="viewKbTitle">Document Content</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('viewKnowledgeModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:12px;display:flex;gap:8px">
+          <span class="badge badge-purple" id="viewKbCategory">Category</span>
+          <span class="badge badge-blue" id="viewKbChunks">0 Chunks</span>
+        </div>
+        <div id="viewKbContent" style="white-space:pre-wrap;background:#f8fafc;padding:16px;border-radius:8px;border:1px solid var(--line);font-size:13.5px;line-height:1.6;max-height:400px;overflow-y:auto"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:18px">
+          <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('viewKnowledgeModal')">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
   <script>
     SalesOS.init('Settings', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Settings' }]);
@@ -857,6 +977,7 @@
         loadWebhookDeliveries();
       }
       if (tabId === 'channels') loadChannelsSettings();
+      if (tabId === 'knowledge') loadKnowledgeDocs();
       if (tabId === 'fls') loadFlsSettings();
       if (tabId === 'sso') loadSsoSettings();
     }
@@ -1599,6 +1720,113 @@ document.getElementById('salesos-inbound-lead-form').addEventListener('submit', 
       if (!el) return;
       navigator.clipboard.writeText(el.value);
       SalesOS.showToast('Webhook URL copied to clipboard!', 'success');
+    }
+
+    // Knowledge Base RAG Client Handlers
+    let allKnowledgeDocs = [];
+
+    async function loadKnowledgeDocs() {
+      try {
+        const res = await fetch('/api/knowledge');
+        if (!res.ok) throw new Error('Failed to load knowledge documents');
+        allKnowledgeDocs = await res.json();
+        
+        const tbody = document.getElementById('knowledgeDocsTableBody');
+        const docCountEl = document.getElementById('kbDocCount');
+        const chunkCountEl = document.getElementById('kbChunkCount');
+        const badgeEl = document.getElementById('kbIndexedBadge');
+
+        const totalChunks = allKnowledgeDocs.reduce((acc, d) => acc + (d.chunks_count || 1), 0);
+        if (docCountEl) docCountEl.textContent = allKnowledgeDocs.length;
+        if (chunkCountEl) chunkCountEl.textContent = totalChunks;
+        if (badgeEl) badgeEl.textContent = `${allKnowledgeDocs.length} Active Document${allKnowledgeDocs.length === 1 ? '' : 's'}`;
+
+        if (!tbody) return;
+
+        if (!allKnowledgeDocs.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">No knowledge documents indexed yet. Click "＋ Add Document" to upload your first policy or guide.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = allKnowledgeDocs.map(doc => `
+          <tr>
+            <td>
+              <strong style="color:var(--ink);cursor:pointer" onclick="viewKnowledgeDoc('${doc.id}')">${SalesOS.escapeHtml(doc.title)}</strong>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:2px">${doc.content ? SalesOS.escapeHtml(doc.content.slice(0, 75)) + '...' : ''}</div>
+            </td>
+            <td><span class="badge ${doc.category === 'Finance' ? 'badge-green' : doc.category === 'Sales' ? 'badge-blue' : 'badge-purple'}">${SalesOS.escapeHtml(doc.category || 'General')}</span></td>
+            <td><span class="badge badge-gray">${doc.chunks_count || 1} chunk${(doc.chunks_count || 1) === 1 ? '' : 's'}</span></td>
+            <td><span style="font-size:12px;color:var(--muted)">${new Date(doc.created_at || Date.now()).toLocaleDateString()}</span></td>
+            <td style="text-align:right;white-space:nowrap">
+              <button class="btn btn-secondary" style="padding:3px 8px;font-size:11px;margin-right:4px" onclick="viewKnowledgeDoc('${doc.id}')">View</button>
+              <button class="btn btn-secondary" style="padding:3px 8px;font-size:11px;color:var(--red)" onclick="deleteKnowledgeDoc('${doc.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('loadKnowledgeDocs error:', err);
+      }
+    }
+
+    function openAddKnowledgeModal() {
+      const form = document.getElementById('addKnowledgeForm');
+      if (form) form.reset();
+      SalesOS.showModal('addKnowledgeModal');
+    }
+
+    async function handleAddKnowledgeSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('kbDocTitle').value.trim();
+      const category = document.getElementById('kbDocCategory').value;
+      const content = document.getElementById('kbDocContent').value.trim();
+
+      if (!title || !content) {
+        SalesOS.showToast('Please fill in both title and document content', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/knowledge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, content })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('addKnowledgeModal');
+          SalesOS.showToast('Document indexed into RAG memory successfully!', 'success');
+          loadKnowledgeDocs();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to index document', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Error uploading document', 'error');
+      }
+    }
+
+    async function deleteKnowledgeDoc(id) {
+      if (!confirm('Are you sure you want to remove this document from the AI Knowledge Base?')) return;
+      try {
+        const res = await fetch(`/api/knowledge/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Knowledge document deleted successfully');
+          loadKnowledgeDocs();
+        } else {
+          SalesOS.showToast('Failed to delete document', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Error deleting document', 'error');
+      }
+    }
+
+    function viewKnowledgeDoc(id) {
+      const doc = allKnowledgeDocs.find(d => d.id === id);
+      if (!doc) return;
+      document.getElementById('viewKbTitle').textContent = doc.title;
+      document.getElementById('viewKbCategory').textContent = doc.category || 'General';
+      document.getElementById('viewKbChunks').textContent = `${doc.chunks_count || 1} Chunks Indexed`;
+      document.getElementById('viewKbContent').textContent = doc.content || '';
+      SalesOS.showModal('viewKnowledgeModal');
     }
 
     const urlParams = new URLSearchParams(window.location.search);

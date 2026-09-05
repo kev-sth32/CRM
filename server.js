@@ -371,6 +371,10 @@ function send(res, status, data, type = 'application/json') {
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS'
   };
 
+  if (type.includes('text/html') || type.includes('application/javascript')) {
+    headers['Cache-Control'] = 'no-cache, must-revalidate';
+  }
+
   if (res._origin) {
     headers['Access-Control-Allow-Origin'] = res._origin;
     headers['Access-Control-Allow-Credentials'] = 'true';

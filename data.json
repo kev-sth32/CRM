@@ -565,10 +565,28 @@
         "created_time": 1725450000
       },
       "stage": "New lead",
-      "score": 82,
+      "score": 80,
       "owner_name": "Arjun Sharma",
       "notes": "Automated inbound lead via Meta Lead Ads form (form_kathmandu_sme_01). Ad ID: ad_b2b_growth_camp.",
-      "created_at": "2026-09-05T04:48:13.815Z"
+      "created_at": "2026-09-05T04:48:13.815Z",
+      "qualification": "hot",
+      "signals": [
+        {
+          "rule": "budget_confirmed",
+          "points": 30,
+          "reason": "Verified organization"
+        },
+        {
+          "rule": "email_provided",
+          "points": 25,
+          "reason": "Valid email contact"
+        },
+        {
+          "rule": "phone_provided",
+          "points": 25,
+          "reason": "Valid telephone line"
+        }
+      ]
     },
     {
       "id": "lead-1788583693613",
@@ -1358,11 +1376,11 @@
     {
       "id": "lead-1",
       "tenant_id": "tenant-1",
-      "name": "Suman Shrestha",
-      "email": "suman@everesttech.com.np",
-      "phone": "+977-9801234567",
-      "company": "Everest Technologies",
-      "source": "Website Form",
+      "name": "[GDPR-ERASED]",
+      "email": "erased-lead-1@purged.invalid",
+      "phone": null,
+      "company": "[GDPR-ERASED]",
+      "source": "Purged",
       "stage": "qualified",
       "score": 88,
       "qualification": "Hot Lead",
@@ -1371,7 +1389,14 @@
         "Immediate timeline (Q3)"
       ],
       "created_at": "2026-03-01T10:00:00.000Z",
-      "status": "active"
+      "status": "deleted",
+      "notes": null,
+      "gdpr_erasure": {
+        "certificate_id": "GDPR-PURGE-lead-1-MTNYTENM",
+        "erased_at": "2026-09-05T05:51:38.866Z",
+        "legal_basis": "EU GDPR Article 17 Right to Erasure",
+        "executed_by": "usr-1"
+      }
     },
     {
       "id": "lead-2",
@@ -4127,6 +4152,139 @@
     }
   ],
   "audit_logs": [
+    {
+      "id": "aud-1788587523163-807",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "qualify",
+      "entity_type": "lead",
+      "entity_id": "lead-meta-1788583693815",
+      "details": {
+        "score": 80,
+        "qualification": "hot",
+        "signals": [
+          {
+            "rule": "budget_confirmed",
+            "points": 30,
+            "reason": "Verified organization"
+          },
+          {
+            "rule": "email_provided",
+            "points": 25,
+            "reason": "Valid email contact"
+          },
+          {
+            "rule": "phone_provided",
+            "points": 25,
+            "reason": "Valid telephone line"
+          }
+        ]
+      },
+      "created_at": "2026-09-05T05:52:03.164Z"
+    },
+    {
+      "id": "aud-1788587520728-127",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "qualify",
+      "entity_type": "lead",
+      "entity_id": "lead-meta-1788583693815",
+      "details": {
+        "score": 80,
+        "qualification": "hot",
+        "signals": [
+          {
+            "rule": "budget_confirmed",
+            "points": 30,
+            "reason": "Verified organization"
+          },
+          {
+            "rule": "email_provided",
+            "points": 25,
+            "reason": "Valid email contact"
+          },
+          {
+            "rule": "phone_provided",
+            "points": 25,
+            "reason": "Valid telephone line"
+          }
+        ]
+      },
+      "created_at": "2026-09-05T05:52:00.728Z"
+    },
+    {
+      "id": "aud-1788587518863-459",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "qualify",
+      "entity_type": "lead",
+      "entity_id": "lead-meta-1788583693815",
+      "details": {
+        "score": 80,
+        "qualification": "hot",
+        "signals": [
+          {
+            "rule": "budget_confirmed",
+            "points": 30,
+            "reason": "Verified organization"
+          },
+          {
+            "rule": "email_provided",
+            "points": 25,
+            "reason": "Valid email contact"
+          },
+          {
+            "rule": "phone_provided",
+            "points": 25,
+            "reason": "Valid telephone line"
+          }
+        ]
+      },
+      "created_at": "2026-09-05T05:51:58.863Z"
+    },
+    {
+      "id": "aud-1788587512926-473",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "delete",
+      "entity_type": "lead",
+      "entity_id": "lead-1",
+      "details": {
+        "soft_delete": true
+      },
+      "created_at": "2026-09-05T05:51:52.926Z"
+    },
+    {
+      "id": "aud-1788587498887-876",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "gdpr_erasure_executed",
+      "entity_type": "lead",
+      "entity_id": "lead-1",
+      "details": {
+        "certificate_id": "GDPR-PURGE-lead-1-MTNYTENM",
+        "erased_at": "2026-09-05T05:51:38.866Z"
+      },
+      "created_at": "2026-09-05T05:51:38.887Z"
+    },
+    {
+      "id": "aud-1788587439594-463",
+      "tenant_id": "tenant-1",
+      "user_id": "usr-1",
+      "user_name": "System / Operator",
+      "action": "login",
+      "entity_type": "session",
+      "entity_id": null,
+      "details": {
+        "auth": "scrypt"
+      },
+      "created_at": "2026-09-05T05:50:39.594Z"
+    },
     {
       "id": "aud-1788583694613-29",
       "tenant_id": "tenant-1",

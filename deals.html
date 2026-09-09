@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deals & Pipeline · SalesOS</title>
+  <script>
+    (function(){try{var t=localStorage.getItem('salesos_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+  </script>
   <link rel="stylesheet" href="/app.css" />
   <style>
     .kanban-board {
@@ -285,6 +288,10 @@
             <span class="forecast-tile-label">Quota Attainment</span>
             <span class="forecast-tile-val" id="fcAttainment">0%</span>
           </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto;justify-content:center;padding:0 8px">
+            <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:4px 8px;white-space:nowrap" onclick="openForecastAdjustModal()">✏️ Override</button>
+            <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:4px 8px;white-space:nowrap" onclick="openRepQuotasModal()">👥 Quotas</button>
+          </div>
         </div>
 
         <!-- Kanban Board View -->
@@ -386,7 +393,7 @@
             <strong id="drawerDealContact">—</strong>
             <span id="drawerDealContactCompany" style="display:block;color:var(--muted);font-size:11px">—</span>
           </div>
-          <a href="/inbox.html" class="btn btn-secondary btn-sm">✉ Message</a>
+          <a href="/inbox" class="btn btn-secondary btn-sm">✉ Message</a>
         </div>
       </div>
     </div>
@@ -397,51 +404,53 @@
     <div class="modal-box">
       <div class="modal-header">
         <h3>Create Opportunity</h3>
-        <button class="modal-close" onclick="SalesOS.closeModal('createDealModal')">×</button>
+        <button class="modal-close" aria-label="Close modal" onclick="SalesOS.closeModal('createDealModal')">×</button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Opportunity Name *</label>
-          <input type="text" id="dealName" class="form-control" placeholder="e.g. Enterprise License Expansion" required />
+      <form id="createDealForm" onsubmit="submitCreateDeal(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="dealName">Opportunity Name *</label>
+            <input type="text" id="dealName" class="form-control" placeholder="e.g. Enterprise License Expansion" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealCompany">Company Account</label>
+            <input type="text" id="dealCompany" class="form-control" placeholder="e.g. Koirala Industries" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealContact">Key Contact Name</label>
+            <input type="text" id="dealContact" class="form-control" placeholder="e.g. Rajan Koirala" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealAmount">Deal Amount (<span class="deal-currency-tag">USD</span>) *</label>
+            <input type="number" id="dealAmount" class="form-control" placeholder="1500000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealStage">Initial Stage</label>
+            <select id="dealStage" class="form-control">
+              <option value="New lead">New lead</option>
+              <option value="Discovery" selected>Discovery</option>
+              <option value="Demo">Demo</option>
+              <option value="Proposal">Proposal</option>
+              <option value="Negotiation">Negotiation</option>
+              <option value="Closed Won">Closed Won</option>
+              <option value="Closed Lost">Closed Lost</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealProbability">Win Probability (%)</label>
+            <input type="range" id="dealProbability" min="5" max="100" step="5" value="50" oninput="document.getElementById('probVal').textContent = this.value + '%'" style="width:100%" />
+            <span id="probVal" style="font-size:12px;font-weight:700;color:var(--blue)">50%</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dealCloseDate">Expected Close Date</label>
+            <input type="date" id="dealCloseDate" class="form-control" />
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Company Account</label>
-          <input type="text" id="dealCompany" class="form-control" placeholder="e.g. Koirala Industries" />
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('createDealModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Opportunity</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Key Contact Name</label>
-          <input type="text" id="dealContact" class="form-control" placeholder="e.g. Rajan Koirala" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Deal Amount (NPR) *</label>
-          <input type="number" id="dealAmount" class="form-control" placeholder="1500000" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Initial Stage</label>
-          <select id="dealStage" class="form-control">
-            <option value="New lead">New lead</option>
-            <option value="Discovery" selected>Discovery</option>
-            <option value="Demo">Demo</option>
-            <option value="Proposal">Proposal</option>
-            <option value="Negotiation">Negotiation</option>
-            <option value="Closed Won">Closed Won</option>
-            <option value="Closed Lost">Closed Lost</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Win Probability (%)</label>
-          <input type="range" id="dealProbability" min="5" max="100" step="5" value="50" oninput="document.getElementById('probVal').textContent = this.value + '%'" style="width:100%" />
-          <span id="probVal" style="font-size:12px;font-weight:700;color:var(--blue)">50%</span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Expected Close Date</label>
-          <input type="date" id="dealCloseDate" class="form-control" value="2026-09-30" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="SalesOS.closeModal('createDealModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitCreateDeal()">Create Opportunity</button>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -471,7 +480,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Deal Amount (NPR)</label>
+          <label class="form-label" for="editDealAmount">Deal Amount (<span class="deal-currency-tag">USD</span>)</label>
           <input type="number" id="editDealAmount" class="form-control" required />
         </div>
         <div class="form-group">
@@ -517,9 +526,115 @@
     </div>
   </div>
 
+  <!-- Modal: Manager Forecast Override -->
+  <div class="modal-overlay" id="forecastAdjustModal">
+    <div class="modal-box" style="max-width:500px">
+      <div class="modal-header">
+        <h3 style="margin:0">✏️ Manager Forecast Override</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('forecastAdjustModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">
+          Apply a managerial override to Collaborative Forecast buckets with an audit log.
+        </p>
+        <form id="forecastAdjustForm" onsubmit="submitForecastAdjustment(event)">
+          <div class="form-group">
+            <label class="form-label">Forecast Category *</label>
+            <select id="adjustCategory" class="form-control" required>
+              <option value="commit">Commit</option>
+              <option value="best_case">Best Case</option>
+              <option value="pipeline">Pipeline</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Adjusted Override Amount (NPR) *</label>
+            <input type="number" id="adjustAmount" class="form-control" placeholder="e.g. 4500000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Period</label>
+            <input type="text" id="adjustPeriod" class="form-control" value="2026-Q3" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Adjustment Rationale / Notes *</label>
+            <textarea id="adjustNotes" class="form-control" rows="3" placeholder="e.g. Verified verbal sign-off from VP Finance for enterprise expansion." required></textarea>
+          </div>
+          <div class="modal-footer" style="padding:0;margin-top:16px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('forecastAdjustModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Adjustment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Rep Quotas Management -->
+  <div class="modal-overlay" id="repQuotasModal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-header">
+        <h3 style="margin:0">👥 Sales Rep Quota Targets</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('repQuotasModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">
+          Configure individual sales quota targets for quarterly collaborative revenue attainment.
+        </p>
+        <div class="table-responsive">
+          <table class="data-table" style="font-size:12.5px">
+            <thead>
+              <tr>
+                <th>Sales Rep</th>
+                <th>Role</th>
+                <th>Quarterly Quota (NPR)</th>
+              </tr>
+            </thead>
+            <tbody id="repQuotasTableBody">
+              <tr><td colspan="3" style="text-align:center;padding:16px;color:var(--muted)">Loading team quotas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('repQuotasModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveRepQuotas()">Save Quota Targets</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Blueprint Stage Gate Transition -->
+  <div class="modal-overlay" id="blueprintGateModal">
+    <div class="modal-box" style="max-width:560px">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin:0">🗺️ Blueprint Stage Gate</h3>
+          <p style="font-size:12px;color:var(--muted);margin:3px 0 0" id="blueprintGateDesc">Stage transition validation requirements.</p>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('blueprintGateModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:var(--orange-light);border:1px solid rgba(245,158,11,0.3);padding:10px 14px;border-radius:6px;font-size:12.5px;color:var(--ink);margin-bottom:14px">
+          ⚠️ <strong>State Machine Transition Policy:</strong> This deal cannot advance to <span id="blueprintTargetStageName" style="font-weight:700"></span> until all mandatory qualification criteria and checklist items are verified.
+        </div>
+
+        <div id="blueprintMissingFieldsBox" style="margin-bottom:14px;display:none">
+          <label class="form-label" style="font-weight:700">Required Stage Fields</label>
+          <div id="blueprintMissingFieldsContainer" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
+        <div id="blueprintChecklistBox" style="margin-bottom:14px;display:none">
+          <label class="form-label" style="font-weight:700">Required Stage Checklist</label>
+          <div id="blueprintChecklistContainer" style="display:flex;flex-direction:column;gap:8px;background:var(--panel-subtle);padding:12px;border-radius:6px;border:1px solid var(--line)"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SalesOS.closeModal('blueprintGateModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitBlueprintGateTransition()">Fulfill Gate & Advance Deal</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Deals', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Deals' }]);
+    SalesOS.init('Deals', [{ label: 'SalesOS', href: '/' }, { label: 'Deals' }]);
 
     const DEFAULT_STAGES = [
       'New lead',
@@ -720,7 +835,17 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ stage: targetStage })
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+          if (res.status === 422) {
+            const errData = await res.json();
+            deal.stage = oldStage;
+            renderKanban();
+            renderTable();
+            openBlueprintGateModal(deal, targetStage, errData);
+            return;
+          }
+          throw new Error();
+        }
       } catch (err) {
         deal.stage = oldStage;
         renderKanban();
@@ -956,7 +1081,7 @@
       document.getElementById('drawerDealAmount').textContent = SalesOS.formatCurrency(d.amount);
       document.getElementById('drawerDealProbability').textContent = `${d.probability || 50}%`;
       document.getElementById('drawerDealStage').textContent = d.stage || 'Discovery';
-      document.getElementById('drawerDealCloseDate').textContent = d.expected_close_date || '2026-09-30';
+      document.getElementById('drawerDealCloseDate').textContent = d.expected_close_date || '—';
       document.getElementById('drawerDealContact').textContent = d.contact_name || 'Primary Stakeholder';
       document.getElementById('drawerDealContactCompany').textContent = d.company_name || d.company || 'Account';
 
@@ -1030,10 +1155,17 @@
 
     function openCreateDealModal() {
       SalesOS.showModal('createDealModal');
+      const dateInput = document.getElementById('dealCloseDate');
+      if (dateInput && !dateInput.value) {
+        const d = new Date();
+        d.setDate(d.getDate() + 14);
+        dateInput.value = d.toISOString().split('T')[0];
+      }
       document.getElementById('dealName').focus();
     }
 
-    async function submitCreateDeal() {
+    async function submitCreateDeal(event) {
+      if (event && event.preventDefault) event.preventDefault();
       const name = document.getElementById('dealName').value.trim();
       const company_name = document.getElementById('dealCompany').value.trim();
       const contact_name = document.getElementById('dealContact').value.trim();
@@ -1103,18 +1235,24 @@
 
     async function confirmDeleteDeal() {
       if (!activeDeal) return;
-      if (!confirm(`Delete opportunity "${activeDeal.name || activeDeal.title || 'this opportunity'}"?`)) return;
-
-      try {
-        const res = await fetch(`/api/opportunities/${activeDeal.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          SalesOS.showToast('Opportunity deleted');
-          closeDealDrawer();
-          loadDeals();
+      SalesOS.confirm({
+        title: 'Delete Opportunity',
+        message: `Are you sure you want to delete opportunity "${activeDeal.name || activeDeal.title || 'this opportunity'}"?`,
+        confirmText: 'Delete Opportunity',
+        danger: true,
+        onConfirm: async () => {
+          try {
+            const res = await fetch(`/api/opportunities/${activeDeal.id}`, { method: 'DELETE' });
+            if (res.ok) {
+              SalesOS.showToast('Opportunity deleted');
+              closeDealDrawer();
+              loadDeals();
+            }
+          } catch (e) {
+            SalesOS.showToast('Error deleting opportunity', 'error');
+          }
         }
-      } catch (e) {
-        SalesOS.showToast('Error deleting opportunity', 'error');
-      }
+      });
     }
 
     // Collaborative Forecast & Splits Handlers
@@ -1141,8 +1279,10 @@
       currentSplitsDealId = dealId;
       const targetDeal = allDeals.find(d => String(d.id) === String(dealId)) || {};
       
+      const defaultOwnerId = targetDeal.owner_id || SalesOS.currentUser?.id || 'usr-1';
+      const defaultOwnerName = targetDeal.owner || targetDeal.owner_name || SalesOS.currentUser?.name || 'Deal Owner';
       currentSplitsList = (targetDeal.splits && targetDeal.splits.length > 0) ? [...targetDeal.splits] : [
-        { user_id: 'usr-1', user_name: 'Arjun Sharma', split_percent: 100 }
+        { user_id: defaultOwnerId, user_name: defaultOwnerName, split_percent: 100 }
       ];
 
       renderSplitRows();
@@ -1224,7 +1364,191 @@
       }
     }
 
+    // Forecast Overrides & Quotas Handlers
+    function openForecastAdjustModal() {
+      SalesOS.showModal('forecastAdjustModal');
+    }
+
+    async function submitForecastAdjustment(e) {
+      e.preventDefault();
+      const category = document.getElementById('adjustCategory').value;
+      const amount = Number(document.getElementById('adjustAmount').value);
+      const period = document.getElementById('adjustPeriod').value.trim() || '2026-Q3';
+      const reason = document.getElementById('adjustNotes').value.trim();
+
+      try {
+        const res = await fetch('/api/forecasts/adjust', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category, adjusted_amount: amount, period, reason })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('forecastAdjustModal');
+          SalesOS.showToast('Manager forecast override saved and audited! ✦');
+          document.getElementById('adjustNotes').value = '';
+          loadForecastSummary();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to save adjustment', 'error');
+        }
+      } catch (err) {
+        SalesOS.showToast('Error saving forecast adjustment', 'error');
+      }
+    }
+
+    let teamRepQuotas = [];
+    async function openRepQuotasModal() {
+      SalesOS.showModal('repQuotasModal');
+      const tbody = document.getElementById('repQuotasTableBody');
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:var(--muted)">Loading team quotas...</td></tr>';
+
+      try {
+        const [qRes, uRes] = await Promise.all([
+          fetch('/api/forecasts/quotas'),
+          fetch('/api/users')
+        ]);
+        const quotas = qRes.ok ? await qRes.json() : [];
+        const users = uRes.ok ? await uRes.json() : [];
+
+        teamRepQuotas = users.map(u => {
+          const matched = quotas.find(q => q.user_id === u.id);
+          return {
+            user_id: u.id,
+            name: u.name,
+            role: u.role,
+            quota_amount: matched?.quota_amount || 2500000
+          };
+        });
+
+        tbody.innerHTML = teamRepQuotas.map((rep, idx) => `
+          <tr>
+            <td><strong>${SalesOS.escapeHtml(rep.name)}</strong></td>
+            <td><span class="badge ${rep.role === 'owner' ? 'badge-purple' : 'badge-blue'}">${rep.role.toUpperCase()}</span></td>
+            <td>
+              <input type="number" class="form-control" style="width:160px;padding:4px 8px;font-size:12px" value="${rep.quota_amount}" onchange="teamRepQuotas[${idx}].quota_amount = Number(this.value)" />
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:var(--red)">Failed to load quotas</td></tr>';
+      }
+    }
+
+    async function saveRepQuotas() {
+      try {
+        for (const rep of teamRepQuotas) {
+          await fetch('/api/forecasts/quotas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: rep.user_id, quota_amount: rep.quota_amount, period: '2026-Q3' })
+          });
+        }
+        SalesOS.closeModal('repQuotasModal');
+        SalesOS.showToast('Sales rep quotas updated successfully! 👥');
+        loadForecastSummary();
+      } catch (e) {
+        SalesOS.showToast('Error saving rep quotas', 'error');
+      }
+    }
+
+    // Blueprint Stage Gate Validation Modal & Transition Handlers
+    let pendingBlueprintGate = null;
+
+    function openBlueprintGateModal(deal, targetStage, errData) {
+      pendingBlueprintGate = { deal, targetStage, errData };
+      document.getElementById('blueprintTargetStageName').textContent = `"${targetStage}"`;
+      document.getElementById('blueprintGateDesc').textContent = `Transitioning "${deal.name || deal.title}" from ${deal.stage} to ${targetStage}`;
+
+      const missingFields = errData.missing_fields || [];
+      const checklist = errData.uncompleted_checklist || [];
+
+      const fieldsBox = document.getElementById('blueprintMissingFieldsBox');
+      const fieldsContainer = document.getElementById('blueprintMissingFieldsContainer');
+      if (missingFields.length > 0) {
+        fieldsBox.style.display = 'block';
+        fieldsContainer.innerHTML = missingFields.map(f => `
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="text-transform:capitalize">${SalesOS.escapeHtml(f.replace(/_/g, ' '))}</label>
+            <input type="text" class="form-control bp-field-input" data-field="${f}" placeholder="Enter ${f.replace(/_/g, ' ')}" required />
+          </div>
+        `).join('');
+      } else {
+        fieldsBox.style.display = 'none';
+        fieldsContainer.innerHTML = '';
+      }
+
+      const checklistBox = document.getElementById('blueprintChecklistBox');
+      const checklistContainer = document.getElementById('blueprintChecklistContainer');
+      if (checklist.length > 0) {
+        checklistBox.style.display = 'block';
+        checklistContainer.innerHTML = checklist.map((item, idx) => `
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+            <input type="checkbox" class="bp-checklist-input" value="${SalesOS.escapeHtml(item)}" id="bp_chk_${idx}">
+            <span>${SalesOS.escapeHtml(item)}</span>
+          </label>
+        `).join('');
+      } else {
+        checklistBox.style.display = 'none';
+        checklistContainer.innerHTML = '';
+      }
+
+      SalesOS.showModal('blueprintGateModal');
+    }
+
+    async function submitBlueprintGateTransition() {
+      if (!pendingBlueprintGate) return;
+      const { deal, targetStage } = pendingBlueprintGate;
+
+      const fieldInputs = document.querySelectorAll('.bp-field-input');
+      const extraFields = {};
+      for (const input of fieldInputs) {
+        if (!input.value.trim()) {
+          SalesOS.showToast(`Please complete required field "${input.getAttribute('data-field')}"`, 'warning');
+          return;
+        }
+        extraFields[input.getAttribute('data-field')] = input.value.trim();
+      }
+
+      const checkedItems = Array.from(document.querySelectorAll('.bp-checklist-input:checked')).map(c => c.value);
+      const totalChecklist = document.querySelectorAll('.bp-checklist-input').length;
+      if (totalChecklist > 0 && checkedItems.length < totalChecklist) {
+        SalesOS.showToast('Please fulfill and verify all checklist items before advancing', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/opportunities/${deal.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            stage: targetStage,
+            checklist: checkedItems,
+            ...extraFields
+          })
+        });
+
+        if (res.ok) {
+          SalesOS.closeModal('blueprintGateModal');
+          SalesOS.showToast(`Blueprint gate fulfilled! Deal moved to "${targetStage}" 🎉`, 'success');
+          pendingBlueprintGate = null;
+          loadDeals();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Blueprint gate verification failed', 'error');
+        }
+      } catch (e) {
+        SalesOS.showToast('Failed to advance deal through blueprint gate', 'error');
+      }
+    }
+
+    function updateDealCurrencyTags() {
+      const curr = SalesOS.tenant?.currency || 'USD';
+      document.querySelectorAll('.deal-currency-tag').forEach(el => el.textContent = curr);
+    }
+
+    updateDealCurrencyTags();
     loadDeals().then(() => {
+      updateDealCurrencyTags();
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('action') === 'new') {
         openCreateDealModal();

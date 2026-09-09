@@ -1,4 +1,4 @@
-const assert = require('assert');
+﻿const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
@@ -17,7 +17,7 @@ const http = require('http');
   const cookie = rLogin.headers.get('set-cookie');
   const authHeaders = { 'Cookie': cookie, 'Content-Type': 'application/json' };
 
-  // 1. Verify Autonomous Lead SLA Tracking & Escalation Engine (PRD §21, §22, §24)
+  // 1. Verify Autonomous Lead SLA Tracking & Escalation Engine (PRD Â§21, Â§22, Â§24)
   console.log('1. Verifying Autonomous Lead SLA Tracking & Escalation Engine...');
   const rSla = await fetch(`${base}/api/leads/sla-status`, { headers: authHeaders });
   assert.equal(rSla.status, 200);
@@ -27,9 +27,9 @@ const http = require('http');
   assert(typeof slaData.compliance_rate === 'number');
   assert(Array.isArray(slaData.breached));
   assert(Array.isArray(slaData.pending));
-  console.log(`✓ SLA Engine verified: ${slaData.total} leads analyzed, compliance rate ${slaData.compliance_rate}%`);
+  console.log(`âœ“ SLA Engine verified: ${slaData.total} leads analyzed, compliance rate ${slaData.compliance_rate}%`);
 
-  // 2. Verify AI Closed-Loop Few-Shot Learning Feedback (PRD §55)
+  // 2. Verify AI Closed-Loop Few-Shot Learning Feedback (PRD Â§55)
   console.log('\n2. Verifying AI Closed-Loop Evaluation Feedback Injection...');
   // Post an approved evaluation guideline
   const rEval = await fetch(`${base}/api/ai/evaluations`, {
@@ -52,7 +52,7 @@ const http = require('http');
   assert.equal(rSuggest.status, 200);
   const suggestion = await rSuggest.json();
   assert(suggestion.feedback_context || suggestion.few_shot_guidelines);
-  console.log('✓ AI Copilot successfully enriched with tenant-approved quality guidelines');
+  console.log('âœ“ AI Copilot successfully enriched with tenant-approved quality guidelines');
 
   // 3. Verify Outbound Webhook Retry Engine & Dead-Letter Queue (DLQ)
   console.log('\n3. Verifying Webhook Delivery & Dead-Letter Queue (DLQ)...');
@@ -76,7 +76,7 @@ const http = require('http');
   // Register Webhook
   const rAddWh = await fetch(`${base}/api/settings/webhooks`, {
     method: 'POST',
-    headers: { ...authHeaders, 'x-test-bypass': 'salesos-internal-test' },
+    headers: { ...authHeaders, 'x-test-bypass': (process.env.TEST_BYPASS_SECRET || 'salesos-internal-test') },
     body: JSON.stringify({
       name: 'DLQ Test Webhook',
       url: mockUrl,
@@ -97,7 +97,7 @@ const http = require('http');
 
   assert.equal(dispatchRes.success, true);
   assert.equal(dispatchRes.attempts, 3);
-  console.log(`✓ Webhook retry engine succeeded after ${dispatchRes.attempts} attempts with exponential backoff`);
+  console.log(`âœ“ Webhook retry engine succeeded after ${dispatchRes.attempts} attempts with exponential backoff`);
 
   // Verify failure into DLQ
   mockAttempts = 0;
@@ -116,12 +116,12 @@ const http = require('http');
   );
   assert.equal(failRes.success, false);
   assert.equal(failRes.dlq, true);
-  console.log('✓ Failed webhook properly quarantined into Dead-Letter Queue (DLQ)');
+  console.log('âœ“ Failed webhook properly quarantined into Dead-Letter Queue (DLQ)');
 
   // Inspect deliveries API
   const rDeliveries = await fetch(`${base}/api/settings/webhooks/deliveries`, { headers: authHeaders });
   assert.equal(rDeliveries.status, 200);
-  console.log('✓ Webhook deliveries & DLQ inspector endpoint returned 200 OK');
+  console.log('âœ“ Webhook deliveries & DLQ inspector endpoint returned 200 OK');
 
   mockServer.close();
 
@@ -135,7 +135,7 @@ const http = require('http');
   assert(appCss.includes('.toast-container'));
   assert(appCss.includes('.toast-success'));
   assert(appCss.includes('.toast-error'));
-  console.log('✓ Glassmorphic Toast subsystem verified in app.js and app.css');
+  console.log('âœ“ Glassmorphic Toast subsystem verified in app.js and app.css');
 
   // 5. Verify WCAG 2.1 AA Keyboard Navigation in deals.html
   console.log('\n5. Verifying WCAG 2.1 AA Keyboard Kanban Drag-and-Drop in deals.html...');
@@ -144,7 +144,7 @@ const http = require('http');
   assert(dealsHtml.includes('kanbanAriaLive'));
   assert(dealsHtml.includes('card-grabbed'));
   assert(dealsHtml.includes('aria-roledescription="draggable deal card"'));
-  console.log('✓ WCAG keyboard navigation and live ARIA announcements verified in deals.html');
+  console.log('âœ“ WCAG keyboard navigation and live ARIA announcements verified in deals.html');
 
   // 6. Verify Settings.html DLQ integration
   console.log('\n6. Verifying Webhook Deliveries & DLQ Table in settings.html...');
@@ -152,10 +152,10 @@ const http = require('http');
   assert(settingsHtml.includes('loadWebhookDeliveries'));
   assert(settingsHtml.includes('replayWebhookDelivery'));
   assert(settingsHtml.includes('webhookDeliveriesTableBody'));
-  console.log('✓ Webhook Deliveries & DLQ table verified in settings.html');
+  console.log('âœ“ Webhook Deliveries & DLQ table verified in settings.html');
 
   console.log('\n======================================================');
-  console.log('🎉 ALL SPECIALIST COUNCIL FIXES VERIFIED SUCCESSFULLY!');
+  console.log('ðŸŽ‰ ALL SPECIALIST COUNCIL FIXES VERIFIED SUCCESSFULLY!');
   console.log('======================================================\n');
 })().catch(err => {
   console.error('Specialist Fixes Verification Failed:', err);

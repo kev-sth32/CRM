@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leads Management · SalesOS</title>
+  <script>
+    (function(){try{var t=localStorage.getItem('salesos_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+  </script>
   <link rel="stylesheet" href="/app.css" />
   <style>
     .score-circle {
@@ -73,6 +76,32 @@
             <button class="btn btn-secondary" onclick="scanLeadDuplicates()">🔍 Scan Duplicates</button>
             <button class="btn btn-secondary" onclick="loadLeads()">↻ Refresh</button>
             <button class="btn btn-primary" onclick="openCreateLeadModal()">＋ New Lead</button>
+          </div>
+        </div>
+
+        <!-- SLA Status Health Bar -->
+        <div id="leadSlaBanner" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);flex-wrap:wrap;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:20px">⏱</span>
+            <div>
+              <strong style="font-size:13px;color:var(--ink)">First-Response SLA Monitor</strong>
+              <small style="display:block;color:var(--muted)">Target: 15-min initial contact · Automated task escalation on breach</small>
+            </div>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+            <div>
+              <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">SLA Compliance</span>
+              <div id="slaComplianceRate" style="font-weight:700;font-size:14px;color:var(--green)">100%</div>
+            </div>
+            <div>
+              <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Active Breaches</span>
+              <div id="slaBreachedCount" style="font-weight:700;font-size:14px;color:var(--ink)">0 Breached</div>
+            </div>
+            <div>
+              <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Pending Deadlines</span>
+              <div id="slaPendingCount" style="font-weight:700;font-size:14px;color:var(--blue)">0 Pending</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="loadLeadSlaStatus()" title="Refresh SLA Status">↻ Check SLA</button>
           </div>
         </div>
 
@@ -155,8 +184,8 @@
       <div style="display:flex;align-items:center;gap:12px">
         <div id="drawerScoreBadge" class="score-circle score-hot">94</div>
         <div>
-          <h3 id="drawerLeadName" style="font-size:17px;font-weight:750">Rajan Koirala</h3>
-          <small id="drawerLeadCompany" style="color:var(--muted)">Koirala Industries</small>
+          <h3 id="drawerLeadName" style="font-size:17px;font-weight:750">Lead Details</h3>
+          <small id="drawerLeadCompany" style="color:var(--muted)">Organization</small>
         </div>
       </div>
       <button class="modal-close" onclick="closeLeadDrawer()">×</button>
@@ -191,7 +220,7 @@
           </div>
           <div>
             <span style="color:var(--muted);display:block">Assigned Rep</span>
-            <strong id="drawerAssigned">Bikram KC</strong>
+            <strong id="drawerAssigned">—</strong>
           </div>
         </div>
       </div>
@@ -327,9 +356,6 @@
         <div class="form-group">
           <label class="form-label">Assigned Representative</label>
           <select id="editAssigned" class="form-control">
-            <option value="Arjun Sharma">Arjun Sharma (Owner)</option>
-            <option value="Sita Thapa">Sita Thapa (Manager)</option>
-            <option value="Bikram KC">Bikram KC (Sales Rep)</option>
             <option value="Unassigned">Unassigned</option>
           </select>
         </div>
@@ -391,7 +417,7 @@
         <button class="modal-close" onclick="SalesOS.closeModal('leadMergeModal')">×</button>
       </div>
       <div class="modal-body">
-        <div style="background:#f8fafc;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+        <div style="background:var(--panel-subtle);padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
           <div>
             <span style="font-size:12px;color:var(--muted)">Similarity Score:</span>
             <strong id="mergeMatchScore" class="badge badge-green" style="margin-left:6px">94% Fuzzy Match</strong>
@@ -402,8 +428,8 @@
           </div>
         </div>
 
-        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff">
-          <div class="merge-grid" style="background:#f1f5f9;font-weight:700;font-size:12px">
+        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)">
+          <div class="merge-grid" style="background:var(--panel-subtle);font-weight:700;font-size:12px">
             <div>Field</div>
             <div id="colHeaderA">Record A (Primary)</div>
             <div id="colHeaderB">Record B (Duplicate)</div>
@@ -464,15 +490,25 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Leads', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Leads' }]);
+    SalesOS.init('Leads', [{ label: 'SalesOS', href: '/' }, { label: 'Leads' }]);
 
     let allLeads = [];
     let selectedLead = null;
-    let searchTimeout = null;
+    let teamUsers = [];
 
-    function debounceSearch() {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(loadLeads, 250);
+    async function loadTeamUsers() {
+      try {
+        const res = await fetch('/api/users');
+        if (res.ok) {
+          teamUsers = await res.json();
+          const sel = document.getElementById('editAssigned');
+          if (sel && Array.isArray(teamUsers)) {
+            sel.innerHTML = '<option value="Unassigned">Unassigned</option>' + teamUsers.map(u => 
+              `<option value="${SalesOS.escapeHtml(u.name)}">${SalesOS.escapeHtml(u.name)} (${SalesOS.escapeHtml(u.role || 'Member')})</option>`
+            ).join('');
+          }
+        }
+      } catch (_) {}
     }
 
     async function loadLeads() {
@@ -499,6 +535,7 @@
         }
 
         renderLeadsTable();
+        loadLeadSlaStatus();
 
         // If URL has highlight param
         const highlightId = new URLSearchParams(location.search).get('highlight');
@@ -1008,6 +1045,41 @@
       document.getElementById('leadSearchInput').value = searchParam;
     }
 
+    async function loadLeadSlaStatus() {
+      try {
+        const res = await fetch('/api/leads/sla-status');
+        if (res.ok) {
+          const data = await res.json();
+          const rateEl = document.getElementById('slaComplianceRate');
+          const breachEl = document.getElementById('slaBreachedCount');
+          const pendEl = document.getElementById('slaPendingCount');
+
+          if (rateEl) {
+            const pct = data.compliance_rate !== undefined ? `${Math.round(data.compliance_rate)}%` : '100%';
+            rateEl.textContent = pct;
+            rateEl.style.color = (data.compliance_rate >= 90) ? 'var(--green)' : (data.compliance_rate >= 75) ? 'var(--orange)' : 'var(--red)';
+          }
+          if (breachEl) {
+            const count = data.breached ? data.breached.length : 0;
+            breachEl.textContent = `${count} Breached`;
+            breachEl.style.color = count > 0 ? 'var(--red)' : 'var(--ink)';
+          }
+          if (pendEl) {
+            const pendingCount = data.pending ? data.pending.length : 0;
+            pendEl.textContent = `${pendingCount} Pending`;
+          }
+        }
+      } catch (_) {}
+    }
+
+    window.addEventListener('salesos:event', (e) => {
+      if (e.detail?.type === 'lead.sla_breached' || e.detail?.type === 'lead.created') {
+        loadLeadSlaStatus();
+        loadLeads();
+      }
+    });
+
+    loadTeamUsers();
     loadLeads().then(() => {
       const highlightId = urlParams.get('highlight');
       if (highlightId) {

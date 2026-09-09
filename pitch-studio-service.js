@@ -7,12 +7,14 @@ class PitchStudioService {
     const company = (lead && lead.company) || 'your company';
     const productName = product ? product.name : 'SalesOS Enterprise Suite';
     const currency = tenant.currency || 'NPR';
+    const orgName = tenant.name || 'SalesOS';
+    const repName = (lead && lead.owner_name) || 'hamro sales team';
 
     if (language === 'nepglish') {
       if (tone === 'urgent') {
         return {
-          headline: `Namaste ${contactName} ji! SalesOS exclusive offer for ${company}`,
-          message: `Namaste ${contactName} ji! Ma Arjun from SalesOS boliraheko chhu. Tapai ko ${company} ma sales leads track garna ra WhatsApp inquiries organize garna hamro new ${productName} launch bhayeko chha. Aaja matra book garda free 1-on-1 team onboarding paucha. Ekchoti 10-minute quick demo herne ho? Reply with "YES" to connect. Dhanyabaad!`,
+          headline: `Namaste ${contactName} ji! ${orgName} exclusive offer for ${company}`,
+          message: `Namaste ${contactName} ji! Ma ${repName} from ${orgName} boliraheko chhu. Tapai ko ${company} ma sales leads track garna ra WhatsApp inquiries organize garna hamro new ${productName} launch bhayeko chha. Aaja matra book garda free 1-on-1 team onboarding paucha. Ekchoti 10-minute quick demo herne ho? Reply with "YES" to connect. Dhanyabaad!`,
           call_to_action: 'Reply with "YES" for instant demo link',
           platform: 'whatsapp',
           language: 'nepglish'
@@ -73,6 +75,78 @@ class PitchStudioService {
       call_to_action: 'Schedule Enterprise Demo',
       hashtags: ['#SaaS', '#EnterpriseSales', '#CRM', '#SalesAutomation']
     };
+  }
+
+  async generateWhatsAppPitchAsync({ lead, tone = 'consultative', language = 'nepglish', product = null, tenant = {}, aiProvider = null, model = null }) {
+    const fallback = this.generateWhatsAppPitch({ lead, tone, language, product, tenant });
+    if (!aiProvider) return fallback;
+
+    const contactName = (lead && (lead.name || lead.first_name)) || 'there';
+    const company = (lead && lead.company) || 'your company';
+    const productName = product ? product.name : 'SalesOS Enterprise Suite';
+
+    try {
+      const prompt = `Write a personalized B2B WhatsApp sales outreach message in ${language} with a ${tone} tone to ${contactName} at ${company} presenting ${productName}. Keep it under 3-4 sentences. Include a friendly greeting and clear call-to-action to schedule a demo. Return ONLY the message text without quotes.`;
+      const res = await aiProvider.generate({
+        model,
+        temperature: 0.7,
+        max_tokens: 300,
+        system: 'You are an elite B2B sales copywriter specializing in high-converting WhatsApp pitches for South Asian businesses. Be concise, respectful, and compelling.',
+        messages: [{ role: 'user', content: prompt }]
+      });
+
+      if (res?.text && res.text.trim().length > 20) {
+        return {
+          ...fallback,
+          message: res.text.trim(),
+          ai_model: res.model,
+          live_generation: true
+        };
+      }
+    } catch (_) {
+      // Graceful fallback to deterministic template
+    }
+    return fallback;
+  }
+
+  async generateSocialAdCopyAsync({ product, platform = 'facebook', goal = 'lead_generation', targetAudience = 'Nepali SMEs & Consultancies', aiProvider = null, model = null }) {
+    const fallback = this.generateSocialAdCopy({ product, platform, goal, targetAudience });
+    if (!aiProvider) return fallback;
+
+    const pName = (product && product.name) || 'SalesOS Cloud CRM';
+
+    try {
+      const prompt = `Generate high-converting ${platform} ad copy promoting ${pName} targeting ${targetAudience} with the goal of ${goal}. Include a punchy headline with emojis, concise value propositions, and an irresistible call to action. Format as:
+HEADLINE: [headline]
+BODY: [primary text]
+CTA: [call to action]`;
+      const res = await aiProvider.generate({
+        model,
+        temperature: 0.7,
+        max_tokens: 500,
+        system: 'You are an expert social media growth marketer. Write engaging, relatable B2B ad copy with high click-through rates.',
+        messages: [{ role: 'user', content: prompt }]
+      });
+
+      if (res?.text) {
+        const text = res.text.trim();
+        const headlineMatch = text.match(/HEADLINE:\s*(.+)/i);
+        const bodyMatch = text.match(/BODY:\s*([\s\S]+?)(?=CTA:|$)/i);
+        const ctaMatch = text.match(/CTA:\s*(.+)/i);
+
+        return {
+          ...fallback,
+          headline: headlineMatch ? headlineMatch[1].trim() : fallback.headline,
+          primary_text: bodyMatch ? bodyMatch[1].trim() : text,
+          call_to_action: ctaMatch ? ctaMatch[1].trim() : fallback.call_to_action,
+          ai_model: res.model,
+          live_generation: true
+        };
+      }
+    } catch (_) {
+      // Graceful fallback to deterministic template
+    }
+    return fallback;
   }
 }
 

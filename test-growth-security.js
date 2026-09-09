@@ -1,4 +1,4 @@
-/**
+﻿/**
  * test-growth-security.js
  * Verification suite for Phase 3:
  * 1. Multi-Channel WhatsApp Follow-up Execution
@@ -24,7 +24,7 @@ function request(pathStr) {
       port: PORT,
       path: pathStr,
       headers: {
-        'x-test-bypass': 'salesos-internal-test',
+        'x-test-bypass': (process.env.TEST_BYPASS_SECRET || 'salesos-internal-test'),
         'x-tenant-id': 'tenant-1'
       }
     }, (res) => {
@@ -45,10 +45,10 @@ async function runTests() {
 
   function record(name, ok, details = '') {
     if (ok) {
-      console.log(`  ✓ PASS: ${name}`);
+      console.log(`  âœ“ PASS: ${name}`);
       passed++;
     } else {
-      console.error(`  ✗ FAIL: ${name} - ${details}`);
+      console.error(`  âœ— FAIL: ${name} - ${details}`);
       failed++;
     }
   }

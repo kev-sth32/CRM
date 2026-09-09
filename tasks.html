@@ -15,7 +15,7 @@
       transition: var(--transition);
     }
     .task-item:hover {
-      background: #fbfcfe;
+      background: var(--panel-subtle);
     }
     .task-checkbox {
       width: 18px;
@@ -128,15 +128,13 @@
           </div>
           <div class="form-group">
             <label class="form-label">Due Date & Time</label>
-            <input type="date" id="taskDue" class="form-control" value="2026-09-05" />
+            <input type="date" id="taskDue" class="form-control" />
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Assigned Representative</label>
           <select id="taskAssigned" class="form-control">
-            <option value="Arjun Sharma">Arjun Sharma (Owner)</option>
-            <option value="Sita Thapa">Sita Thapa (Manager)</option>
-            <option value="Bikram KC">Bikram KC (Sales Rep)</option>
+            <option value="Unassigned">Unassigned</option>
           </select>
         </div>
         <div class="form-group">
@@ -153,9 +151,25 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Tasks', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Tasks' }]);
+    SalesOS.init('Tasks', [{ label: 'SalesOS', href: '/' }, { label: 'Tasks' }]);
 
     let allTasks = [];
+    let teamUsers = [];
+
+    async function loadTeamUsers() {
+      try {
+        const res = await fetch('/api/users');
+        if (res.ok) {
+          teamUsers = await res.json();
+          const sel = document.getElementById('taskAssigned');
+          if (sel && Array.isArray(teamUsers)) {
+            sel.innerHTML = '<option value="Unassigned">Unassigned</option>' + teamUsers.map(u => 
+              `<option value="${SalesOS.escapeHtml(u.name)}">${SalesOS.escapeHtml(u.name)} (${SalesOS.escapeHtml(u.role || 'Member')})</option>`
+            ).join('');
+          }
+        }
+      } catch (_) {}
+    }
 
     async function loadTasks() {
       try {
@@ -234,6 +248,12 @@
 
     function openCreateTaskModal() {
       SalesOS.showModal('createTaskModal');
+      const dueInput = document.getElementById('taskDue');
+      if (dueInput && !dueInput.value) {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        dueInput.value = d.toISOString().split('T')[0];
+      }
       document.getElementById('taskTitle').focus();
     }
 
@@ -279,6 +299,7 @@
       }
     }
 
+    loadTeamUsers();
     loadTasks().then(() => {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('action') === 'new') {

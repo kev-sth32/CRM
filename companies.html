@@ -88,7 +88,7 @@
     <div class="drawer-body">
       <!-- Actions -->
       <div style="display:flex;gap:8px;margin-bottom:20px">
-        <a href="/deals.html" class="btn btn-primary btn-sm" style="flex:1">＋ Add Opportunity</a>
+        <a href="/deals" class="btn btn-primary btn-sm" style="flex:1">＋ Add Opportunity</a>
         <button class="btn btn-secondary btn-sm" onclick="openEditCompanyModal()">✎ Edit Account</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDeleteCompany()">🗑 Delete</button>
       </div>
@@ -120,7 +120,7 @@
       <div class="card" style="padding:16px;margin-bottom:18px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Associated Contacts</h4>
-          <a href="/contacts.html" style="font-size:11.5px;color:var(--blue);font-weight:600">View Contacts →</a>
+          <a href="/contacts" style="font-size:11.5px;color:var(--blue);font-weight:600">View Contacts →</a>
         </div>
         <div id="companyContactsContainer">
           <p style="color:var(--muted);font-size:12px">Loading stakeholders...</p>
@@ -131,7 +131,7 @@
       <div class="card" style="padding:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Active Deals & Pipeline</h4>
-          <a href="/deals.html" style="font-size:11.5px;color:var(--blue);font-weight:600">Kanban →</a>
+          <a href="/deals" style="font-size:11.5px;color:var(--blue);font-weight:600">Kanban →</a>
         </div>
         <div id="companyDealsContainer">
           <p style="color:var(--muted);font-size:12px">Loading deals...</p>
@@ -231,7 +231,7 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Companies', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Companies' }]);
+    SalesOS.init('Companies', [{ label: 'SalesOS', href: '/' }, { label: 'Companies' }]);
 
     let allCompanies = [];
     let activeCompany = null;
@@ -350,7 +350,7 @@
                   <strong>${escapeHtml(c.name)}</strong>
                   <span style="color:var(--muted);display:block;font-size:11px">${escapeHtml(c.title || 'Contact')}</span>
                 </div>
-                <a href="/contacts.html?search=${encodeURIComponent(c.name)}" class="btn btn-secondary btn-sm">Profile →</a>
+                <a href="/contacts?search=${encodeURIComponent(c.name)}" class="btn btn-secondary btn-sm">Profile →</a>
               </div>
             `).join('');
           } else {
@@ -368,7 +368,7 @@
           const dBox = document.getElementById('companyDealsContainer');
           if (linkedDeals.length) {
             dBox.innerHTML = linkedDeals.map(d => `
-              <div style="padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:12.5px;margin-bottom:8px">
+              <div style="padding:10px 12px;background:var(--panel-subtle);border-radius:8px;border:1px solid var(--line);font-size:12.5px;margin-bottom:8px">
                 <strong style="display:block">${escapeHtml(d.name)}</strong>
                 <div style="display:flex;justify-content:space-between;color:var(--muted);margin-top:4px">
                   <span class="badge badge-blue">${escapeHtml(d.stage)}</span>

@@ -1,38 +1,47 @@
 // SalesOS Shared App Shell & Client Library
 const SalesOS = {
-  currentUser: { id: 'usr-1', name: 'Arjun Sharma', role: 'Owner', email: 'arjun@acmecloud.com', tenant_id: 'tenant-1' },
-  tenant: { id: 'tenant-1', name: 'Acme Cloud', plan: 'Enterprise SaaS', currency: 'NPR' },
+  currentUser: { id: null, name: 'User', role: 'member', email: '', tenant_id: null },
+  tenant: { id: null, name: 'SalesOS Workspace', plan: 'Enterprise SaaS', currency: 'USD' },
 
   routes: [
-    { label: 'Dashboard', path: '/index.html', icon: '▦', section: 'Workspace' },
-    { label: 'Inbox', path: '/inbox.html', icon: '☵', section: 'Workspace', badge: '12', badgeClass: 'badge-blue' },
-    { label: 'Leads', path: '/leads.html', icon: '♙', section: 'Workspace' },
-    { label: 'Contacts', path: '/contacts.html', icon: '◉', section: 'Workspace' },
-    { label: 'Companies', path: '/companies.html', icon: '▱', section: 'Workspace' },
-    { label: 'Deals', path: '/deals.html', icon: '◇', section: 'Revenue Pipeline' },
-    { label: 'Quotes', path: '/quotes.html', icon: '📄', section: 'Revenue Pipeline' },
-    { label: 'Products', path: '/products.html', icon: '▤', section: 'Revenue Pipeline' },
-    { label: 'Tasks', path: '/tasks.html', icon: '✓', section: 'Revenue Pipeline' },
-    { label: 'Campaigns', path: '/campaigns.html', icon: '◌', section: 'Autonomous AI' },
-    { label: 'AI Agents & Approvals', path: '/approvals.html', icon: '✦', section: 'Autonomous AI', badge: '3', badgeClass: 'badge-orange' },
-    { label: 'Automations', path: '/automations.html', icon: '⚙', section: 'Autonomous AI' },
-    { label: 'Channels & Ingestion', path: '/settings.html?tab=channels', icon: '🌐', section: 'Autonomous AI', badge: 'New', badgeClass: 'badge-green' },
-    { label: 'Knowledge Base', path: '/settings.html?tab=knowledge', icon: '📚', section: 'Autonomous AI' },
-    { label: 'Reports', path: '/reports.html', icon: '▥', section: 'Analytics & Manage' },
-    { label: 'Settings', path: '/settings.html', icon: '⚙', section: 'Analytics & Manage' },
+    { label: 'Dashboard', path: '/', icon: '▦', section: 'Workspace' },
+    { label: 'Inbox', path: '/inbox', icon: '☵', section: 'Workspace', badge: '12', badgeClass: 'badge-blue' },
+    { label: 'Leads', path: '/leads', icon: '♙', section: 'Workspace' },
+    { label: 'Contacts', path: '/contacts', icon: '◉', section: 'Workspace' },
+    { label: 'Companies', path: '/companies', icon: '▱', section: 'Workspace' },
+    { label: 'Deals', path: '/deals', icon: '◇', section: 'Revenue Pipeline' },
+    { label: 'Quotes', path: '/quotes', icon: '📄', section: 'Revenue Pipeline' },
+    { label: 'Products', path: '/products', icon: '▤', section: 'Revenue Pipeline' },
+    { label: 'Tasks', path: '/tasks', icon: '✓', section: 'Revenue Pipeline' },
+    { label: 'Campaigns', path: '/campaigns', icon: '◌', section: 'Autonomous AI' },
+    { label: 'AI Agents & Approvals', path: '/approvals', icon: '✦', section: 'Autonomous AI', badge: '3', badgeClass: 'badge-orange' },
+    { label: 'Automations', path: '/automations', icon: '⚙', section: 'Autonomous AI' },
+    { label: 'Channels & Ingestion', path: '/settings?tab=channels', icon: '🌐', section: 'Autonomous AI', badge: 'New', badgeClass: 'badge-green' },
+    { label: 'Knowledge Base', path: '/settings?tab=knowledge', icon: '📚', section: 'Autonomous AI' },
+    { label: 'Reports', path: '/reports', icon: '▥', section: 'Analytics & Manage' },
+    { label: 'Settings', path: '/settings', icon: '⚙', section: 'Analytics & Manage' },
   ],
 
   init(activeRouteName, breadcrumbs = []) {
+    // Clean URL normalization: strip .html extension in browser address bar without reload
+    if (typeof window !== 'undefined' && window.location && window.location.pathname.endsWith('.html')) {
+      const clean = (window.location.pathname === '/index.html') ? '/' : window.location.pathname.replace(/\.html$/, '');
+      window.history.replaceState(null, '', clean + window.location.search + window.location.hash);
+    }
+
     this.initTheme();
     this.checkSession();
     this.renderSidebar(activeRouteName);
     this.initSidebarCollapse();
     this.refreshSidebarBadges();
     this.renderTopbar(breadcrumbs);
+    this.initTheme();
     this.renderModals();
     this.setupGlobalEvents();
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.update().catch(() => {});
+      }).catch(() => {});
     }
   },
 
@@ -43,7 +52,7 @@ const SalesOS = {
     const currentPath = window.location.pathname;
 
     let html = `
-      <a href="/index.html" class="brand">
+      <a href="/" class="brand">
         <div class="brand-mark">✦</div>
         <div class="brand-text">
           <span>SalesOS</span>
@@ -51,7 +60,7 @@ const SalesOS = {
         </div>
       </a>
 
-      <div class="tenant-badge" onclick="location.href='/settings.html'" title="Switch or edit workspace">
+      <div class="tenant-badge" role="button" tabindex="0" onclick="location.href='/settings'" onkeydown="if(event.key==='Enter'||event.key===' ')location.href='/settings'" title="Switch or edit workspace" aria-label="Switch or edit workspace">
         <div class="tenant-avatar">${(this.tenant.name || 'AC').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
         <div class="tenant-info">
           <strong>${this.escapeHtml(this.tenant.name || 'Workspace')}</strong>
@@ -65,21 +74,24 @@ const SalesOS = {
 
     let currentSection = '';
     this.routes.forEach(route => {
-      if (route.section !== currentSection) {
+      // Print section divider if changed
+      if (route.section && route.section !== currentSection) {
         currentSection = route.section;
-        html += `<div class="nav-section-label" style="margin-top:${currentSection === 'Workspace' ? '0' : '14px'}">${currentSection}</div>`;
+        html += `<div class="nav-section-title">${this.escapeHtml(currentSection)}</div>`;
       }
 
       // Check if this route is currently active
+      const cleanCurrent = currentPath.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+      const cleanRoutePath = route.path.split('?')[0].replace(/\.html$/, '').replace(/\/$/, '') || '/';
       const isActive = activeRouteName === route.label || 
-        currentPath === route.path || 
-        (route.path === '/index.html' && (currentPath === '/' || currentPath === ''));
+        cleanCurrent === cleanRoutePath || 
+        (cleanRoutePath === '/' && (cleanCurrent === '/' || cleanCurrent === '/index' || cleanCurrent === '/dashboard'));
 
       html += `
         <a href="${route.path}" class="nav-item ${isActive ? 'active' : ''}" id="nav-${route.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" title="${this.escapeHtml(route.label)}">
           <span class="nav-icon">${route.icon}</span>
-          <span>${route.label}</span>
-          ${route.badge ? `<span class="nav-badge ${route.badgeClass || ''}">${route.badge}</span>` : ''}
+          <span>${this.escapeHtml(route.label)}</span>
+          ${route.badge ? `<span class="nav-badge ${this.escapeHtml(route.badgeClass || '')}">${this.escapeHtml(route.badge)}</span>` : ''}
         </a>
       `;
     });
@@ -90,17 +102,17 @@ const SalesOS = {
         <div class="agent-mini-card">
           <b>✦ Autonomous Sales Engine</b>
           <p>Handled 68% of inbound conversations autonomously this week.</p>
-          <a href="/approvals.html">Review AI actions →</a>
+          <a href="/approvals">Review AI actions →</a>
         </div>
-        <a href="/onboarding.html" class="nav-item" style="color:var(--blue);font-weight:600" title="12-Step Setup Wizard">
+        <a href="/onboarding" class="nav-item" style="color:var(--blue);font-weight:600" title="12-Step Setup Wizard">
           <span class="nav-icon">✨</span>
           <span>12-Step Setup Wizard</span>
         </a>
-        <a href="/superadmin.html" class="nav-item" id="sidebarSuperadminLink" style="color:#a855f7;font-weight:600;display:${this.currentUser?.role === 'superadmin' ? 'flex' : 'none'}" title="Platform Superadmin">
+        <a href="/superadmin" class="nav-item" id="sidebarSuperadminLink" style="color:#a855f7;font-weight:600;display:${(this.currentUser?.role === 'superadmin' || this.currentUser?.is_impersonating) ? 'flex' : 'none'}" title="Platform Superadmin">
           <span class="nav-icon">⚡</span>
           <span>Platform Superadmin</span>
         </a>
-        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="SalesOS.toggleSidebarCollapse()" title="Toggle Sidebar (Ctrl+\)">
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="SalesOS.toggleSidebarCollapse()" title="Toggle Sidebar (Ctrl+\\)">
           <span class="collapse-icon">«</span>
           <span class="collapse-text">Collapse Rail</span>
         </button>
@@ -218,22 +230,22 @@ const SalesOS = {
             <span style="font-size:9px">⌄</span>
           </button>
           <div class="user-dropdown" id="quickCreateMenu" style="right:0;top:38px;width:180px">
-            <a href="/leads.html?action=new">♙ New Lead</a>
-            <a href="/deals.html?action=new">◇ New Deal</a>
-            <a href="/quotes.html?action=new">📄 New Quote</a>
-            <a href="/tasks.html?action=new">✓ New Task</a>
+            <a href="/leads?action=new">♙ New Lead</a>
+            <a href="/deals?action=new">◇ New Deal</a>
+            <a href="/quotes?action=new">📄 New Quote</a>
+            <a href="/tasks?action=new">✓ New Task</a>
           </div>
         </div>
 
-        <button class="btn-icon" title="WebRTC Softphone Dialer" id="btnToggleSoftphone" onclick="SalesOS.toggleSoftphone()" style="position:relative">
+        <button class="btn-icon" title="WebRTC Softphone Dialer" aria-label="WebRTC Softphone Dialer" id="btnToggleSoftphone" onclick="SalesOS.toggleSoftphone()" style="position:relative">
           <span>📞</span>
         </button>
 
-        <button class="btn-icon" title="Toggle Light / Dark Theme" id="btnThemeToggle" onclick="SalesOS.toggleTheme()" style="position:relative;font-size:14px">
-          <span id="themeToggleIcon">🌙</span>
+        <button class="btn-icon" title="Toggle Light / Dark Theme" aria-label="Toggle Light or Dark Theme" id="btnThemeToggle" onclick="SalesOS.toggleTheme()" style="position:relative;font-size:14px">
+          <span id="themeToggleIcon">${(document.documentElement.getAttribute('data-theme') || localStorage.getItem('salesos_theme')) === 'dark' ? '☀️' : '🌙'}</span>
         </button>
 
-        <button class="btn-icon" title="Notifications" onclick="SalesOS.showToast('All systems operational. 3 AI actions pending review.', 'info')">
+        <button class="btn-icon" title="Notifications" aria-label="Notifications" onclick="SalesOS.showToast('All systems operational. 3 AI actions pending review.', 'info')">
           <span>🔔</span>
           <span class="dot-badge"></span>
         </button>
@@ -251,9 +263,9 @@ const SalesOS = {
               <strong style="font-size:12px;display:block" id="dropdownEmail">${this.escapeHtml(this.currentUser?.email || '')}</strong>
               <span class="badge badge-blue" style="font-size:10px;margin-top:4px" id="dropdownRole">${this.escapeHtml(this.currentUser?.role || 'owner')}</span>
             </div>
-            <a href="/settings.html">👤 Workspace Settings</a>
-            <a href="/approvals.html">✦ AI Guardrails</a>
-            <a href="/superadmin.html" style="color:#a855f7;font-weight:600">⚡ Superadmin Control Plane</a>
+            <a href="/settings">👤 Workspace Settings</a>
+            <a href="/approvals">✦ AI Guardrails</a>
+            <a href="/superadmin" style="color:#a855f7;font-weight:600">⚡ Superadmin Control Plane</a>
             <button onclick="SalesOS.logout()" style="color:var(--red)">🚪 Sign Out</button>
           </div>
         </div>
@@ -283,11 +295,11 @@ const SalesOS = {
             <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Enter your credentials to access your tenant workspace.</p>
             <div class="form-group">
               <label class="form-label">Email Address</label>
-              <input type="email" id="loginEmail" class="form-control" placeholder="arjun@acmecloud.com" value="arjun@example.com">
+              <input type="email" id="loginEmail" class="form-control" placeholder="name@company.com">
             </div>
             <div class="form-group">
               <label class="form-label">Password</label>
-              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" value="secret">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••">
             </div>
             <div id="loginError" style="color:var(--red);font-size:12px;min-height:18px;margin-bottom:8px"></div>
             <button class="btn btn-primary" style="width:100%" onclick="SalesOS.submitLogin()">Sign In</button>
@@ -343,6 +355,9 @@ const SalesOS = {
   },
 
   setupGlobalEvents() {
+    if (this._globalEventsBound) return;
+    this._globalEventsBound = true;
+
     // Close dropdowns on outside click
     document.addEventListener('click', (e) => {
       const dropdown = document.getElementById('userDropdownMenu');
@@ -399,6 +414,45 @@ const SalesOS = {
     if (modal) modal.classList.remove('active');
   },
 
+  confirm(options) {
+    const title = options.title || 'Confirm Action';
+    const message = options.message || 'Are you sure you want to proceed?';
+    const confirmText = options.confirmText || 'Confirm';
+    const cancelText = options.cancelText || 'Cancel';
+    const isDanger = options.danger !== false;
+
+    let modal = document.getElementById('salesosConfirmModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'salesosConfirmModal';
+      modal.className = 'modal-overlay';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div class="modal-box" style="max-width:420px">
+        <div class="modal-header">
+          <h3 style="margin:0;font-size:16px">${this.escapeHtml(title)}</h3>
+          <button class="modal-close" aria-label="Close dialog" onclick="SalesOS.closeModal('salesosConfirmModal')">×</button>
+        </div>
+        <div class="modal-body" style="padding:18px 24px;font-size:14px;color:var(--ink)">
+          ${this.escapeHtml(message)}
+        </div>
+        <div class="modal-footer" style="padding:14px 24px;display:flex;justify-content:flex-end;gap:10px">
+          <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('salesosConfirmModal')">${this.escapeHtml(cancelText)}</button>
+          <button type="button" class="btn ${isDanger ? 'btn-danger' : 'btn-primary'}" id="salesosConfirmBtn">${this.escapeHtml(confirmText)}</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('salesosConfirmBtn').onclick = () => {
+      SalesOS.closeModal('salesosConfirmModal');
+      if (typeof options.onConfirm === 'function') options.onConfirm();
+    };
+
+    this.showModal('salesosConfirmModal');
+  },
+
   showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -428,9 +482,11 @@ const SalesOS = {
 
   async checkSession() {
     const path = window.location.pathname;
-    const isPublicPage = path.endsWith('/login.html') ||
-                         path.endsWith('/quote-view.html') ||
-                         path.endsWith('/404.html');
+    const cleanPath = path.replace(/\.html$/, '') || '/';
+    const isPublicPage = cleanPath === '/login' ||
+                         cleanPath === '/quote-view' ||
+                         cleanPath === '/reset-password' ||
+                         cleanPath === '/404';
     try {
       const res = await fetch('/api/auth/me');
       if (res.ok) {
@@ -440,15 +496,111 @@ const SalesOS = {
           if (data.tenant) this.tenant = data.tenant;
           this.updateUserUI();
           this.updateTenantUI();
+          this.initEventStream();
+          this.ensureBSCalendar();
+          this.renderImpersonationBanner();
         }
       } else if (res.status === 401 && !isPublicPage) {
-        window.location.href = `/login.html?redirect=${encodeURIComponent(path + window.location.search)}`;
+        window.location.href = `/login?redirect=${encodeURIComponent(path + window.location.search)}`;
       }
     } catch (e) {
       if (!isPublicPage) {
-        window.location.href = '/login.html';
+        window.location.href = '/login';
       }
     }
+  },
+
+  renderImpersonationBanner() {
+    if (!this.currentUser?.is_impersonating) return;
+    let banner = document.getElementById('impersonationBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'impersonationBanner';
+      banner.style.cssText = 'background:linear-gradient(90deg, #6366f1, #a855f7);color:white;padding:8px 18px;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.3)';
+      banner.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">⚡</span>
+          <span><strong>Superadmin Impersonation Mode:</strong> Viewing tenant <u>${this.escapeHtml(this.tenant?.name || 'Workspace')}</u> as <u>${this.escapeHtml(this.currentUser.name)}</u> (${this.escapeHtml(this.currentUser.role)})</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <a href="/superadmin" style="background:rgba(255,255,255,0.2);color:white;text-decoration:none;padding:3px 10px;border-radius:4px;font-size:11px">Superadmin Console</a>
+          <button id="btnExitImpersonation" style="background:white;color:#6b21a8;border:none;border-radius:4px;padding:4px 12px;font-weight:700;font-size:11px;cursor:pointer" onclick="SalesOS.exitImpersonation()">
+            Exit Impersonation ✕
+          </button>
+        </div>
+      `;
+      document.body.prepend(banner);
+    }
+  },
+
+  async exitImpersonation() {
+    try {
+      const res = await fetch('/api/superadmin/switch-back', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/superadmin';
+      } else {
+        SalesOS.showToast('Failed to exit impersonation session.', 'error');
+      }
+    } catch (e) {
+      SalesOS.showToast('Network error while exiting impersonation.', 'error');
+    }
+  },
+
+  initEventStream() {
+    if (typeof window === 'undefined' || !window.EventSource) return;
+    if (this._sseConnected) return;
+    const path = window.location.pathname;
+    const cleanPath = path.replace(/\.html$/, '') || '/';
+    const isPublicPage = cleanPath === '/login' ||
+                         cleanPath === '/quote-view' ||
+                         cleanPath === '/reset-password' ||
+                         cleanPath === '/404';
+    if (isPublicPage) return;
+
+    try {
+      const evtSource = new EventSource('/api/events/stream');
+      this._sseConnected = true;
+
+      evtSource.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          window.dispatchEvent(new CustomEvent('salesos:event', { detail: data }));
+
+          if (data.type === 'lead.sla_breached') {
+            SalesOS.showToast(`⚠️ Lead SLA Breach Alert! ${data.payload?.breached_count || 1} lead(s) overdue. Escalated to tasks.`, 'error');
+          } else if (data.type === 'quote.signed') {
+            SalesOS.showToast(`📄 Quote accepted & digitally signed by customer!`, 'success');
+          } else if (data.type === 'quote.paid') {
+            SalesOS.showToast(`💰 Quote payment verified & deal marked Closed Won!`, 'success');
+          } else if (data.type === 'message.received') {
+            SalesOS.showToast(`💬 Inbound message from ${data.payload?.sender_name || 'customer'}`, 'info');
+          } else if (data.type === 'ai_approval.created') {
+            SalesOS.showToast(`✦ New AI action approval requested: ${data.payload?.action || 'tool'}`, 'info');
+            SalesOS.refreshSidebarBadges();
+          } else if (data.type === 'handoff.created') {
+            SalesOS.showToast(`👤 Lead escalated to human sales operator queue`, 'info');
+          }
+        } catch (_) {}
+      };
+
+      evtSource.onerror = () => {
+        this._sseConnected = false;
+        evtSource.close();
+        setTimeout(() => this.initEventStream(), 10000);
+      };
+    } catch (_) {}
+  },
+
+  async ensureBSCalendar() {
+    if (typeof window === 'undefined') return;
+    if (window.BSCalendar) return;
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = '/bs-calendar.js';
+      script.onload = () => resolve();
+      script.onerror = () => resolve();
+      document.head.appendChild(script);
+    });
   },
 
   updateTenantUI() {
@@ -478,7 +630,7 @@ const SalesOS = {
     }
     const superLink = document.getElementById('sidebarSuperadminLink');
     if (superLink) {
-      superLink.style.display = this.currentUser?.role === 'superadmin' ? 'flex' : 'none';
+      superLink.style.display = (this.currentUser?.role === 'superadmin' || this.currentUser?.is_impersonating) ? 'flex' : 'none';
     }
   },
 
@@ -522,7 +674,7 @@ const SalesOS = {
     } catch (e) {}
     this.showToast('You have been signed out.');
     setTimeout(() => {
-      window.location.href = '/login.html';
+      window.location.href = '/login';
     }, 400);
   },
 
@@ -530,7 +682,7 @@ const SalesOS = {
     if (event.key === 'Enter') {
       const q = event.target.value.trim();
       if (q) {
-        window.location.href = `/leads.html?search=${encodeURIComponent(q)}`;
+        window.location.href = `/leads?search=${encodeURIComponent(q)}`;
       }
     }
   },
@@ -759,12 +911,10 @@ const SalesOS = {
 
   initTheme() {
     if (typeof window === 'undefined') return;
-    // Default to clean enterprise Light mode unless explicitly switched by user
     let theme = localStorage.getItem('salesos_theme');
-    const isExplicit = localStorage.getItem('salesos_theme_explicit') === 'true';
-    if (!isExplicit || !theme) {
-      theme = 'light';
-      localStorage.setItem('salesos_theme', 'light');
+    if (!theme) {
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      localStorage.setItem('salesos_theme', theme);
     }
     document.documentElement.setAttribute('data-theme', theme);
     const icon = document.getElementById('themeToggleIcon');
@@ -773,7 +923,7 @@ const SalesOS = {
 
   toggleTheme() {
     if (typeof window === 'undefined') return;
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const current = document.documentElement.getAttribute('data-theme') || localStorage.getItem('salesos_theme') || 'light';
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('salesos_theme', next);
@@ -798,15 +948,94 @@ const SalesOS = {
     return 'FY 2083/84';
   },
 
-  formatCurrency(amount, currency = 'NPR') {
+  formatCurrency(amount, currency = null) {
+    const curr = currency || this.tenant?.currency || 'USD';
     const num = Number(amount) || 0;
-    return `${currency} ${num.toLocaleString()}`;
+    return `${curr} ${num.toLocaleString()}`;
+  },
+
+  // FE-9: Skeleton loading state system — shimmer placeholders while data loads
+  // Usage: SalesOS.showSkeleton('#leads-table', { rows: 6, cols: 5 });
+  //        await fetchData();
+  //        SalesOS.hideSkeleton('#leads-table');
+  showSkeleton(selector, { rows = 5, cols = 4, type = 'table' } = {}) {
+    const container = typeof selector === 'string' ? document.querySelector(selector) : selector;
+    if (!container) return;
+
+    // Inject skeleton CSS once
+    if (!document.getElementById('sos-skeleton-styles')) {
+      const style = document.createElement('style');
+      style.id = 'sos-skeleton-styles';
+      style.textContent = `
+        @keyframes sos-shimmer {
+          0%   { background-position: -600px 0; }
+          100% { background-position: 600px 0; }
+        }
+        .sos-skeleton-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border, #e5e7eb); }
+        .sos-skeleton-cell {
+          height: 14px; border-radius: 6px; flex: 1;
+          background: linear-gradient(90deg, var(--skeleton-base, #e5e7eb) 25%, var(--skeleton-shine, #f3f4f6) 50%, var(--skeleton-base, #e5e7eb) 75%);
+          background-size: 600px 100%;
+          animation: sos-shimmer 1.4s infinite linear;
+        }
+        .sos-skeleton-cell.wide { flex: 2; }
+        .sos-skeleton-cell.narrow { flex: 0.5; }
+        .dark .sos-skeleton-cell { --skeleton-base: #374151; --skeleton-shine: #4b5563; }
+        .sos-skeleton-header { height: 10px; border-radius: 4px; background: var(--skeleton-base, #e5e7eb); margin-bottom: 4px; }
+        .sos-skeleton-wrap { padding: 4px 0; }
+        .sos-skeleton-card {
+          border-radius: 10px; padding: 16px; margin-bottom: 12px;
+          background: linear-gradient(90deg, var(--skeleton-base, #e5e7eb) 25%, var(--skeleton-shine, #f3f4f6) 50%, var(--skeleton-base, #e5e7eb) 75%);
+          background-size: 600px 100%;
+          animation: sos-shimmer 1.4s infinite linear;
+          min-height: 80px;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    container.dataset.skeletonOriginal = container.innerHTML;
+    container.dataset.skeletonActive = '1';
+
+    if (type === 'cards') {
+      container.innerHTML = Array.from({ length: rows }, () => `<div class="sos-skeleton-card"></div>`).join('');
+    } else {
+      // Default: table rows with variable-width cells
+      const widths = ['wide', '', '', 'narrow'];
+      container.innerHTML = `
+        <div class="sos-skeleton-wrap">
+          ${Array.from({ length: rows }, () => `
+            <div class="sos-skeleton-row">
+              ${Array.from({ length: cols }, (_, i) => `<div class="sos-skeleton-cell ${widths[i % widths.length] || ''}"></div>`).join('')}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  },
+
+  hideSkeleton(selector) {
+    const container = typeof selector === 'string' ? document.querySelector(selector) : selector;
+    if (!container || !container.dataset.skeletonActive) return;
+    delete container.dataset.skeletonActive;
+    // Caller is responsible for populating real content after hideSkeleton
+  },
+
+  // Helper: wraps an async fetch with skeleton on a container, then auto-hides
+  async withSkeleton(selector, fetchFn, skeletonOpts = {}) {
+    this.showSkeleton(selector, skeletonOpts);
+    try {
+      return await fetchFn();
+    } finally {
+      this.hideSkeleton(selector);
+    }
   }
 };
 
 if (typeof window !== 'undefined') {
   window.escapeHtml = (s) => SalesOS.escapeHtml(s);
   window.SalesOS = SalesOS;
+  SalesOS.initTheme();
 }
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = SalesOS;

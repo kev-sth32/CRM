@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const UNSUBSCRIBE_SECRET = process.env.UNSUBSCRIBE_SECRET || 'unsub_sec_default_salesos_99';
+const UNSUBSCRIBE_SECRET = process.env.UNSUBSCRIBE_SECRET || (process.env.NODE_ENV === 'production' ? (() => { throw new Error('CRITICAL CONFIGURATION ERROR: UNSUBSCRIBE_SECRET is required in production.'); })() : 'unsub_sec_default_salesos_99');
 
 function generateUnsubscribeToken(leadId, email) {
   return crypto.createHmac('sha256', UNSUBSCRIBE_SECRET).update(`${leadId || 'general'}:${(email || '').toLowerCase().trim()}`).digest('hex');
@@ -53,7 +53,7 @@ async function sendEmail({ to, subject, html, text, from, tenantId, leadId, meta
 
   const emailRecord = {
     id: `email-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
-    tenant_id: tenantId || 'tenant-1',
+    tenant_id: tenantId || null,
     lead_id: leadId || null,
     to,
     from: fromAddress,

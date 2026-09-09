@@ -8,16 +8,37 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="app.css">
+  <script>
+    // Immediate blocking theme initialization to prevent Flash of Unstyled Theme (FOUT)
+    (function() {
+      const theme = localStorage.getItem('salesos_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <style>
     :root {
       --superadmin-nav-bg: #090d16;
       --superadmin-card-bg: #0e1526;
       --superadmin-border: rgba(255, 255, 255, 0.08);
+      --superadmin-bg: #060911;
+      --superadmin-text: #f1f5f9;
+      --superadmin-muted: #94a3b8;
+    }
+    [data-theme="light"] {
+      --superadmin-nav-bg: #ffffff;
+      --superadmin-card-bg: #ffffff;
+      --superadmin-border: rgba(0, 0, 0, 0.1);
+      --superadmin-bg: #f8fafc;
+      --superadmin-text: #0f172a;
+      --superadmin-muted: #64748b;
     }
     body {
-      background: #060911;
-      color: #f1f5f9;
+      background: var(--superadmin-bg);
+      color: var(--superadmin-text);
       font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      transition: background 0.2s ease, color 0.2s ease;
     }
     .platform-header {
       background: var(--superadmin-nav-bg);
@@ -26,13 +47,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     .platform-brand {
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
-      color: white;
+      color: var(--superadmin-text);
     }
     .platform-mark {
       width: 34px;
@@ -64,7 +90,7 @@
       margin-left: 6px;
     }
     .platform-container {
-      max-width: 1360px;
+      max-width: 1380px;
       margin: 0 auto;
       padding: 28px 24px 60px;
     }
@@ -81,6 +107,7 @@
       padding: 20px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
     .platform-card::before {
       content: '';
@@ -90,7 +117,7 @@
     }
     .stat-label {
       font-size: 12px;
-      color: #94a3b8;
+      color: var(--superadmin-muted);
       font-weight: 500;
       margin-bottom: 8px;
       display: flex;
@@ -101,7 +128,7 @@
       font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      color: #ffffff;
+      color: var(--superadmin-text);
       margin-bottom: 6px;
     }
     .stat-sub {
@@ -117,29 +144,31 @@
       border-bottom: 1px solid var(--superadmin-border);
       margin-bottom: 24px;
       padding-bottom: 2px;
+      overflow-x: auto;
     }
     .tab-btn {
       padding: 10px 18px;
       border-radius: 8px 8px 0 0;
       background: transparent;
       border: none;
-      color: #94a3b8;
+      color: var(--superadmin-muted);
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
       transition: all 0.15s ease;
     }
     .tab-btn:hover {
-      color: #f1f5f9;
+      color: var(--superadmin-text);
       background: rgba(255, 255, 255, 0.03);
     }
     .tab-btn.active {
-      color: #ffffff;
+      color: var(--superadmin-text);
       border-bottom: 2px solid #a855f7;
-      background: rgba(168, 85, 247, 0.06);
+      background: rgba(168, 85, 247, 0.08);
     }
     .tenants-table {
       width: 100%;
@@ -149,7 +178,7 @@
     .tenants-table th {
       text-align: left;
       padding: 12px 16px;
-      color: #94a3b8;
+      color: var(--superadmin-muted);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -157,11 +186,14 @@
     }
     .tenants-table td {
       padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--superadmin-border);
       vertical-align: middle;
     }
     .tenants-table tr:hover td {
       background: rgba(255, 255, 255, 0.02);
+    }
+    [data-theme="light"] .tenants-table tr:hover td {
+      background: rgba(0, 0, 0, 0.02);
     }
     .tenant-cell {
       display: flex;
@@ -173,7 +205,7 @@
       height: 36px;
       border-radius: 10px;
       background: linear-gradient(135deg, #1e293b, #334155);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--superadmin-border);
       display: grid;
       place-items: center;
       font-size: 13px;
@@ -182,11 +214,11 @@
     }
     .tenant-name-wrap strong {
       display: block;
-      color: #ffffff;
+      color: var(--superadmin-text);
       font-weight: 600;
     }
     .tenant-name-wrap small {
-      color: #64748b;
+      color: var(--superadmin-muted);
       font-family: var(--font-mono);
       font-size: 11px;
     }
@@ -208,10 +240,17 @@
     .badge-active {
       background: rgba(16, 185, 129, 0.12);
       color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .badge-suspended {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
     .badge-pending {
       background: rgba(245, 158, 11, 0.12);
       color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
     .status-dot {
       width: 7px;
@@ -222,104 +261,173 @@
       background: #10b981;
       box-shadow: 0 0 8px #10b981;
     }
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--superadmin-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+    .impersonation-banner {
+      background: linear-gradient(90deg, #92400e, #b45309);
+      color: #fef3c7;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .glass-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.92);
+      color: white;
+      border: 1px solid var(--superadmin-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      z-index: 100000;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      max-width: 400px;
+    }
+    .glass-toast.toast-success { border-left: 4px solid #10b981; }
+    .glass-toast.toast-error { border-left: 4px solid #ef4444; }
+    .glass-toast.toast-info { border-left: 4px solid #3b82f6; }
+
     @media (max-width: 1024px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      .platform-header { padding: 12px 16px; }
+      .platform-container { padding: 16px 12px 40px; }
       .stats-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="platform-header">
-    <div style="display:flex;align-items:center;gap:20px">
-      <a href="/superadmin.html" class="platform-brand">
-        <div class="platform-mark">⚡</div>
-        <div>
-          <span class="platform-title">SalesOS Platform Control Plane</span>
-          <span class="platform-badge">Superadmin</span>
-        </div>
-      </a>
-      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#94a3b8">
-        <span class="status-dot"></span>
-        <span>Multi-Tenant Cluster: <strong>Production (Active)</strong></span>
-      </div>
-    </div>
+  <!-- Auth Barrier (Protects against unauthenticated flash) -->
+  <div id="authBarrier" class="auth-overlay">
+    <div style="font-size:36px;margin-bottom:12px">⚡</div>
+    <div style="font-size:15px;font-weight:600;color:var(--superadmin-text)" id="authBarrierText">Verifying Superadmin Credentials...</div>
+  </div>
 
-    <div style="display:flex;align-items:center;gap:12px">
-      <button class="btn btn-secondary" style="background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="openProvisionModal()">
-        ＋ Provision New Tenant
+  <div id="superadminContent" style="display:none">
+    <!-- Header -->
+    <header class="platform-header">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <a href="/superadmin" class="platform-brand">
+          <div class="platform-mark">⚡</div>
+          <div>
+            <span class="platform-title">SalesOS Platform Control Plane</span>
+            <span class="platform-badge">Superadmin</span>
+          </div>
+        </a>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--superadmin-muted)">
+          <span class="status-dot"></span>
+          <span>Multi-Tenant Cluster: <strong id="clusterStatusText" style="color:var(--superadmin-text)">Production (Active)</strong></span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span id="superadminEmailBadge" style="font-size:12px;color:var(--superadmin-muted);margin-right:6px">superadmin@salesos.io</span>
+        <button class="btn-icon" title="Toggle Light / Dark Theme" aria-label="Toggle light or dark theme" id="btnThemeToggle" onclick="toggleSuperadminTheme()" style="position:relative;font-size:14px">
+          <span id="themeToggleIcon">🌙</span>
+        </button>
+        <script>(function(){var i=document.getElementById('themeToggleIcon');if(i)i.textContent=(document.documentElement.getAttribute('data-theme')||localStorage.getItem('salesos_theme'))==='dark'?'☀️':'🌙';})();</script>
+        <button class="btn btn-secondary" onclick="openProvisionModal()">
+          ＋ Provision New Tenant
+        </button>
+        <a href="/" class="btn btn-primary" style="background:linear-gradient(135deg, #6366f1, #a855f7);border:none">
+          ← Return to Workspace
+        </a>
+        <button class="btn btn-secondary" style="color:#f87171" onclick="handleSuperadminLogout()">
+          🚪 Sign Out
+        </button>
+      </div>
+    </header>
+
+    <!-- Impersonation Mode Banner -->
+    <div id="impersonationWarningBanner" class="impersonation-banner">
+      <span id="impersonationBannerText">⚠️ <strong>Superadmin Impersonation Mode:</strong> You are viewing an isolated tenant workspace.</span>
+      <button class="btn btn-secondary" onclick="exitImpersonationFromHeader()" style="padding:4px 12px;font-size:12px;background:rgba(0,0,0,0.3);color:white;border:1px solid rgba(255,255,255,0.3)">
+        Exit Impersonation ✕
       </button>
-      <a href="/index.html" class="btn btn-primary" style="background:linear-gradient(135deg, #6366f1, #a855f7);border:none">
-        ← Return to Workspace
-      </a>
-      <button class="btn btn-secondary" style="background:#1e293b;border-color:var(--superadmin-border);color:#f87171" onclick="handleSuperadminLogout()">
-        🚪 Sign Out
-      </button>
-    </div>
-  </header>
-
-  <div class="platform-container">
-    <!-- Top Stats -->
-    <div class="stats-row" id="statsRow">
-      <div class="platform-card">
-        <div class="stat-label">
-          <span>Active Organizations</span>
-          <span style="color:#a855f7">🏢</span>
-        </div>
-        <div class="stat-number" id="statTenants">4</div>
-        <div class="stat-sub">100% tenant isolation active</div>
-      </div>
-
-      <div class="platform-card">
-        <div class="stat-label">
-          <span>Global Platform MRR</span>
-          <span style="color:#10b981">📈</span>
-        </div>
-        <div class="stat-number" id="statMrr">NPR 41,56,000</div>
-        <div class="stat-sub">↑ 22.4% vs last quarter</div>
-      </div>
-
-      <div class="platform-card">
-        <div class="stat-label">
-          <span>Provisioned Platform Users</span>
-          <span style="color:#3b82f6">👥</span>
-        </div>
-        <div class="stat-number" id="statUsers">8</div>
-        <div class="stat-sub">Across 4 isolated tenants</div>
-      </div>
-
-      <div class="platform-card">
-        <div class="stat-label">
-          <span>Autonomous AI Actions (Today)</span>
-          <span style="color:#f59e0b">✦</span>
-        </div>
-        <div class="stat-number" id="statAi">142</div>
-        <div class="stat-sub">232,600 tokens processed</div>
-      </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="tabs-bar">
-      <button class="tab-btn active" id="tabTenants" onclick="switchTab('tenants')">🏢 Tenants & Workspaces</button>
-      <button class="tab-btn" id="tabInfrastructure" onclick="switchTab('infrastructure')">⚡ AI & Infrastructure</button>
-      <button class="tab-btn" id="tabTelemetry" onclick="switchTab('telemetry')">📊 System Telemetry</button>
-    </div>
-
-    <!-- Tab 1: Tenants List -->
-    <div id="viewTenants" class="platform-card" style="padding:0">
-      <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--superadmin-border)">
-        <div>
-          <strong style="font-size:15px;color:white">Tenant Organizations Directory</strong>
-          <p style="font-size:12px;color:#94a3b8;margin:0">Full overview of provisioned workspaces, subscription tiers, and resource usage.</p>
+    <div class="platform-container">
+      <!-- Top Stats -->
+      <div class="stats-row" id="statsRow">
+        <div class="platform-card">
+          <div class="stat-label">
+            <span>Active Organizations</span>
+            <span style="color:#a855f7">🏢</span>
+          </div>
+          <div class="stat-number" id="statTenants">...</div>
+          <div class="stat-sub">100% tenant isolation active</div>
         </div>
-        <input type="text" id="tenantSearchInput" placeholder="Filter by organization or slug..." oninput="filterTenants()" 
-               style="background:#060911;border:1px solid var(--superadmin-border);padding:8px 14px;border-radius:8px;color:white;font-size:12px;width:260px">
+
+        <div class="platform-card">
+          <div class="stat-label">
+            <span>Global Platform MRR</span>
+            <span style="color:#10b981">📈</span>
+          </div>
+          <div class="stat-number" id="statMrr">...</div>
+          <div class="stat-sub">↑ Real-time subscription run-rate</div>
+        </div>
+
+        <div class="platform-card">
+          <div class="stat-label">
+            <span>Provisioned Platform Users</span>
+            <span style="color:#3b82f6">👥</span>
+          </div>
+          <div class="stat-number" id="statUsers">...</div>
+          <div class="stat-sub" id="statUsersSub">Across all isolated workspaces</div>
+        </div>
+
+        <div class="platform-card">
+          <div class="stat-label">
+            <span>Autonomous AI Actions (Today)</span>
+            <span style="color:#f59e0b">✦</span>
+          </div>
+          <div class="stat-number" id="statAi">...</div>
+          <div class="stat-sub" id="statAiSub">Live tokens processed</div>
+        </div>
       </div>
 
-      <div style="overflow-x:auto">
-        <table class="tenants-table">
+      <!-- Navigation Tabs -->
+      <div class="tabs-bar" role="tablist">
+        <button class="tab-btn active" id="tabTenants" role="tab" aria-selected="true" aria-controls="viewTenants" onclick="switchTab('tenants')">🏢 Tenants & Workspaces</button>
+        <button class="tab-btn" id="tabInfrastructure" role="tab" aria-selected="false" aria-controls="viewInfrastructure" onclick="switchTab('infrastructure')">⚡ AI & Infrastructure</button>
+        <button class="tab-btn" id="tabTelemetry" role="tab" aria-selected="false" aria-controls="viewTelemetry" onclick="switchTab('telemetry')">📊 System Telemetry</button>
+        <button class="tab-btn" id="tabDlq" role="tab" aria-selected="false" aria-controls="viewDlq" onclick="switchTab('dlq')">📬 Async Queue & DLQ</button>
+        <button class="tab-btn" id="tabAudit" role="tab" aria-selected="false" aria-controls="viewAudit" onclick="switchTab('audit')">📜 Platform Audit Logs</button>
+      </div>
+
+      <!-- Tab 1: Tenants List -->
+      <div id="viewTenants" class="platform-card" style="padding:0" role="tabpanel" aria-labelledby="tabTenants">
+        <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--superadmin-border);flex-wrap:wrap;gap:12px">
+          <div>
+            <strong style="font-size:15px;color:var(--superadmin-text)">Tenant Organizations Directory</strong>
+            <p style="font-size:12px;color:var(--superadmin-muted);margin:0">Full overview of provisioned workspaces, subscription tiers, and resource usage.</p>
+          </div>
+          <input type="text" id="tenantSearchInput" placeholder="Filter by organization, slug, or status..." oninput="filterTenants()" aria-label="Search tenants by organization, slug, or status"
+                 style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);padding:8px 14px;border-radius:8px;color:var(--superadmin-text);font-size:12px;width:280px">
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="tenants-table">
           <thead>
             <tr>
               <th>Organization</th>
@@ -340,155 +448,275 @@
     </div>
 
     <!-- Tab 2: AI & Infrastructure -->
-    <div id="viewInfrastructure" class="platform-card" style="display:none;padding:24px">
-      <h3 style="margin-top:0;margin-bottom:6px">Global AI Infrastructure & Provider Health</h3>
-      <p style="color:#94a3b8;font-size:13px;margin-bottom:24px">Multi-tenant runtime orchestration, model routing, and token quota enforcement.</p>
+    <!-- Tab 2: AI & Infrastructure -->
+    <div id="viewInfrastructure" class="platform-card" style="display:none;padding:24px" role="tabpanel" aria-labelledby="tabInfrastructure">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="margin:0 0 6px">Global AI Infrastructure & Provider Health</h3>
+          <p style="color:var(--superadmin-muted);font-size:13px;margin:0">Multi-tenant runtime orchestration, model routing, and token quota enforcement.</p>
+        </div>
+        <span class="badge badge-active" id="aiProviderBadge">Active (openai-compatible)</span>
+      </div>
 
-      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin-bottom:28px">
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:28px" id="aiCardsGrid">
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-            <strong style="font-size:14px">OpenAI Connector</strong>
-            <span class="badge badge-active">Operational</span>
+            <strong style="font-size:14px">Primary Reasoning Model</strong>
+            <span class="badge badge-active" id="aiPrimaryBadge">Operational</span>
           </div>
-          <p style="font-size:12px;color:#94a3b8;margin:0 0 12px">Model: <code>gpt-4o-mini</code> / <code>text-embedding-3-small</code></p>
-          <div style="font-size:11px;color:#64748b">Latency: <strong>420ms</strong> · Error rate: <strong>0.01%</strong></div>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:0 0 12px">Model: <code id="aiPrimaryModel">meta/llama-3.2-11b-vision-instruct</code></p>
+          <div style="font-size:11px;color:var(--superadmin-muted)" id="aiPrimarySub">Low-latency copilot & structured generation</div>
         </div>
 
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-            <strong style="font-size:14px">Gemini Connector</strong>
-            <span class="badge badge-active">Operational</span>
+            <strong style="font-size:14px">Deep Reasoning & Forecasting</strong>
+            <span class="badge badge-active" id="aiReasoningBadge">Operational</span>
           </div>
-          <p style="font-size:12px;color:#94a3b8;margin:0 0 12px">Model: <code>gemini-1.5-flash</code></p>
-          <div style="font-size:11px;color:#64748b">Latency: <strong>380ms</strong> · Error rate: <strong>0.00%</strong></div>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:0 0 12px">Model: <code id="aiReasoningModel">meta/llama-3.2-90b-vision-instruct</code></p>
+          <div style="font-size:11px;color:var(--superadmin-muted)" id="aiReasoningSub">Complex pipeline analysis, forecasting & quotas</div>
         </div>
 
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-            <strong style="font-size:14px">Local Fallback Copilot</strong>
-            <span class="badge badge-active">Standby / Ready</span>
+            <strong style="font-size:14px">Guardrail & Prompt Defense</strong>
+            <span class="badge badge-active" id="aiGuardBadge">Active Enforcement</span>
           </div>
-          <p style="font-size:12px;color:#94a3b8;margin:0 0 12px">Engine: Rule & Knowledge heuristic pipeline</p>
-          <div style="font-size:11px;color:#64748b">Zero-network fallback guaranteed</div>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:0 0 12px">Model: <code id="aiGuardModel">meta/llama-guard-4-12b</code></p>
+          <div style="font-size:11px;color:var(--superadmin-muted)" id="aiGuardSub">Cognitive AppSec & prompt injection defense</div>
         </div>
       </div>
 
-      <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:20px">
+      <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:20px">
         <h4 style="margin:0 0 10px;font-size:14px">Global Platform AI Safety Policies</h4>
-        <ul style="font-size:13px;color:#cbd5e1;line-height:1.8;margin:0;padding-left:20px">
-          <li><strong>Autonomous Action Escalation:</strong> Mandatory human review required if confidence score < 85%</li>
+        <ul style="font-size:13px;color:var(--superadmin-text);line-height:1.8;margin:0;padding-left:20px">
+          <li><strong>Autonomous Action Escalation:</strong> Mandatory human review required if confidence score &lt; 85%</li>
           <li><strong>Protected Tool Guardrails:</strong> Quote generation above NPR 5,00,000 mandates approval executor review</li>
           <li><strong>Tenant Scoping:</strong> Strict vector chunk segregation by <code>tenant_id</code> prevents cross-tenant data leaks</li>
           <li><strong>Audit Logging:</strong> 100% of LLM prompts, citations, and execution traces persisted to <code>ai_runs</code></li>
+          <li><strong>Zero-Network Heuristic Fallback:</strong> Automatic switch to local copilot if upstream provider experiences transient timeouts</li>
         </ul>
       </div>
     </div>
 
     <!-- Tab 3: Telemetry -->
-    <div id="viewTelemetry" class="platform-card" style="display:none;padding:24px">
-      <h3 style="margin-top:0;margin-bottom:6px">System Telemetry & Database Cluster</h3>
-      <p style="color:#94a3b8;font-size:13px;margin-bottom:24px">Live backend metrics, SSE client connections, and worker heartbeats.</p>
+    <div id="viewTelemetry" class="platform-card" style="display:none;padding:24px" role="tabpanel" aria-labelledby="tabTelemetry">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="margin:0 0 6px">System Telemetry & Database Cluster</h3>
+          <p style="color:var(--superadmin-muted);font-size:13px;margin:0">Live backend metrics, SSE client connections, and worker heartbeats.</p>
+        </div>
+        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="loadSuperadminData()">
+          🔄 Refresh Telemetry
+        </button>
+      </div>
 
-      <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:16px" id="telemetryGrid">
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
-          <div style="color:#94a3b8;font-size:12px;margin-bottom:4px">Database Mode</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px" id="telemetryGrid">
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+          <div style="color:var(--superadmin-muted);font-size:12px;margin-bottom:4px">Database Mode</div>
           <strong style="font-size:16px;color:#38bdf8" id="telemetryDb">Loading...</strong>
-          <p style="font-size:12px;color:#64748b;margin:6px 0 0">Automatic fallback active if PostgreSQL instance is unconfigured.</p>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:6px 0 0">Automatic fallback active if PostgreSQL instance is unconfigured.</p>
         </div>
 
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
-          <div style="color:#94a3b8;font-size:12px;margin-bottom:4px">SSE Real-Time Push Clients</div>
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+          <div style="color:var(--superadmin-muted);font-size:12px;margin-bottom:4px">SSE Real-Time Push Clients</div>
           <strong style="font-size:16px;color:#4ade80" id="telemetrySse">Loading...</strong>
-          <p style="font-size:12px;color:#64748b;margin:6px 0 0">Live browser sessions streaming event updates.</p>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:6px 0 0">Live browser sessions streaming event updates.</p>
         </div>
 
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
-          <div style="color:#94a3b8;font-size:12px;margin-bottom:4px">Worker Queue & Lease Manager</div>
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+          <div style="color:var(--superadmin-muted);font-size:12px;margin-bottom:4px">Worker Queue & Lease Manager</div>
           <strong style="font-size:16px;color:#fbbf24" id="telemetryWorkers">Running (Leases Active)</strong>
-          <p style="font-size:12px;color:#64748b;margin:6px 0 0">Distributed worker concurrency with lock heartbeats.</p>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:6px 0 0">Distributed worker concurrency with lock heartbeats.</p>
         </div>
 
-        <div style="background:#060911;border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
-          <div style="color:#94a3b8;font-size:12px;margin-bottom:4px">Node Server Process Uptime</div>
+        <div style="background:var(--superadmin-bg);border:1px solid var(--superadmin-border);border-radius:12px;padding:18px">
+          <div style="color:var(--superadmin-muted);font-size:12px;margin-bottom:4px">Node Server Process Uptime & Memory</div>
           <strong style="font-size:16px;color:#c084fc" id="telemetryUptime">Loading...</strong>
-          <p style="font-size:12px;color:#64748b;margin:6px 0 0">Zero crashes or unhandled rejections detected.</p>
+          <p style="font-size:12px;color:var(--superadmin-muted);margin:6px 0 0" id="telemetryMemory">Memory tracking active.</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Dead-Letter Queue (DLQ) -->
+    <div id="viewDlq" class="platform-card" style="display:none;padding:24px" role="tabpanel" aria-labelledby="tabDlq">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="margin:0 0 6px">Dead-Letter Queue (DLQ) & Job Telemetry</h3>
+          <p style="color:var(--superadmin-muted);font-size:13px;margin:0">Failed connector events exceeding retry limits. Operators can inspect and safely replay jobs.</p>
+        </div>
+        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="loadDlqEvents()">
+          🔄 Refresh DLQ
+        </button>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table class="tenants-table">
+          <thead>
+            <tr>
+              <th>Job / Event ID</th>
+              <th>Tenant</th>
+              <th>Type</th>
+              <th>Attempts</th>
+              <th>Last Error</th>
+              <th>Received At</th>
+              <th style="text-align:right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="dlqTableBody">
+            <tr><td colspan="7" style="text-align:center;color:var(--superadmin-muted);padding:32px">Loading Dead-Letter Queue items...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 5: Platform Audit Logs -->
+    <div id="viewAudit" class="platform-card" style="display:none;padding:24px" role="tabpanel" aria-labelledby="tabAudit">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="margin:0 0 6px">Platform Security & Operational Audit Log</h3>
+          <p style="color:var(--superadmin-muted);font-size:13px;margin:0">Audit records of administrative actions, tenant provisioning, and cluster events.</p>
+        </div>
+        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="loadAuditLogs()">
+          🔄 Refresh Logs
+        </button>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table class="tenants-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Actor</th>
+              <th>Action</th>
+              <th>Entity Type</th>
+              <th>Entity ID</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--superadmin-muted);padding:32px">Loading audit events...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
   <!-- Provision Tenant Modal -->
-  <div class="modal-overlay" id="provisionModal">
-    <div class="modal-box" style="background:#0e1526;border-color:var(--superadmin-border);color:white;max-width:480px">
+  <div class="modal-overlay" id="provisionModal" role="dialog" aria-modal="true" aria-labelledby="provModalTitle">
+    <div class="modal-box" style="background:var(--superadmin-card-bg);border-color:var(--superadmin-border);color:var(--superadmin-text);max-width:500px">
       <div class="modal-header" style="border-bottom-color:var(--superadmin-border)">
-        <h3 style="margin:0;font-size:16px">＋ Provision New Tenant Workspace</h3>
-        <button class="modal-close" style="color:#94a3b8" onclick="closeProvisionModal()">×</button>
+        <h3 style="margin:0;font-size:16px" id="provModalTitle">＋ Provision New Tenant Workspace</h3>
+        <button class="modal-close" aria-label="Close dialog" style="color:var(--superadmin-muted)" onclick="closeProvisionModal()">×</button>
       </div>
       <div class="modal-body">
         <form id="provisionForm" onsubmit="handleProvisionSubmit(event)">
           <div class="form-group">
-            <label class="form-label" style="color:#cbd5e1">Organization Name</label>
-            <input type="text" id="provName" class="form-control" placeholder="e.g. Kathmandu FinTech Labs" required style="background:#060911;border-color:var(--superadmin-border);color:white">
+            <label class="form-label" style="color:var(--superadmin-text)">Organization Name</label>
+            <input type="text" id="provName" class="form-control" placeholder="e.g. Kathmandu FinTech Labs" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
           </div>
           <div class="form-group">
-            <label class="form-label" style="color:#cbd5e1">Workspace URL Slug</label>
-            <input type="text" id="provSlug" class="form-control" placeholder="e.g. ktm-fintech" required style="background:#060911;border-color:var(--superadmin-border);color:white">
+            <label class="form-label" style="color:var(--superadmin-text)">Workspace URL Slug</label>
+            <input type="text" id="provSlug" class="form-control" placeholder="e.g. ktm-fintech" pattern="[a-z0-9][a-z0-9-]*" title="Lowercase alphanumeric characters and hyphens only" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+            <small style="color:var(--superadmin-muted);font-size:11px">Unique identifier for tenant isolation and subdomain routing.</small>
           </div>
           <div class="form-group">
-            <label class="form-label" style="color:#cbd5e1">Subscription Plan</label>
-            <select id="provPlan" class="form-control" style="background:#060911;border-color:var(--superadmin-border);color:white">
+            <label class="form-label" style="color:var(--superadmin-text)">Subscription Plan</label>
+            <select id="provPlan" class="form-control" style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
               <option value="Enterprise SaaS">Enterprise SaaS (NPR 24,00,000/mo)</option>
               <option value="Growth SaaS">Growth SaaS (NPR 12,00,000/mo)</option>
               <option value="Starter SaaS" selected>Starter SaaS (NPR 4,00,000/mo)</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" style="color:#cbd5e1">Initial Admin Email</label>
-            <input type="email" id="provEmail" class="form-control" placeholder="admin@ktmfintech.com" required style="background:#060911;border-color:var(--superadmin-border);color:white">
+            <label class="form-label" style="color:var(--superadmin-text)">Initial Admin Name</label>
+            <input type="text" id="provAdminName" class="form-control" placeholder="e.g. Binod Shrestha" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--superadmin-text)">Initial Admin Email</label>
+            <input type="email" id="provEmail" class="form-control" placeholder="admin@ktmfintech.com" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+            <small style="color:var(--superadmin-muted);font-size:11px">A secure temporary password will be generated and displayed upon provisioning.</small>
           </div>
           <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
             <button type="button" class="btn btn-secondary" style="background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="closeProvisionModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg, #6366f1, #a855f7);border:none">Provision Tenant</button>
+            <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg, #6366f1, #a855f7);border:none" id="btnProvisionSubmit">Provision Tenant</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
+  <!-- Edit Tenant Modal -->
+  <div class="modal-overlay" id="editTenantModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <div class="modal-box" style="background:var(--superadmin-card-bg);border-color:var(--superadmin-border);color:var(--superadmin-text);max-width:480px">
+      <div class="modal-header" style="border-bottom-color:var(--superadmin-border)">
+        <h3 style="margin:0;font-size:16px" id="editModalTitle">⚙ Edit Tenant Subscription & Status</h3>
+        <button class="modal-close" aria-label="Close dialog" style="color:var(--superadmin-muted)" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="editTenantForm" onsubmit="handleEditSubmit(event)">
+          <input type="hidden" id="editTenantId">
+          <div class="form-group">
+            <label class="form-label" style="color:var(--superadmin-text)">Organization Name</label>
+            <input type="text" id="editTenantName" class="form-control" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--superadmin-text)">Subscription Plan</label>
+            <select id="editTenantPlan" class="form-control" style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+              <option value="Enterprise SaaS">Enterprise SaaS (NPR 24,00,000/mo)</option>
+              <option value="Growth SaaS">Growth SaaS (NPR 12,00,000/mo)</option>
+              <option value="Starter SaaS">Starter SaaS (NPR 4,00,000/mo)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--superadmin-text)">Operational Status</label>
+            <select id="editTenantStatus" class="form-control" style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+              <option value="Active">Active (Unrestricted)</option>
+              <option value="Suspended">Suspended (Access Blocked)</option>
+              <option value="Pending">Pending Setup</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--superadmin-text)">Monthly Recurring Revenue (NPR)</label>
+            <input type="number" id="editTenantMrr" min="0" class="form-control" required style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" style="background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg, #6366f1, #a855f7);border:none">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteTenantModal" role="dialog" aria-modal="true" aria-labelledby="delModalTitle">
+    <div class="modal-box" style="background:var(--superadmin-card-bg);border-color:var(--superadmin-border);color:var(--superadmin-text);max-width:480px">
+      <div class="modal-header" style="border-bottom-color:var(--superadmin-border)">
+        <h3 style="margin:0;font-size:16px;color:#f87171" id="delModalTitle">⚠️ Confirm Tenant Workspace Purge</h3>
+        <button class="modal-close" aria-label="Close dialog" style="color:var(--superadmin-muted)" onclick="closeDeleteModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--superadmin-muted);line-height:1.6">
+          This action permanently and cascade-purges organization <strong id="deleteOrgName" style="color:white"></strong> and all its associated users, leads, deals, quotes, and AI policies.
+        </p>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label" style="color:var(--superadmin-text)">Please type <code id="deleteOrgSlugPrompt" style="color:#f87171"></code> to confirm:</label>
+          <input type="text" id="deleteConfirmSlugInput" class="form-control" placeholder="Type slug here..." oninput="handleDeleteInputCheck()" style="background:var(--superadmin-bg);border-color:var(--superadmin-border);color:var(--superadmin-text)">
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+          <button type="button" class="btn btn-secondary" style="background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="closeDeleteModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmDelete" disabled style="background:#ef4444;border:none;color:white;opacity:0.5;cursor:not-allowed" onclick="executeDeleteTenant()">Purge Workspace</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let allTenants = [];
-
-    async function loadSuperadminData() {
-      try {
-        const [statsRes, tenantsRes] = await Promise.all([
-          fetch('/api/superadmin/stats'),
-          fetch('/api/superadmin/tenants')
-        ]);
-
-        if (statsRes.ok) {
-          const stats = await statsRes.json();
-          document.getElementById('statTenants').textContent = stats.total_tenants;
-          document.getElementById('statMrr').textContent = `NPR ${stats.total_mrr.toLocaleString()}`;
-          document.getElementById('statUsers').textContent = stats.total_users;
-          document.getElementById('statAi').textContent = stats.autonomous_actions_today;
-
-          if (stats.system_status) {
-            document.getElementById('telemetryDb').textContent = stats.system_status.database;
-            document.getElementById('telemetrySse').textContent = `${stats.system_status.sse_connections} active streaming connections`;
-            document.getElementById('telemetryWorkers').textContent = stats.system_status.worker_pool;
-            const mins = Math.floor(stats.system_status.uptime_seconds / 60);
-            document.getElementById('telemetryUptime').textContent = `${mins} minutes active`;
-          }
-        }
-
-        if (tenantsRes.ok) {
-          allTenants = await tenantsRes.json();
-          renderTenantsTable(allTenants);
-        }
-      } catch (e) {
-        console.error('Failed to load superadmin data', e);
-      }
-    }
+    let currentAuthUser = null;
+    let targetDeleteTenant = null;
+    let pollTimeoutId = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -500,10 +728,141 @@
         .replace(/'/g, '&#039;');
     }
 
+    function showToast(message, type = 'info') {
+      const existing = document.querySelectorAll('.glass-toast');
+      existing.forEach(e => e.remove());
+
+      const toast = document.createElement('div');
+      toast.className = `glass-toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // 1. Authenticate and enforce superadmin role
+    async function verifySuperadminAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) {
+          window.location.href = '/login?error=superadmin_required';
+          return false;
+        }
+        const data = await res.json();
+        const isSuper = (data.authenticated && data.user && (data.user.role === 'superadmin' || (data.user.original_user && data.user.original_user.role === 'superadmin')));
+        if (!isSuper) {
+          window.location.href = '/login?error=superadmin_forbidden';
+          return false;
+        }
+        currentAuthUser = data.user;
+        const emailBadge = document.getElementById('superadminEmailBadge');
+        if (emailBadge) {
+          const displayEmail = (data.user.original_user && data.user.original_user.email) || data.user.email;
+          emailBadge.textContent = displayEmail;
+        }
+
+        // Show Impersonation Banner if active
+        if (data.user.is_impersonating) {
+          const banner = document.getElementById('impersonationWarningBanner');
+          const bannerText = document.getElementById('impersonationBannerText');
+          if (banner) banner.style.display = 'flex';
+          if (bannerText) {
+            bannerText.innerHTML = `⚠️ <strong>Superadmin Impersonation Mode:</strong> Currently viewing as <u>${escapeHtml(data.user.name)}</u> (${escapeHtml(data.user.role)}) in workspace <u>${escapeHtml(data.tenant?.name || 'Tenant')}</u>.`;
+          }
+        }
+        
+        // Remove barrier and reveal layout
+        const barrier = document.getElementById('authBarrier');
+        if (barrier) barrier.style.display = 'none';
+        const content = document.getElementById('superadminContent');
+        if (content) content.style.display = 'block';
+        return true;
+      } catch (e) {
+        window.location.href = '/login?error=auth_error';
+        return false;
+      }
+    }
+
+    async function exitImpersonationFromHeader() {
+      try {
+        const res = await fetch('/api/superadmin/switch-back', { method: 'POST' });
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          showToast('Failed to exit impersonation mode.', 'error');
+        }
+      } catch (_) {
+        showToast('Network error while exiting impersonation.', 'error');
+      }
+    }
+
+    async function loadSuperadminData() {
+      try {
+        const [statsRes, tenantsRes] = await Promise.all([
+          fetch('/api/superadmin/telemetry'),
+          fetch('/api/superadmin/tenants')
+        ]);
+
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          document.getElementById('statTenants').textContent = stats.total_tenants;
+          document.getElementById('statMrr').textContent = `NPR ${Number(stats.total_mrr).toLocaleString()}`;
+          document.getElementById('statUsers').textContent = stats.total_users;
+          document.getElementById('statAi').textContent = stats.autonomous_actions_today;
+          document.getElementById('statAiSub').textContent = `${(stats.ai_tokens_used || 0).toLocaleString()} tokens consumed`;
+
+          if (stats.system_status) {
+            const sys = stats.system_status;
+            document.getElementById('telemetryDb').textContent = sys.database || 'Active';
+            document.getElementById('telemetrySse').textContent = `${sys.sse_connections || 0} active push streams`;
+            document.getElementById('telemetryWorkers').textContent = sys.worker_pool || 'Running';
+            
+            const mins = Math.floor((sys.uptime_seconds || 0) / 60);
+            const hours = Math.floor(mins / 60);
+            document.getElementById('telemetryUptime').textContent = hours > 0 ? `${hours}h ${mins % 60}m online` : `${mins} minutes active`;
+
+            if (sys.memory) {
+              document.getElementById('telemetryMemory').textContent = `Heap: ${sys.memory.heap_used_mb}MB / ${sys.memory.heap_total_mb}MB · RSS: ${sys.memory.rss_mb}MB`;
+            }
+
+            if (sys.ai_models) {
+              if (document.getElementById('aiPrimaryModel')) document.getElementById('aiPrimaryModel').textContent = sys.ai_models.primary;
+              if (document.getElementById('aiReasoningModel')) document.getElementById('aiReasoningModel').textContent = sys.ai_models.reasoning;
+              if (document.getElementById('aiGuardModel')) document.getElementById('aiGuardModel').textContent = sys.ai_models.guard;
+            }
+
+            if (document.getElementById('aiProviderBadge')) {
+              document.getElementById('aiProviderBadge').textContent = `Active (${sys.ai_provider})`;
+            }
+          }
+        }
+
+        if (tenantsRes.ok) {
+          allTenants = await tenantsRes.json();
+          renderTenantsTable(allTenants);
+        }
+      } catch (e) {
+        console.error('Failed to load superadmin data', e);
+      } finally {
+        scheduleNextPoll();
+      }
+    }
+
+    function scheduleNextPoll() {
+      if (pollTimeoutId) clearTimeout(pollTimeoutId);
+      if (document.visibilityState === 'visible') {
+        pollTimeoutId = setTimeout(loadSuperadminData, 30000);
+      }
+    }
+
     function renderTenantsTable(tenants) {
       const tbody = document.getElementById('tenantsTableBody');
       if (!tenants || !tenants.length) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#64748b;padding:32px">No tenant organizations found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--superadmin-muted);padding:32px">No tenant organizations found.</td></tr>`;
         return;
       }
 
@@ -513,10 +872,14 @@
         if (t.plan && t.plan.includes('Enterprise')) planBadge = 'badge-enterprise';
         else if (t.plan && t.plan.includes('Growth')) planBadge = 'badge-growth';
 
-        const statusBadge = t.status === 'Active' ? 'badge-active' : 'badge-pending';
+        let statusBadge = 'badge-active';
+        if (t.status === 'Suspended') statusBadge = 'badge-suspended';
+        else if (t.status === 'Pending') statusBadge = 'badge-pending';
+
+        const isProtected = t.id === 'tenant-1' || t.id === 'tenant-2';
 
         return `
-          <tr>
+          <tr data-tenant-id="${escapeHtml(t.id)}">
             <td>
               <div class="tenant-cell">
                 <div class="tenant-avatar-circle">${initials}</div>
@@ -527,40 +890,74 @@
               </div>
             </td>
             <td><span class="badge ${planBadge}">${escapeHtml(t.plan)}</span></td>
-            <td><span class="badge ${statusBadge}">${escapeHtml(t.status)}</span></td>
-            <td><strong style="color:white">${t.users_count || 1}</strong> users</td>
-            <td><strong style="color:white">${t.leads_count || 0}</strong> leads</td>
-            <td><strong style="color:#34d399">NPR ${(t.mrr || 0).toLocaleString()}</strong></td>
-            <td><code style="color:#c084fc;font-size:11px">${(t.ai_tokens_used || 0).toLocaleString()}</code></td>
-            <td style="text-align:right">
-              <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;background:#1e293b;border-color:var(--superadmin-border);color:white" onclick="switchTenantContext('${escapeHtml(t.id)}', '${escapeHtml(t.name).replace(/'/g, "\\'")}')">
-                Switch Context →
+            <td><span class="badge ${statusBadge}">${escapeHtml(t.status || 'Active')}</span></td>
+            <td><strong style="color:var(--superadmin-text)">${Number(t.users_count) || 1}</strong> users</td>
+            <td><strong style="color:var(--superadmin-text)">${Number(t.leads_count) || 0}</strong> leads</td>
+            <td><strong style="color:#34d399">${escapeHtml(t.currency || 'USD')} ${(Number(t.mrr) || 0).toLocaleString()}</strong></td>
+            <td><code style="color:#c084fc;font-size:11px">${(Number(t.ai_tokens_used) || 0).toLocaleString()}</code></td>
+            <td style="text-align:right;white-space:nowrap">
+              <button class="btn btn-secondary btn-switch" style="padding:4px 9px;font-size:11px;background:#1e293b;border-color:var(--superadmin-border);color:white;margin-right:4px" 
+                      data-id="${escapeHtml(t.id)}" data-name="${escapeHtml(t.name)}">
+                Switch →
               </button>
+              <button class="btn btn-secondary btn-edit" style="padding:4px 8px;font-size:11px;background:#1e293b;border-color:var(--superadmin-border);color:#93c5fd;margin-right:4px"
+                      data-id="${escapeHtml(t.id)}" data-name="${escapeHtml(t.name)}" data-plan="${escapeHtml(t.plan)}" data-status="${escapeHtml(t.status || 'Active')}" data-mrr="${Number(t.mrr) || 0}">
+                Edit
+              </button>
+              ${!isProtected ? `
+                <button class="btn btn-secondary btn-delete" aria-label="Delete organization ${escapeHtml(t.name)}" style="padding:4px 8px;font-size:11px;background:#1e293b;border-color:var(--superadmin-border);color:#f87171"
+                        data-id="${escapeHtml(t.id)}" data-name="${escapeHtml(t.name)}" data-slug="${escapeHtml(t.slug || t.id)}">
+                  ✕
+                </button>
+              ` : ''}
             </td>
           </tr>
         `;
       }).join('');
+
+      tbody.querySelectorAll('.btn-switch').forEach(btn => {
+        btn.addEventListener('click', () => switchTenantContext(btn.dataset.id, btn.dataset.name));
+      });
+      tbody.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(btn.dataset));
+      });
+      tbody.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.dataset.id, btn.dataset.name, btn.dataset.slug));
+      });
     }
 
     function filterTenants() {
       const q = document.getElementById('tenantSearchInput').value.toLowerCase().trim();
       const filtered = allTenants.filter(t => 
-        t.name.toLowerCase().includes(q) || t.slug.toLowerCase().includes(q) || t.plan.toLowerCase().includes(q)
+        (t.name && String(t.name).toLowerCase().includes(q)) || 
+        (t.slug && String(t.slug).toLowerCase().includes(q)) || 
+        (t.plan && String(t.plan).toLowerCase().includes(q)) ||
+        (t.status && String(t.status).toLowerCase().includes(q))
       );
       renderTenantsTable(filtered);
     }
 
     function switchTab(tab) {
-      document.getElementById('viewTenants').style.display = tab === 'tenants' ? 'block' : 'none';
-      document.getElementById('viewInfrastructure').style.display = tab === 'infrastructure' ? 'block' : 'none';
-      document.getElementById('viewTelemetry').style.display = tab === 'telemetry' ? 'block' : 'none';
+      const tabs = ['tenants', 'infrastructure', 'telemetry', 'dlq', 'audit'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const btn = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (view) view.style.display = (t === tab) ? 'block' : 'none';
+        if (btn) {
+          btn.classList.toggle('active', t === tab);
+          btn.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        }
+      });
 
-      document.getElementById('tabTenants').classList.toggle('active', tab === 'tenants');
-      document.getElementById('tabInfrastructure').classList.toggle('active', tab === 'infrastructure');
-      document.getElementById('tabTelemetry').classList.toggle('active', tab === 'telemetry');
+      if (tab === 'dlq') {
+        loadDlqEvents();
+      } else if (tab === 'audit') {
+        loadAuditLogs();
+      }
     }
 
     function openProvisionModal() {
+      document.getElementById('provisionForm').reset();
       document.getElementById('provisionModal').classList.add('active');
     }
 
@@ -573,25 +970,141 @@
       const name = document.getElementById('provName').value.trim();
       const slug = document.getElementById('provSlug').value.trim();
       const plan = document.getElementById('provPlan').value;
-      const email = document.getElementById('provEmail').value.trim();
+      const admin_name = document.getElementById('provAdminName').value.trim();
+      const admin_email = document.getElementById('provEmail').value.trim();
+
+      if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
+        showToast('Workspace URL slug may only contain lowercase alphanumeric characters and hyphens.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnProvisionSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Provisioning...';
 
       try {
         const res = await fetch('/api/superadmin/tenants', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, slug, plan, admin_email: email })
+          body: JSON.stringify({ name, slug, plan, admin_name, admin_email })
         });
 
         if (res.ok) {
+          const created = await res.json();
           closeProvisionModal();
           await loadSuperadminData();
-          alert(`Organization "${name}" provisioned successfully!`);
+          const tempPass = created.initial_admin?.temporary_password || 'secret';
+          showToast(`Organization "${name}" provisioned! Admin: ${admin_email} | Password: ${tempPass}`, 'success');
         } else {
-          const err = await res.json();
-          alert(err.error || 'Failed to provision tenant.');
+          let errText = 'Failed to provision tenant.';
+          try { const err = await res.json(); errText = err.error || errText; } catch (_) {}
+          showToast(errText, 'error');
         }
       } catch (err) {
-        alert('Network error while provisioning tenant.');
+        showToast('Network error while provisioning tenant.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Provision Tenant';
+      }
+    }
+
+    function openEditModal(data) {
+      document.getElementById('editTenantId').value = data.id;
+      document.getElementById('editTenantName').value = data.name;
+      document.getElementById('editTenantPlan').value = data.plan;
+      document.getElementById('editTenantStatus').value = data.status;
+      document.getElementById('editTenantMrr').value = data.mrr;
+      document.getElementById('editTenantModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editTenantModal').classList.remove('active');
+    }
+
+    async function handleEditSubmit(e) {
+      e.preventDefault();
+      const tid = document.getElementById('editTenantId').value;
+      const name = document.getElementById('editTenantName').value.trim();
+      const plan = document.getElementById('editTenantPlan').value;
+      const status = document.getElementById('editTenantStatus').value;
+      const mrr = Number(document.getElementById('editTenantMrr').value);
+
+      if (isNaN(mrr) || mrr < 0) {
+        showToast('Monthly Recurring Revenue must be a positive number.', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/superadmin/tenants/${tid}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, plan, status, mrr })
+        });
+
+        if (res.ok) {
+          closeEditModal();
+          await loadSuperadminData();
+          showToast(`Tenant "${name}" successfully updated.`, 'success');
+        } else {
+          let errText = 'Failed to update tenant.';
+          try { const err = await res.json(); errText = err.error || errText; } catch (_) {}
+          showToast(errText, 'error');
+        }
+      } catch (err) {
+        showToast('Network error updating tenant.', 'error');
+      }
+    }
+
+    // Modal-based safe deletion
+    function openDeleteModal(id, name, slug) {
+      targetDeleteTenant = { id, name, slug };
+      document.getElementById('deleteOrgName').textContent = name;
+      document.getElementById('deleteOrgSlugPrompt').textContent = slug;
+      const input = document.getElementById('deleteConfirmSlugInput');
+      input.value = '';
+      const btn = document.getElementById('btnConfirmDelete');
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      document.getElementById('deleteTenantModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      targetDeleteTenant = null;
+      document.getElementById('deleteTenantModal').classList.remove('active');
+    }
+
+    function handleDeleteInputCheck() {
+      if (!targetDeleteTenant) return;
+      const input = document.getElementById('deleteConfirmSlugInput').value.trim().toLowerCase();
+      const expected = targetDeleteTenant.slug.toLowerCase();
+      const btn = document.getElementById('btnConfirmDelete');
+      const isMatch = (input === expected);
+      btn.disabled = !isMatch;
+      btn.style.opacity = isMatch ? '1' : '0.5';
+      btn.style.cursor = isMatch ? 'pointer' : 'not-allowed';
+    }
+
+    async function executeDeleteTenant() {
+      if (!targetDeleteTenant) return;
+      const { id, name } = targetDeleteTenant;
+
+      try {
+        const res = await fetch(`/api/superadmin/tenants/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          closeDeleteModal();
+          await loadSuperadminData();
+          showToast(`Organization "${name}" and all associated workspace data purged successfully.`, 'success');
+        } else {
+          let errText = 'Failed to delete tenant.';
+          try { const err = await res.json(); errText = err.error || errText; } catch (_) {}
+          showToast(errText, 'error');
+        }
+      } catch (e) {
+        showToast('Network error while deleting tenant.', 'error');
       }
     }
 
@@ -603,13 +1116,98 @@
           body: JSON.stringify({ tenant_id: tenantId })
         });
         if (res.ok) {
-          alert(`Switched platform context to "${tenantName}". Redirecting to workspace...`);
-          window.location.href = '/index.html';
+          window.location.href = '/';
         } else {
-          alert('Failed to switch tenant context.');
+          let errText = 'Failed to switch tenant context.';
+          try { const err = await res.json(); errText = err.error || errText; } catch (_) {}
+          showToast(errText, 'error');
         }
       } catch (e) {
-        alert('Network error while switching context.');
+        showToast('Network error while switching context.', 'error');
+      }
+    }
+
+    // DLQ Table Rendering (DOM Event Listeners prevent inline attribute XSS)
+    async function loadDlqEvents() {
+      const tbody = document.getElementById('dlqTableBody');
+      try {
+        const res = await fetch('/api/superadmin/dlq');
+        if (res.ok) {
+          const events = await res.json();
+          if (!events || !events.length) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--superadmin-muted);padding:32px">All worker queues operational. 0 dead-letter jobs.</td></tr>`;
+            return;
+          }
+          tbody.innerHTML = events.map(e => `
+            <tr>
+              <td><code>${escapeHtml(e.id)}</code></td>
+              <td>${escapeHtml(e.tenant_id || 'system')}</td>
+              <td><span class="badge badge-starter">${escapeHtml(e.type || 'message.classify')}</span></td>
+              <td><strong style="color:#f87171">${Number(e.attempt_count) || 5}</strong> / 5</td>
+              <td style="color:#fca5a5;font-size:11px">${escapeHtml(e.error || 'Unknown error')}</td>
+              <td style="font-size:11px;color:var(--superadmin-muted)">${new Date(e.received_at || Date.now()).toLocaleTimeString()}</td>
+              <td style="text-align:right">
+                <button class="btn btn-secondary btn-replay-dlq" style="padding:4px 9px;font-size:11px;background:#1e293b;border-color:var(--superadmin-border);color:#34d399" 
+                        data-id="${escapeHtml(e.id)}">
+                  Replay Job ↺
+                </button>
+              </td>
+            </tr>
+          `).join('');
+
+          // Clean DOM event listeners eliminate inline attribute breakout
+          tbody.querySelectorAll('.btn-replay-dlq').forEach(btn => {
+            btn.addEventListener('click', () => replayDlqJob(btn.dataset.id));
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#ef4444;padding:32px">Failed to load Dead-Letter Queue items.</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#ef4444;padding:32px">Failed to load Dead-Letter Queue items.</td></tr>`;
+      }
+    }
+
+    async function replayDlqJob(id) {
+      try {
+        const res = await fetch(`/api/superadmin/dlq/${encodeURIComponent(id)}/replay`, { method: 'POST' });
+        if (res.ok) {
+          showToast(`Job ${id} re-queued for immediate processing.`, 'success');
+          await loadDlqEvents();
+        } else {
+          let errText = 'Failed to replay job.';
+          try { const err = await res.json(); errText = err.error || errText; } catch (_) {}
+          showToast(errText, 'error');
+        }
+      } catch (e) {
+        showToast('Network error while replaying job.', 'error');
+      }
+    }
+
+    async function loadAuditLogs() {
+      const tbody = document.getElementById('auditTableBody');
+      try {
+        const res = await fetch('/api/superadmin/audit-logs');
+        if (res.ok) {
+          const logs = await res.json();
+          if (!logs || !logs.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--superadmin-muted);padding:32px">No audit log records recorded yet.</td></tr>`;
+            return;
+          }
+          tbody.innerHTML = logs.map(l => `
+            <tr>
+              <td style="font-size:11px;color:var(--superadmin-muted);font-family:var(--font-mono)">${new Date(l.created_at || Date.now()).toLocaleString()}</td>
+              <td><code>${escapeHtml(l.user_id || 'system')}</code></td>
+              <td><span class="badge badge-starter">${escapeHtml(l.action || 'unknown')}</span></td>
+              <td>${escapeHtml(l.entity_type || '—')}</td>
+              <td><code>${escapeHtml(l.entity_id || '—')}</code></td>
+              <td style="font-size:11px;color:var(--superadmin-muted);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(JSON.stringify(l.metadata || {}))}</td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:32px">Failed to load audit logs.</td></tr>`;
+        }
+      } catch (_) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:32px">Network error fetching audit logs.</td></tr>`;
       }
     }
 
@@ -617,10 +1215,51 @@
       try {
         await fetch('/api/auth/logout', { method: 'POST' });
       } catch (e) {}
-      window.location.href = '/login.html';
+      window.location.href = '/login';
     }
 
-    document.addEventListener('DOMContentLoaded', loadSuperadminData);
+    function initSuperadminTheme() {
+      const theme = localStorage.getItem('salesos_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon = document.getElementById('themeToggleIcon');
+      if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+
+    function toggleSuperadminTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('salesos_theme', next);
+      localStorage.setItem('salesos_theme_explicit', 'true');
+      const icon = document.getElementById('themeToggleIcon');
+      if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+
+    // Keyboard accessibility: Escape closes any open modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProvisionModal();
+        closeEditModal();
+        closeDeleteModal();
+      }
+    });
+
+    // Visibility change handler: pause polling when tab is hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        loadSuperadminData();
+      } else if (pollTimeoutId) {
+        clearTimeout(pollTimeoutId);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initSuperadminTheme();
+      const authorized = await verifySuperadminAuth();
+      if (authorized) {
+        await loadSuperadminData();
+      }
+    });
   </script>
 </body>
 </html>

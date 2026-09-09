@@ -8,9 +8,19 @@ const crypto = require('crypto');
 
 class CryptoStorage {
   constructor() {
-    const rawSecret = process.env.ENCRYPTION_SECRET || 'salesos_master_envelope_key_32_bytes_long!';
+    const rawSecret = process.env.ENCRYPTION_SECRET;
+    if (!rawSecret) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('CRITICAL SECURITY CONFIGURATION ERROR: ENCRYPTION_SECRET environment variable is mandatory in production mode to protect stored secrets.');
+      }
+      if (process.env.NODE_ENV !== 'test' && !CryptoStorage._warned) {
+        console.warn('⚠️ WARNING: ENCRYPTION_SECRET not configured. Using temporary fallback key for development only.');
+        CryptoStorage._warned = true;
+      }
+    }
+    const secret = rawSecret || 'salesos_dev_envelope_key_32_bytes_dev!';
     // Ensure 32 bytes key via SHA-256
-    this.key = crypto.createHash('sha256').update(rawSecret).digest();
+    this.key = crypto.createHash('sha256').update(secret).digest();
   }
 
   /**

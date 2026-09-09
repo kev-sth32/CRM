@@ -1,0 +1,147 @@
+﻿# docker-compose.prod.yml — Production-grade deployment (DEVOPS-5: zero-downtime rolling updates)
+#
+# Usage:
+#   docker stack deploy -c docker-compose.prod.yml salesos
+#
+# Features:
+#   - Docker Swarm rolling updates (zero-downtime)
+#   - Redis for session & rate-limit state (DEVOPS-3)
+#   - Health-check based rollback
+#   - Resource limits to prevent noisy-neighbour saturation
+#   - Secrets management via Docker secrets (not env vars)
+
+version: '3.8'
+
+secrets:
+  db_password:
+    external: true   # Create with: echo "yourpassword" | docker secret create db_password -
+  encryption_secret:
+    external: true
+  test_bypass_secret:
+    external: true
+
+services:
+  salesos-web:
+    image: salesos:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1          # Roll one replica at a time
+        delay: 10s              # Wait 10s between replica updates
+        failure_action: rollback
+        order: start-first      # Start new before stopping old (zero-downtime)
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://salesos_user:DOCKER_SECRET_PLACEHOLDER@salesos-db:5432/salesos_db
+      REDIS_URL: redis://salesos-redis:6379
+      PGSSL: 'require'
+      TRUST_PROXY: 'true'
+    secrets:
+      - db_password
+      - encryption_secret
+      - test_bypass_secret
+    ports:
+      - '3000:3000'
+    depends_on:
+      - salesos-db
+      - salesos-redis
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/api/health']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - salesos-net
+
+  salesos-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: salesos_db
+      POSTGRES_USER: salesos_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U salesos_user -d salesos_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - salesos-net
+
+  salesos-redis:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save ""
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 300M
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - salesos-net
+
+  salesos-backup:
+    image: postgres:16-alpine
+    environment:
+      DATABASE_URL: postgres://salesos_user:DOCKER_SECRET_PLACEHOLDER@salesos-db:5432/salesos_db
+    secrets:
+      - db_password
+    volumes:
+      - ./scripts/backup.sh:/backup.sh:ro
+      - backups:/backups
+    command: sh -c 'crond -f'
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 64M
+    networks:
+      - salesos-net
+
+volumes:
+  pgdata:
+  backups:
+
+networks:
+  salesos-net:
+    driver: overlay
+    attachable: true

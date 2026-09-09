@@ -63,6 +63,7 @@
           <button class="settings-tab" onclick="switchTab('webhooks', this)">⚡ Webhooks & Zapier</button>
           <button class="settings-tab" onclick="switchTab('fls', this)">🛡️ Field Security (FLS)</button>
           <button class="settings-tab" onclick="switchTab('sso', this)">🔑 Enterprise SSO & SCIM</button>
+          <button class="settings-tab" onclick="switchTab('scoring_rules', this)">♙ Lead Scoring Rules</button>
           <button class="settings-tab" onclick="switchTab('team', this)">Users & Access Roles</button>
           <button class="settings-tab" onclick="switchTab('audit', this)">Audit Log Viewer</button>
         </div>
@@ -123,7 +124,7 @@
                   Switch your pipeline stages, custom fields, and AI persona to an industry vertical template.
                 </p>
               </div>
-              <a href="/onboarding.html" class="btn btn-secondary btn-sm" style="white-space:nowrap">Launch Wizard ✨</a>
+              <a href="/onboarding" class="btn btn-secondary btn-sm" style="white-space:nowrap">Launch Wizard ✨</a>
             </div>
             <div style="display:flex;gap:12px;align-items:flex-end">
               <div style="flex:1">
@@ -189,7 +190,7 @@
 
             <div class="form-group">
               <label class="form-label">Allowed Tools Registry</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:13px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:var(--panel-subtle);border-radius:8px;border:1px solid var(--line);font-size:13px">
                 <label><input type="checkbox" checked disabled /> search_customer</label>
                 <label><input type="checkbox" checked disabled /> search_products</label>
                 <label><input type="checkbox" checked disabled /> create_task</label>
@@ -201,7 +202,7 @@
 
             <div class="form-group">
               <label class="form-label">High-Risk Tools Requiring Human Approval</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:#fff7ed;border-radius:8px;border:1px solid #fed7aa;font-size:13px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:var(--orange-light);border-radius:8px;border:1px solid rgba(245,158,11,0.3);font-size:13px">
                 <label><input type="checkbox" checked disabled /> send_discount_quote</label>
                 <label><input type="checkbox" checked disabled /> schedule_enterprise_demo</label>
                 <label><input type="checkbox" checked disabled /> delete_crm_record</label>
@@ -216,6 +217,39 @@
 
             <div style="display:flex;justify-content:flex-end;margin-top:14px">
               <button class="btn btn-primary" onclick="saveAiPolicy()">Update AI Policies</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Lead Scoring Rules -->
+        <div class="settings-section" id="sec-scoring_rules">
+          <div class="card" style="max-width:880px;padding:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+              <div>
+                <h3 style="font-size:16px;font-weight:750;margin:0">♙ Lead Scoring Engine Rules (SCORING.md)</h3>
+                <p style="color:var(--muted);font-size:12.5px;margin:3px 0 0">
+                  Configure criteria to automatically qualify leads, assign qualification signals, and calculate hot/warm scores.
+                </p>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openCreateScoringRuleModal()">＋ Add Scoring Rule</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Rule Name</th>
+                    <th>Target Field</th>
+                    <th>Operator</th>
+                    <th>Matching Value</th>
+                    <th>Points</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="scoringRulesTableBody">
+                  <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Loading scoring rules...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -536,17 +570,17 @@
             </div>
 
             <!-- Service Provider Metadata -->
-            <div style="background:#f8fafc;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:28px">
+            <div style="background:var(--panel-subtle);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:28px">
               <h4 style="font-size:13.5px;font-weight:700;margin:0 0 8px">SalesOS SP (Service Provider) Metadata</h4>
               <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Provide these URLs when configuring your enterprise Identity Provider (IdP) application:</p>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
                 <div>
                   <strong style="display:block;margin-bottom:4px;color:var(--ink)">Single Sign-On ACS URL:</strong>
-                  <code style="background:#fff;padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/api/auth/saml/callback</code>
+                  <code style="background:var(--panel);padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/api/auth/saml/callback</code>
                 </div>
                 <div>
                   <strong style="display:block;margin-bottom:4px;color:var(--ink)">Entity ID / Audience URI:</strong>
-                  <code style="background:#fff;padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/saml/metadata</code>
+                  <code style="background:var(--panel);padding:6px 10px;border:1px solid var(--line);border-radius:4px;display:block">https://salesos.app/saml/metadata</code>
                 </div>
               </div>
             </div>
@@ -559,7 +593,7 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
                 <div>
                   <label class="form-label">SCIM 2.0 Base URL</label>
-                  <code style="background:#fff;padding:8px 12px;border:1px solid var(--line);border-radius:6px;display:block;font-size:12px">https://salesos.app/scim/v2</code>
+                  <code style="background:var(--panel);padding:8px 12px;border:1px solid var(--line);border-radius:6px;display:block;font-size:12px">https://salesos.app/scim/v2</code>
                 </div>
                 <div>
                   <label class="form-label">SCIM Bearer Authentication Token</label>
@@ -862,6 +896,63 @@
     </div>
   </div>
 
+  <!-- Modal: Create Scoring Rule -->
+  <div class="modal-overlay" id="createScoringRuleModal">
+    <div class="modal-box" style="max-width:520px">
+      <div class="modal-header">
+        <h3 style="margin:0">＋ Add Lead Scoring Rule</h3>
+        <button class="modal-close" onclick="SalesOS.closeModal('createScoringRuleModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="createScoringRuleForm" onsubmit="submitCreateScoringRule(event)">
+          <div class="form-group">
+            <label class="form-label">Rule Name *</label>
+            <input type="text" id="ruleName" class="form-control" placeholder="e.g. Executive Title Match" required />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Target Field *</label>
+              <select id="ruleField" class="form-control" required>
+                <option value="title">Title / Role</option>
+                <option value="employees">Employees Count</option>
+                <option value="source">Lead Source</option>
+                <option value="company">Company</option>
+                <option value="email">Email Verified</option>
+                <option value="phone">Phone Provided</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Operator *</label>
+              <select id="ruleOperator" class="form-control" required>
+                <option value="contains">Contains text</option>
+                <option value="equals">Exact match</option>
+                <option value="exists">Exists / Non-empty</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Value to Match</label>
+              <input type="text" id="ruleValue" class="form-control" placeholder="e.g. Director or 100+" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Points (0-100) *</label>
+              <input type="number" id="rulePoints" class="form-control" value="25" min="1" max="100" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Qualification Signal Reason</label>
+            <input type="text" id="ruleReason" class="form-control" placeholder="e.g. High purchasing authority" />
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('createScoringRuleModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Scoring Rule</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Add Webhook -->
   <div class="modal-overlay" id="addWebhookModal">
     <div class="modal-box" style="max-width:520px">
@@ -947,7 +1038,7 @@
           <span class="badge badge-purple" id="viewKbCategory">Category</span>
           <span class="badge badge-blue" id="viewKbChunks">0 Chunks</span>
         </div>
-        <div id="viewKbContent" style="white-space:pre-wrap;background:#f8fafc;padding:16px;border-radius:8px;border:1px solid var(--line);font-size:13.5px;line-height:1.6;max-height:400px;overflow-y:auto"></div>
+        <div id="viewKbContent" style="white-space:pre-wrap;background:var(--panel-subtle);padding:16px;border-radius:8px;border:1px solid var(--line);font-size:13.5px;line-height:1.6;max-height:400px;overflow-y:auto"></div>
         <div style="display:flex;justify-content:flex-end;margin-top:18px">
           <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('viewKnowledgeModal')">Close</button>
         </div>
@@ -957,7 +1048,7 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Settings', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Settings' }]);
+    SalesOS.init('Settings', [{ label: 'SalesOS', href: '/' }, { label: 'Settings' }]);
 
     let allAuditLogs = [];
 
@@ -980,6 +1071,21 @@
       if (tabId === 'knowledge') loadKnowledgeDocs();
       if (tabId === 'fls') loadFlsSettings();
       if (tabId === 'sso') loadSsoSettings();
+      if (tabId === 'ai_policy') loadAiPolicy();
+      if (tabId === 'scoring_rules') loadScoringRules();
+    }
+
+    async function loadAiPolicy() {
+      try {
+        const res = await fetch('/api/ai-policies');
+        if (res.ok) {
+          const p = await res.json();
+          if (p.mode) document.getElementById('setAiMode').value = p.mode;
+          if (p.daily_budget_micros) {
+            document.getElementById('setAiBudget').value = Math.round(p.daily_budget_micros / 1000000);
+          }
+        }
+      } catch (_) {}
     }
 
     async function loadSettings() {
@@ -1515,7 +1621,7 @@
     // =========================================================================
     // Self-Service Channels & Website Ingestion Logic
     // =========================================================================
-    let currentActiveTenantId = 'tenant-1';
+    let currentActiveTenantId = (window.SalesOS && SalesOS.tenant && SalesOS.tenant.id) ? SalesOS.tenant.id : 'tenant-1';
 
     function switchChannelSubTab(channel) {
       document.querySelectorAll('.channel-pill').forEach(p => {
@@ -1612,7 +1718,7 @@ document.getElementById('salesos-inbound-lead-form').addEventListener('submit', 
         const res = await fetch('/api/settings/channels');
         if (res.ok) {
           const data = await res.json();
-          currentActiveTenantId = data.website?.tenant_id || 'tenant-1';
+          currentActiveTenantId = data.website?.tenant_id || (window.SalesOS && SalesOS.tenant && SalesOS.tenant.id) || 'tenant-1';
 
           // Website
           if (document.getElementById('siteEndpointPreview')) {
@@ -1827,6 +1933,85 @@ document.getElementById('salesos-inbound-lead-form').addEventListener('submit', 
       document.getElementById('viewKbChunks').textContent = `${doc.chunks_count || 1} Chunks Indexed`;
       document.getElementById('viewKbContent').textContent = doc.content || '';
       SalesOS.showModal('viewKnowledgeModal');
+    }
+
+    // Lead Scoring Rules Client Handlers
+    let allScoringRules = [];
+    async function loadScoringRules() {
+      const tbody = document.getElementById('scoringRulesTableBody');
+      try {
+        const res = await fetch('/api/scoring-rules');
+        if (!res.ok) throw new Error();
+        allScoringRules = await res.json();
+        renderScoringRules();
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--red)">Failed to load scoring rules</td></tr>';
+      }
+    }
+
+    function renderScoringRules() {
+      const tbody = document.getElementById('scoringRulesTableBody');
+      if (!allScoringRules.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">No scoring rules configured yet. Click "＋ Add Scoring Rule" to configure lead qualification rules.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = allScoringRules.map(r => `
+        <tr>
+          <td><strong>${SalesOS.escapeHtml(r.name)}</strong></td>
+          <td><code>${SalesOS.escapeHtml(r.field)}</code></td>
+          <td><span class="badge badge-gray">${SalesOS.escapeHtml(r.operator)}</span></td>
+          <td><span>${SalesOS.escapeHtml(String(r.value || '—'))}</span></td>
+          <td><strong style="color:var(--green)">+${r.points} pts</strong></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="deleteScoringRule('${r.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openCreateScoringRuleModal() {
+      SalesOS.showModal('createScoringRuleModal');
+    }
+
+    async function submitCreateScoringRule(e) {
+      e.preventDefault();
+      const name = document.getElementById('ruleName').value.trim();
+      const field = document.getElementById('ruleField').value;
+      const operator = document.getElementById('ruleOperator').value;
+      const value = document.getElementById('ruleValue').value.trim();
+      const points = Number(document.getElementById('rulePoints').value) || 10;
+      const reason = document.getElementById('ruleReason').value.trim();
+
+      try {
+        const res = await fetch('/api/scoring-rules', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, field, operator, value, points, reason, priority: points })
+        });
+        if (res.ok) {
+          SalesOS.closeModal('createScoringRuleModal');
+          SalesOS.showToast('Lead scoring rule created successfully!');
+          loadScoringRules();
+        } else {
+          const err = await res.json();
+          SalesOS.showToast(err.error || 'Failed to create rule', 'error');
+        }
+      } catch (_) {
+        SalesOS.showToast('Network error saving rule', 'error');
+      }
+    }
+
+    async function deleteScoringRule(id) {
+      if (!confirm('Delete this scoring rule?')) return;
+      try {
+        const res = await fetch(`/api/scoring-rules/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          SalesOS.showToast('Scoring rule deleted');
+          loadScoringRules();
+        }
+      } catch (_) {
+        SalesOS.showToast('Failed to delete scoring rule', 'error');
+      }
     }
 
     const urlParams = new URLSearchParams(window.location.search);

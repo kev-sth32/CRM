@@ -1,15 +1,22 @@
-# Production Multi-Stage Dockerfile for SalesOS SaaS
-FROM node:20-alpine AS base
-WORKDIR /app
+# ==========================================
+# Production Multi-Stage Dockerfile: SalesOS
+# ==========================================
 
-# Install dependencies
+# Stage 1: Dependencies Cache
+FROM node:20-alpine AS deps
+WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production --ignore-scripts
 
-# Copy application assets and source code
+# Stage 2: Minimal Production Runtime
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Copy production node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Security: run under unprivileged node user
+# Security: Run under unprivileged node user
 USER node
 
 ENV NODE_ENV=production \
@@ -17,7 +24,8 @@ ENV NODE_ENV=production \
 
 EXPOSE 3000
 
+# Fast, low-overhead health check using Alpine built-in wget (no extra Node process)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD node -e "fetch('http://localhost:3000/api/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 CMD ["node", "server.js"]

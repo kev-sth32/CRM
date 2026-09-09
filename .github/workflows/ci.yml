@@ -1,0 +1,76 @@
+name: SalesOS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test & Security Audit
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: salesos_user
+          POSTGRES_PASSWORD: salesos_secure_password
+          POSTGRES_DB: salesos_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Production & Dev Dependencies
+        run: npm ci
+
+      - name: Run Core Smoke Test Suite
+        run: node test.js
+
+      - name: Run Security & Compliance Test Suite (52 Checks)
+        run: node test-security.js
+
+      - name: Run Multi-Tenancy Isolation Test Suite
+        run: node test-tenant-isolation.js
+
+      - name: Run Growth & Crypto Storage Test Suite
+        run: node test-growth-security.js
+
+      - name: Run Enterprise Parity Test Suite
+        run: node test-enterprise-parity.js
+
+  docker-build:
+    name: Docker Image Verification
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Multi-Stage Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: salesos-crm:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

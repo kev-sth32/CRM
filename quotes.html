@@ -67,6 +67,7 @@
             <p>Generate formal quotes with line items, calculate discounts & taxes, and collect verified customer e-signatures.</p>
           </div>
           <div class="page-actions">
+            <button class="btn btn-secondary" onclick="openAmendContractModal()">⟲ Contract Amendment</button>
             <button class="btn btn-primary" onclick="openCreateQuoteModal()">＋ Create Price Quote</button>
           </div>
         </div>
@@ -167,10 +168,15 @@
 
           <!-- Line Items -->
           <div style="margin-top:16px;border-top:1px solid var(--line-light);padding-top:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
               <label class="form-label" style="margin:0;font-weight:700">Line Items & Products</label>
-              <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px" onclick="addLineItemRow()">＋ Add Line Item</button>
+              <div style="display:flex;gap:6px">
+                <button type="button" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" onclick="checkProductBundle()">⚡ Validate Bundle</button>
+                <button type="button" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" onclick="applyVolumePricingSlabs()">📊 Apply Tiered Slabs</button>
+                <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px" onclick="addLineItemRow()">＋ Add Line Item</button>
+              </div>
             </div>
+            <div id="bundleStatusNotice" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:6px;font-size:12px"></div>
 
             <div style="display:grid;grid-template-columns:2fr 1fr 80px 110px 100px 36px;gap:8px;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px">
               <span>Item / Description</span>
@@ -250,6 +256,79 @@
     </div>
   </div>
 
+  <!-- Modal: Contract Amendment & Co-Terming Proration -->
+  <div class="modal-overlay" id="amendContractModal">
+    <div class="modal-box" style="max-width:680px">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin:0">⟲ Mid-Term Contract Amendment (CLM)</h3>
+          <p style="font-size:12px;color:var(--muted);margin:3px 0 0">Prorate expansion seats or add-ons co-terming to existing contract end date.</p>
+        </div>
+        <button class="modal-close" onclick="SalesOS.closeModal('amendContractModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="amendContractForm" onsubmit="handleAmendContractSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Base Contract / Signed Quote *</label>
+            <select id="amendBaseQuote" class="form-control" onchange="updateAmendQuoteDetails()" required>
+              <option value="">-- Select Active Signed Quote --</option>
+            </select>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;background:var(--panel-subtle);padding:12px;border-radius:var(--radius);border:1px solid var(--line)">
+            <div>
+              <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Contract Term</span>
+              <div id="amendTermDays" style="font-weight:600;font-size:13px">365 Days</div>
+            </div>
+            <div>
+              <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Remaining Co-Terming Days</span>
+              <div id="amendRemainingDays" style="font-weight:600;font-size:13px;color:var(--blue)">180 Days (0.493 factor)</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="form-label" style="font-weight:700">Additional Expansion Items</label>
+            <div style="display:grid;grid-template-columns:2fr 1fr 70px 100px;gap:8px;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px">
+              <span>Item / Add-on</span>
+              <span>SKU</span>
+              <span>Qty</span>
+              <span>Unit Price</span>
+            </div>
+            <div id="amendItemsContainer">
+              <div class="line-item-row amend-item-row" style="display:grid;grid-template-columns:2fr 1fr 70px 100px;gap:8px;margin-bottom:8px">
+                <input type="text" class="form-control amend-name" value="Additional Enterprise Seats" placeholder="Item Name" required>
+                <input type="text" class="form-control amend-sku" value="SALESOS-ENT" placeholder="SKU" required>
+                <input type="number" class="form-control amend-qty" value="5" min="1" oninput="previewAmendmentProration()">
+                <input type="number" class="form-control amend-price" value="12000" min="0" oninput="previewAmendmentProration()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Proration Summary Box -->
+          <div class="quote-summary-box" style="margin-top:16px">
+            <div class="summary-row">
+              <span>Annualized Expansion Value:</span>
+              <span id="amendAnnualAmount" style="font-weight:600">NPR 60,000</span>
+            </div>
+            <div class="summary-row">
+              <span>Proration Factor:</span>
+              <span id="amendProrationFactor">0.493</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Prorated Due Now:</span>
+              <span id="amendTotalDue" style="color:var(--blue)">NPR 29,580</span>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <button type="button" class="btn btn-secondary" onclick="SalesOS.closeModal('amendContractModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Generate Amendment Quote</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="/bs-calendar.js"></script>
   <script src="app.js"></script>
   <script>
@@ -258,18 +337,16 @@
     let lineItemIndex = 1;
     let availableDeals = [];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      SalesOS.init('Quotes & Proposals', [
-        { label: 'Workspace', href: '/index.html' },
-        { label: 'Quotes & Proposals' }
-      ]);
-      loadQuotes();
-      loadDealsForSelect();
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('action') === 'new') {
-        openCreateQuoteModal();
-      }
-    });
+    SalesOS.init('Quotes & Proposals', [
+      { label: 'Workspace', href: '/' },
+      { label: 'Quotes & Proposals' }
+    ]);
+    loadQuotes();
+    loadDealsForSelect();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'new') {
+      openCreateQuoteModal();
+    }
 
     async function loadQuotes() {
       try {
@@ -347,7 +424,7 @@
               <small style="color:var(--muted)">${SalesOS.formatDate(q.created_at)}</small>
             </td>
             <td style="text-align:right;white-space:nowrap">
-              <a href="/quote-view.html?token=${signToken}" target="_blank" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" title="View Customer Sign Page">
+              <a href="/quote-view?token=${signToken}" target="_blank" class="btn btn-secondary" style="padding:4px 8px;font-size:11px" title="View Customer Sign Page">
                 ✍ Sign Page
               </a>
               <button class="btn btn-secondary" style="padding:4px 8px;font-size:11px" onclick="copySignLink('${signToken}')" title="Copy secure customer signing link">
@@ -498,12 +575,199 @@
     }
 
     function copySignLink(token) {
-      const url = `${window.location.origin}/quote-view.html?token=${token}`;
+      const url = `${window.location.origin}/quote-view?token=${token}`;
       navigator.clipboard.writeText(url).then(() => {
         SalesOS.showToast('Customer signing link copied to clipboard!');
       }).catch(() => {
         prompt('Copy customer signing URL:', url);
       });
+    }
+
+    // CLM Bundle Validation
+    async function checkProductBundle() {
+      const notice = document.getElementById('bundleStatusNotice');
+      const skus = Array.from(document.querySelectorAll('.line-item-row .item-sku'))
+        .map(i => i.value.trim().toUpperCase())
+        .filter(Boolean);
+
+      if (!skus.length) {
+        SalesOS.showToast('Please add at least one line item with SKU', 'info');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/quotes/validate-bundle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ selected_skus: skus })
+        });
+        const data = await res.json();
+        if (notice) {
+          notice.style.display = 'block';
+          if (data.valid) {
+            notice.style.background = '#ecfdf5';
+            notice.style.color = '#065f46';
+            notice.style.border = '1px solid #a7f3d0';
+            notice.innerHTML = '✓ <strong>Bundle Validated:</strong> All prerequisite and compatibility rules satisfied.';
+            SalesOS.showToast('Product bundle rules satisfied! ✓');
+          } else {
+            notice.style.background = '#fef2f2';
+            notice.style.color = '#991b1b';
+            notice.style.border = '1px solid #fecaca';
+            notice.innerHTML = `⚠️ <strong>Bundle Validation Warning:</strong><br>${data.errors.join('<br>')}`;
+            SalesOS.showToast('Product bundle conflict detected!', 'error');
+          }
+        }
+      } catch (e) {
+        SalesOS.showToast('Could not validate bundle rules', 'error');
+      }
+    }
+
+    // CLM Volume Slab Discounts
+    async function applyVolumePricingSlabs() {
+      let appliedCount = 0;
+      let totalDiscountSavings = 0;
+
+      const rows = document.querySelectorAll('.line-item-row');
+      for (const row of rows) {
+        const qtyEl = row.querySelector('.item-qty');
+        const priceEl = row.querySelector('.item-price');
+        const qty = Number(qtyEl.value) || 1;
+        const basePrice = Number(priceEl.value) || 0;
+
+        try {
+          const res = await fetch('/api/quotes/volume-price', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ unit_price: basePrice, quantity: qty })
+          });
+          if (res.ok) {
+            const slab = await res.json();
+            if (slab.discount_percent > 0) {
+              priceEl.value = slab.effective_unit_price;
+              appliedCount++;
+              totalDiscountSavings += slab.total_savings;
+            }
+          }
+        } catch (_) {}
+      }
+
+      calculateQuoteTotals();
+      if (appliedCount > 0) {
+        SalesOS.showToast(`Applied tiered volume discounts to ${appliedCount} line item(s)! Total savings: NPR ${totalDiscountSavings.toLocaleString()}`);
+      } else {
+        SalesOS.showToast('No volume discounts available for current quantities (< 10 units)', 'info');
+      }
+    }
+
+    // CLM Contract Amendment Modal
+    function openAmendContractModal() {
+      const select = document.getElementById('amendBaseQuote');
+      select.innerHTML = '<option value="">-- Select Active Signed Quote --</option>';
+      const eligible = allQuotes.filter(q => q.status === 'Signed' || q.status === 'Paid' || q.status === 'Sent');
+      if (!eligible.length) {
+        allQuotes.forEach(q => {
+          const opt = document.createElement('option');
+          opt.value = q.id;
+          opt.textContent = `${q.quote_number} · ${q.customer_name} (${SalesOS.formatCurrency(q.total, q.currency)})`;
+          select.appendChild(opt);
+        });
+      } else {
+        eligible.forEach(q => {
+          const opt = document.createElement('option');
+          opt.value = q.id;
+          opt.textContent = `${q.quote_number} · ${q.customer_name} (${SalesOS.formatCurrency(q.total, q.currency)})`;
+          select.appendChild(opt);
+        });
+      }
+      previewAmendmentProration();
+      SalesOS.showModal('amendContractModal');
+    }
+
+    function updateAmendQuoteDetails() {
+      previewAmendmentProration();
+    }
+
+    async function previewAmendmentProration() {
+      const quoteId = document.getElementById('amendBaseQuote').value;
+      const targetQuote = allQuotes.find(q => q.id === quoteId) || allQuotes[0] || {};
+      
+      const qty = Number(document.querySelector('.amend-qty')?.value) || 1;
+      const price = Number(document.querySelector('.amend-price')?.value) || 0;
+      const annual = qty * price;
+      document.getElementById('amendAnnualAmount').textContent = `NPR ${annual.toLocaleString()}`;
+
+      const contract = {
+        id: targetQuote.id || 'quote-base',
+        start_date: targetQuote.created_at || new Date(Date.now() - 180 * 86400000).toISOString(),
+        end_date: new Date(Date.now() + 185 * 86400000).toISOString()
+      };
+
+      try {
+        const res = await fetch('/api/quotes/amend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contract,
+            additional_items: [{
+              sku: document.querySelector('.amend-sku')?.value || 'SALESOS-ENT',
+              name: document.querySelector('.amend-name')?.value || 'Expansion Units',
+              quantity: qty,
+              price: price
+            }]
+          })
+        });
+        if (res.ok) {
+          const d = await res.json();
+          document.getElementById('amendTermDays').textContent = `${d.contract_term_days} Days`;
+          document.getElementById('amendRemainingDays').textContent = `${d.remaining_days} Days (${d.proration_factor} factor)`;
+          document.getElementById('amendProrationFactor').textContent = `${d.proration_factor}`;
+          document.getElementById('amendTotalDue').textContent = `NPR ${Number(d.total_amendment_due).toLocaleString()}`;
+        }
+      } catch (e) {}
+    }
+
+    async function handleAmendContractSubmit(e) {
+      e.preventDefault();
+      const quoteId = document.getElementById('amendBaseQuote').value;
+      const targetQuote = allQuotes.find(q => q.id === quoteId);
+      const name = document.querySelector('.amend-name').value;
+      const sku = document.querySelector('.amend-sku').value;
+      const qty = Number(document.querySelector('.amend-qty').value) || 1;
+      const price = Number(document.querySelector('.amend-price').value) || 0;
+      const totalDue = Number(document.getElementById('amendTotalDue').textContent.replace(/[^0-9.]/g, '')) || (qty * price);
+
+      try {
+        const res = await fetch('/api/quotes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: `Contract Amendment: ${targetQuote?.title || 'Add-on expansion'}`,
+            deal_id: targetQuote?.deal_id || null,
+            customer_name: targetQuote?.customer_name || 'Enterprise Customer',
+            customer_email: targetQuote?.customer_email || 'billing@customer.com',
+            currency: 'NPR',
+            tax_mode: 'inclusive',
+            terms: 'Mid-term co-terming contract expansion. Due upon invoice signature.',
+            line_items: [{
+              name: `${name} (Co-Termed Proration)`,
+              sku,
+              qty,
+              price: Math.round(totalDue / qty)
+            }]
+          })
+        });
+
+        if (res.ok) {
+          SalesOS.closeModal('amendContractModal');
+          SalesOS.showToast('Contract amendment quote generated! ⟲');
+          await loadQuotes();
+        } else {
+          SalesOS.showToast('Failed to create amendment quote', 'error');
+        }
+      } catch (_) {
+        SalesOS.showToast('Error processing amendment', 'error');
+      }
     }
   </script>
 </body>

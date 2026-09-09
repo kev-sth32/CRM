@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contacts Directory · SalesOS</title>
+  <script>
+    (function(){try{var t=localStorage.getItem('salesos_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+  </script>
   <link rel="stylesheet" href="/app.css" />
 </head>
 <body>
@@ -77,10 +80,10 @@
   <aside class="drawer" id="contactDrawer">
     <div class="drawer-header">
       <div style="display:flex;align-items:center;gap:12px">
-        <div class="user-avatar" id="drawerContactAvatar" style="width:42px;height:42px;font-size:16px">RK</div>
+        <div class="user-avatar" id="drawerContactAvatar" style="width:42px;height:42px;font-size:16px">—</div>
         <div>
-          <h3 id="drawerContactName" style="font-size:17px;font-weight:750">Rajan Koirala</h3>
-          <small id="drawerContactTitle" style="color:var(--muted)">Managing Director · Koirala Industries</small>
+          <h3 id="drawerContactName" style="font-size:17px;font-weight:750">—</h3>
+          <small id="drawerContactTitle" style="color:var(--muted)">—</small>
         </div>
       </div>
       <button class="modal-close" onclick="closeContactDrawer()">×</button>
@@ -89,7 +92,7 @@
     <div class="drawer-body">
       <!-- Actions -->
       <div style="display:flex;gap:8px;margin-bottom:20px">
-        <a href="/inbox.html" class="btn btn-primary btn-sm" style="flex:1">✉ Send Message</a>
+        <a href="/inbox" class="btn btn-primary btn-sm" style="flex:1">✉ Send Message</a>
         <button class="btn btn-secondary btn-sm" onclick="openEditContactModal()">✎ Edit</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDeleteContact()">🗑 Delete</button>
       </div>
@@ -121,26 +124,18 @@
       <div class="card" style="padding:16px;margin-bottom:18px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <h4 style="font-size:13px;font-weight:700;color:var(--ink-secondary)">Linked Opportunities</h4>
-          <a href="/deals.html" style="font-size:11.5px;color:var(--blue);font-weight:600">View Pipeline →</a>
+          <a href="/deals" style="font-size:11.5px;color:var(--blue);font-weight:600">View Pipeline →</a>
         </div>
         <div id="contactDealsContainer">
-          <div style="padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);font-size:12.5px">
-            <strong style="display:block">Koirala Group 3-Branch CRM Rollout</strong>
-            <div style="display:flex;justify-content:space-between;color:var(--muted);margin-top:4px">
-              <span>Stage: Negotiation</span>
-              <strong style="color:var(--ink)">NPR 18,50,000</strong>
-            </div>
-          </div>
+          <p style="color:var(--muted);font-size:12px">Loading opportunities...</p>
         </div>
       </div>
 
       <!-- Interaction History -->
       <div class="card" style="padding:16px">
         <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--ink-secondary)">Interaction History</h4>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6">
-          <p>• <strong>Sep 3, 2026:</strong> Inbound message received via Website Chat inquiring about multi-branch rollout.</p>
-          <p style="margin-top:8px">• <strong>Sep 2, 2026:</strong> AI Copilot qualified lead with 94/100 score.</p>
-          <p style="margin-top:8px">• <strong>Aug 15, 2026:</strong> Initial contact created and assigned to Arjun Sharma.</p>
+        <div id="contactHistoryContainer" style="font-size:12px;color:var(--muted);line-height:1.6">
+          <p style="color:var(--muted);font-size:12px">Select a contact to view relationship timeline.</p>
         </div>
       </div>
     </div>
@@ -231,7 +226,7 @@
         <button class="modal-close" onclick="SalesOS.closeModal('contactMergeModal')">×</button>
       </div>
       <div class="modal-body">
-        <div style="background:#f8fafc;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+        <div style="background:var(--panel-subtle);padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
           <div>
             <span style="font-size:12px;color:var(--muted)">Similarity Score:</span>
             <strong id="contactMatchScore" class="badge badge-green" style="margin-left:6px">96% Match</strong>
@@ -242,8 +237,8 @@
           </div>
         </div>
 
-        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff">
-          <div class="merge-grid" style="background:#f1f5f9;font-weight:700;font-size:12px">
+        <div style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)">
+          <div class="merge-grid" style="background:var(--panel-subtle);font-weight:700;font-size:12px">
             <div>Field</div>
             <div id="contactColHeaderA">Record A (Primary)</div>
             <div id="contactColHeaderB">Record B (Duplicate)</div>
@@ -260,7 +255,7 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Contacts', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Contacts' }]);
+    SalesOS.init('Contacts', [{ label: 'SalesOS', href: '/' }, { label: 'Contacts' }]);
 
     let allContacts = [];
     let activeContact = null;
@@ -330,7 +325,7 @@
             </td>
             <td><span style="color:var(--ink-secondary)">${escapeHtml(c.title || 'Contact')}</span></td>
             <td>
-              <a href="/companies.html?highlight=${encodeURIComponent(c.company_id || '')}" style="color:var(--blue);text-decoration:none;font-weight:600" onclick="event.stopPropagation()">
+              <a href="/companies?highlight=${encodeURIComponent(c.company_id || '')}" style="color:var(--blue);text-decoration:none;font-weight:600" onclick="event.stopPropagation()">
                 ${escapeHtml(c.company_name || 'Individual')}
               </a>
             </td>
@@ -356,6 +351,50 @@
       document.getElementById('drawerContactPhone').textContent = c.phone || '—';
       document.getElementById('drawerContactCompany').textContent = c.company_name || 'Individual';
       document.getElementById('drawerContactAvatar').textContent = (c.name || 'C').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+
+      // Reset and load linked opportunities
+      const dBox = document.getElementById('contactDealsContainer');
+      if (dBox) dBox.innerHTML = '<p style="color:var(--muted);font-size:12px">Loading opportunities...</p>';
+      
+      try {
+        fetch('/api/opportunities')
+          .then(r => r.ok ? r.json() : [])
+          .then(deals => {
+            if (!dBox) return;
+            const linkedDeals = (deals || []).filter(x => 
+              x.contact_id === c.id || 
+              (x.contact_name && c.name && x.contact_name.toLowerCase() === c.name.toLowerCase()) ||
+              (c.company_name && x.company_name && x.company_name.toLowerCase() === c.company_name.toLowerCase())
+            );
+            if (linkedDeals.length) {
+              dBox.innerHTML = linkedDeals.map(d => `
+                <div style="padding:10px 12px;background:var(--panel-subtle);border-radius:8px;border:1px solid var(--line);font-size:12.5px;margin-bottom:8px">
+                  <strong style="display:block">${escapeHtml(d.name)}</strong>
+                  <div style="display:flex;justify-content:space-between;color:var(--muted);margin-top:4px">
+                    <span class="badge badge-blue">${escapeHtml(d.stage || 'Pipeline')}</span>
+                    <strong style="color:var(--ink)">${SalesOS.formatCurrency(d.amount)}</strong>
+                  </div>
+                </div>
+              `).join('');
+            } else {
+              dBox.innerHTML = '<p style="color:var(--muted);font-size:12px">No active opportunities linked to this contact.</p>';
+            }
+          })
+          .catch(() => {
+            if (dBox) dBox.innerHTML = '<p style="color:var(--muted);font-size:12px">No active opportunities found.</p>';
+          });
+      } catch (_) {}
+
+      // Populate Interaction History dynamically
+      const hBox = document.getElementById('contactHistoryContainer');
+      if (hBox) {
+        const createdDate = c.created_at ? SalesOS.formatDate(c.created_at) : 'Active record';
+        hBox.innerHTML = `
+          <p>• <strong>${escapeHtml(createdDate)}:</strong> Contact registered in SalesOS workspace.</p>
+          ${c.email ? `<p style="margin-top:8px">• <strong>Communication:</strong> Email inquiries routed to <code>${escapeHtml(c.email)}</code>.</p>` : ''}
+          ${c.phone ? `<p style="margin-top:8px">• <strong>Channel:</strong> Direct phone / SMS line verified (${escapeHtml(c.phone)}).</p>` : ''}
+        `;
+      }
 
       document.getElementById('contactDrawerOverlay').classList.add('active');
       document.getElementById('contactDrawer').classList.add('open');

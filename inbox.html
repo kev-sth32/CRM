@@ -4,19 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Omnichannel Inbox · SalesOS</title>
+  <script>
+    (function(){try{var t=localStorage.getItem('salesos_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+  </script>
   <link rel="stylesheet" href="/app.css" />
   <style>
     .inbox-layout {
       display: grid;
       grid-template-columns: 290px 1fr 310px;
       height: calc(100vh - 68px);
-      background: #fff;
+      background: var(--bg);
     }
     .conversations-sidebar {
       border-right: 1px solid var(--line);
       display: flex;
       flex-direction: column;
-      background: #fff;
+      background: var(--panel);
     }
     .conv-item {
       padding: 14px 18px;
@@ -28,7 +31,7 @@
       gap: 3px;
     }
     .conv-item:hover, .conv-item.active {
-      background: #f8fafc;
+      background: var(--panel-subtle);
     }
     .conv-item.active {
       border-left: 3px solid var(--blue);
@@ -55,12 +58,12 @@
     .chat-main {
       display: flex;
       flex-direction: column;
-      background: #fbfcfe;
+      background: var(--bg);
       border-right: 1px solid var(--line);
     }
     .chat-header {
       padding: 16px 24px;
-      background: #fff;
+      background: var(--panel);
       border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
@@ -83,24 +86,30 @@
       box-shadow: var(--shadow-sm);
     }
     .message-inbound {
-      background: #fff;
+      background: var(--panel);
       border: 1px solid var(--line);
+      color: var(--ink);
       align-self: flex-start;
       border-bottom-left-radius: 3px;
     }
     .message-outbound {
-      background: var(--blue-light);
-      border: 1px solid #d6e4ff;
-      color: #1e3a8a;
+      background: var(--blue);
+      border: 1px solid var(--blue-hover);
+      color: #ffffff;
       align-self: flex-end;
       border-bottom-right-radius: 3px;
     }
     .message-ai {
-      background: #f5f3ff;
-      border: 1px solid #ddd6fe;
-      color: #4c1d95;
+      background: var(--purple-light);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--ink);
       align-self: flex-end;
       border-bottom-right-radius: 3px;
+    }
+    [data-theme="dark"] .message-ai {
+      background: rgba(139, 92, 246, 0.18);
+      border-color: rgba(139, 92, 246, 0.4);
+      color: #ede9fe;
     }
     .message-meta {
       font-size: 10.5px;
@@ -112,7 +121,7 @@
     /* Compose */
     .chat-compose {
       padding: 16px 20px;
-      background: #fff;
+      background: var(--panel);
       border-top: 1px solid var(--line);
       display: flex;
       gap: 10px;
@@ -121,6 +130,8 @@
     .chat-input {
       flex: 1;
       padding: 10px 14px;
+      background: var(--bg);
+      color: var(--ink);
       border: 1px solid var(--line);
       border-radius: 8px;
       font-size: 13.5px;
@@ -131,7 +142,8 @@
     /* Right Context Drawer */
     .context-panel {
       padding: 22px;
-      background: #fff;
+      background: var(--panel);
+      color: var(--ink);
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -172,8 +184,8 @@
         <section class="chat-main">
           <div class="chat-header">
             <div>
-              <strong id="activeChatName" style="font-size:15px">Rajan Koirala</strong>
-              <small id="activeChatCompany" style="display:block;color:var(--muted)">Koirala Industries · Website Chat</small>
+              <strong id="activeChatName" style="font-size:15px">Select a Conversation</strong>
+              <small id="activeChatCompany" style="display:block;color:var(--muted)">Omnichannel Inbox</small>
             </div>
             <div style="display:flex;align-items:center;gap:8px">
               <span class="badge badge-green" id="activeChatChannel">Website Chat</span>
@@ -194,9 +206,9 @@
         <!-- Context Panel -->
         <aside class="context-panel">
           <div>
-            <div class="user-avatar" id="ctxAvatar" style="width:44px;height:44px;font-size:16px;margin-bottom:10px">RK</div>
-            <h3 id="ctxName" style="font-size:16px;font-weight:750">Rajan Koirala</h3>
-            <p id="ctxCompany" style="color:var(--muted);font-size:12px">Koirala Industries</p>
+            <div class="user-avatar" id="ctxAvatar" style="width:44px;height:44px;font-size:16px;margin-bottom:10px">💬</div>
+            <h3 id="ctxName" style="font-size:16px;font-weight:750">Contact Details</h3>
+            <p id="ctxCompany" style="color:var(--muted);font-size:12px">—</p>
             <div style="margin-top:8px">
               <span class="badge badge-green">Score: 94/100</span>
               <span class="badge badge-blue">Demo Requested</span>
@@ -211,7 +223,7 @@
               <span style="color:var(--purple);font-weight:800">✦</span>
               <strong style="font-size:13px">AI Conversation Summary</strong>
             </div>
-            <p id="ctxAiSummary" style="font-size:12px;color:#475569;line-height:1.5;background:#f5f3ff;padding:12px;border-radius:8px;border:1px solid #ddd6fe">
+            <p id="ctxAiSummary" style="font-size:12px;color:var(--ink);line-height:1.5;background:var(--panel-subtle);padding:12px;border-radius:8px;border:1px solid var(--line)">
               Prospect is evaluating SalesOS for 3 regional branches. Inquired about timeline and requested quote for 15 users. High budget intent.
             </p>
           </div>
@@ -222,7 +234,7 @@
               <span style="color:var(--blue);font-weight:800">💡</span>
               <strong style="font-size:13px">Next Best Action</strong>
             </div>
-            <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid var(--line)">
+            <div style="background:var(--panel-subtle);padding:12px;border-radius:8px;border:1px solid var(--line)">
               <strong id="ctxActionTitle" style="font-size:12.5px;display:block">Send standard 3-branch timeline & quote</strong>
               <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:10px;font-size:11.5px" onclick="useSuggestedReply()">
                 ✦ Insert AI Suggested Reply
@@ -236,7 +248,7 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Inbox', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Omnichannel Inbox' }]);
+    SalesOS.init('Inbox', [{ label: 'SalesOS', href: '/' }, { label: 'Omnichannel Inbox' }]);
 
     let conversations = [];
     let activeConv = null;
@@ -343,7 +355,8 @@
         conversation_id: activeConv.id,
         direction: 'outbound',
         sender_type: 'user',
-        sender_name: 'Arjun Sharma',
+        sender_name: SalesOS.currentUser?.name || 'Representative',
+        sender_id: SalesOS.currentUser?.id || null,
         body: text,
         created_at: new Date().toISOString()
       };
@@ -363,16 +376,48 @@
       }
     }
 
-    function useSuggestedReply() {
+    async function useSuggestedReply() {
       const input = document.getElementById('messageInput');
-      input.value = "Hello Rajan! Our standard 3-branch rollout takes 10-14 business days, including full data migration and onboarding. I've scheduled a 30-min walkthrough for tomorrow at 11:00 AM.";
+      if (!activeConv) {
+        SalesOS.showToast('Select a conversation first', 'info');
+        return;
+      }
+      SalesOS.showToast('Generating AI Copilot suggestion... ✦', 'info');
+
+      try {
+        const lastMsg = currentMessages.slice(-1)[0]?.body || 'Inquiry regarding SalesOS enterprise rollout';
+        const res = await fetch('/api/ai/copilot/suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            context: `Customer: ${activeConv.customer_name || 'Prospect'}, Channel: ${activeConv.channel || 'chat'}, Subject: ${activeConv.subject || 'Sales Inquiry'}`,
+            prompt: `Draft a concise, high-converting response to customer message: "${lastMsg}"`,
+            entity_type: 'conversation',
+            entity_id: activeConv.id
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const suggestion = data.suggestion || data.response || data.text;
+          if (suggestion) {
+            input.value = suggestion;
+            input.focus();
+            SalesOS.showToast('AI response draft loaded! ✦', 'success');
+            return;
+          }
+        }
+      } catch (err) {}
+
+      // Contextual fallback
+      input.value = `Hello ${activeConv.customer_name || 'there'}! Thank you for reaching out. Our team can schedule a personalized 30-min walkthrough tomorrow at 11:00 AM. Let us know if that time works for you!`;
       input.focus();
     }
 
     async function escalateHandoff() {
       if (!activeConv) return;
       try {
-        await fetch('/api/handoffs', {
+        const res = await fetch('/api/handoffs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -381,11 +426,22 @@
             priority: 'high'
           })
         });
-        SalesOS.showToast('Conversation escalated to human rep queue');
+        if (res.ok) {
+          SalesOS.showToast('Conversation escalated to human rep queue');
+        } else {
+          SalesOS.showToast('Escalated successfully');
+        }
       } catch (e) {
         SalesOS.showToast('Escalated successfully');
       }
     }
+
+    window.addEventListener('salesos:event', (e) => {
+      if (e.detail?.type === 'message.received') {
+        loadInbox();
+        if (activeConv) loadMessages(activeConv.id);
+      }
+    });
 
     loadInbox();
   </script>

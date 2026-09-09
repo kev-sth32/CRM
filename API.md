@@ -183,14 +183,20 @@ Tenant-scoped. Messages use `(tenant_id, external_id)` idempotency.
 
 ## Superadmin
 ```http
-GET  /api/superadmin/tenants
-POST /api/superadmin/tenants
-PATCH /api/superadmin/tenants/:id
-POST /api/superadmin/switch-tenant
-GET  /api/superadmin/telemetry
+GET    /api/superadmin/tenants
+POST   /api/superadmin/tenants
+PATCH  /api/superadmin/tenants/:id
+DELETE /api/superadmin/tenants/:id
+POST   /api/superadmin/switch-tenant
+POST   /api/superadmin/switch-back
+GET    /api/superadmin/stats
+GET    /api/superadmin/telemetry
+GET    /api/superadmin/dlq
+POST   /api/superadmin/dlq/:id/replay
+GET    /api/superadmin/audit-logs
 ```
 
-Platform-wide tenant directory, creation, updates, cross-tenant switching, and telemetry. Requires `superadmin` role.
+Platform-wide tenant directory, provisioning, cascade purge, cross-tenant impersonation switching and switch-back, runtime telemetry, Dead-Letter Queue inspection and replay, and global audit logging. Requires `superadmin` role. Mutating endpoints include CSRF and cross-origin guards. Rate limited to 60 req/min.
 
 ## Billing
 ```http

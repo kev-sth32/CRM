@@ -1,4 +1,4 @@
-/**
+﻿/**
  * test-local-integrations.js
  * Verification suite for:
  * 1. Bikram Sambat (BS) / Gregorian (AD) Dual Calendar Engine
@@ -17,7 +17,7 @@ const PORT = 3000;
 
 function request(options, data = null) {
   options.headers = Object.assign({
-    'x-test-bypass': 'salesos-internal-test',
+    'x-test-bypass': (process.env.TEST_BYPASS_SECRET || 'salesos-internal-test'),
     'x-tenant-id': 'tenant-1'
   }, options.headers || {});
 
@@ -58,10 +58,10 @@ async function runTests() {
 
   function record(name, ok, details = '') {
     if (ok) {
-      console.log(`  ✓ PASS: ${name}`);
+      console.log(`  âœ“ PASS: ${name}`);
       passed++;
     } else {
-      console.error(`  ✗ FAIL: ${name} - ${details}`);
+      console.error(`  âœ— FAIL: ${name} - ${details}`);
       failed++;
     }
   }

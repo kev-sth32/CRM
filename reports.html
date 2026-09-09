@@ -21,7 +21,7 @@
     .funnel-track {
       flex: 1;
       height: 24px;
-      background: #f1f5f9;
+      background: var(--line);
       border-radius: 6px;
       overflow: hidden;
       position: relative;
@@ -148,7 +148,7 @@
 
   <script src="/app.js"></script>
   <script>
-    SalesOS.init('Reports', [{ label: 'SalesOS', href: '/index.html' }, { label: 'Reports' }]);
+    SalesOS.init('Reports', [{ label: 'SalesOS', href: '/' }, { label: 'Reports' }]);
 
     let reportData = null;
 

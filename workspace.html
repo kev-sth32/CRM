@@ -18,23 +18,23 @@
     const view = params.get('view') || 'dashboard';
 
     const routes = {
-      dashboard: '/index.html',
-      leads: '/leads.html',
-      contacts: '/contacts.html',
-      companies: '/companies.html',
-      deals: '/deals.html',
-      products: '/products.html',
-      tasks: '/tasks.html',
-      campaigns: '/campaigns.html',
-      automations: '/automations.html',
-      reports: '/reports.html',
-      settings: '/settings.html',
-      inbox: '/inbox.html',
-      approvals: '/approvals.html',
-      agents: '/approvals.html'
+      dashboard: '/',
+      leads: '/leads',
+      contacts: '/contacts',
+      companies: '/companies',
+      deals: '/deals',
+      products: '/products',
+      tasks: '/tasks',
+      campaigns: '/campaigns',
+      automations: '/automations',
+      reports: '/reports',
+      settings: '/settings',
+      inbox: '/inbox',
+      approvals: '/approvals',
+      agents: '/approvals'
     };
 
-    const target = routes[view.toLowerCase()] || '/index.html';
+    const target = routes[view.toLowerCase()] || '/';
     window.location.replace(target);
   </script>
 </body>

@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('salesos_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="app.css">
   <style>
     body {
@@ -90,6 +98,11 @@
   </style>
 </head>
 <body>
+  <div style="position:fixed;top:20px;right:20px;z-index:100">
+    <button class="btn-icon" title="Toggle Light / Dark Theme" id="btnThemeToggle" onclick="SalesOS.toggleTheme()" style="position:relative;font-size:14px">
+      <span id="themeToggleIcon">🌙</span>
+    </button>
+  </div>
   <div class="login-container">
     <div class="login-card">
       <div class="brand-header">
@@ -116,15 +129,15 @@
 
         <div class="form-group">
           <label class="form-label" for="email">Work Email</label>
-          <input type="email" id="email" class="form-control" placeholder="arjun@acmecloud.com" required autocomplete="email" value="arjun@acmecloud.com">
+          <input type="email" id="email" class="form-control" placeholder="name@company.com" required autocomplete="email">
         </div>
 
         <div class="form-group">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
             <label class="form-label" for="password" style="margin-bottom:0">Password</label>
-            <a href="#" id="forgotLink" onclick="openForgotModal(); return false;" style="font-size:12px;color:var(--blue);text-decoration:none">Forgot password?</a>
+            <button type="button" id="forgotLink" onclick="openForgotModal()" style="background:none;border:none;padding:0;font-size:12px;color:var(--blue);cursor:pointer;text-decoration:none">Forgot password?</button>
           </div>
-          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" value="secret">
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
         </div>
 
         <div id="loginError" style="color:var(--red);font-size:12px;margin-bottom:14px;min-height:16px"></div>
@@ -154,12 +167,17 @@
           <span><strong>🏢 Himalayan Retail</strong> · Aarav M. (Owner)</span>
           <span class="badge badge-orange">Tenant 3</span>
         </button>
+        <button type="button" class="quick-login-btn" onclick="quickFill('diwas@nimbus.com', 'secret')">
+          <span><strong>🏢 Nimbus Networks</strong> · Diwas A. (Owner)</span>
+          <span class="badge" style="background:#e0e7ff;color:#4338ca">Tenant 4</span>
+        </button>
       </div>
     </div>
   </div>
 
   <script src="app.js"></script>
   <script>
+    SalesOS.initTheme();
     let currentMode = 'signin';
 
     function setAuthMode(mode) {
@@ -219,7 +237,7 @@
           if (res.ok && data.user) {
             submitBtn.textContent = '✓ Workspace Created! Redirecting...';
             submitBtn.style.background = 'var(--green)';
-            setTimeout(() => { window.location.href = '/index.html'; }, 400);
+            setTimeout(() => { window.location.href = '/'; }, 400);
           } else {
             errorEl.textContent = data.error || 'Registration failed.';
             submitBtn.disabled = false;
@@ -249,9 +267,9 @@
               if (redirect) {
                 window.location.href = redirect;
               } else if (data.user.role === 'superadmin' || data.user.email === 'superadmin@salesos.io') {
-                window.location.href = '/superadmin.html';
+                window.location.href = '/superadmin';
               } else {
-                window.location.href = '/index.html';
+                window.location.href = '/';
               }
             }, 350);
           } else {
@@ -319,11 +337,11 @@
 
   <!-- Forgot Password Recovery Modal -->
   <div id="forgotModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px">
-    <div style="background:#ffffff;width:100%;max-width:440px;border-radius:16px;padding:32px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);position:relative">
+    <div style="background:var(--panel);border:1px solid var(--line);width:100%;max-width:440px;border-radius:16px;padding:32px;box-shadow:var(--shadow-lg);position:relative">
       <button type="button" onclick="closeForgotModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer">&times;</button>
-      <div style="width:42px;height:42px;border-radius:10px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;color:#0284c7;font-size:20px;margin-bottom:16px">🔑</div>
-      <h3 style="margin:0 0 8px;font-size:18px;color:#0f172a">Reset Your Password</h3>
-      <p style="margin:0 0 20px;font-size:13px;color:#64748b;line-height:1.5">Enter your registered work email. We'll generate a secure password reset link.</p>
+      <div style="width:42px;height:42px;border-radius:10px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:20px;margin-bottom:16px">🔑</div>
+      <h3 style="margin:0 0 8px;font-size:18px;color:var(--ink)">Reset Your Password</h3>
+      <p style="margin:0 0 20px;font-size:13px;color:var(--muted);line-height:1.5">Enter your registered work email. We'll generate a secure password reset link.</p>
       
       <form id="forgotForm" onsubmit="handleForgotSubmit(event)">
         <div class="form-group" style="margin-bottom:16px">
@@ -337,5 +355,6 @@
       </form>
     </div>
   </div>
+  <script src="/app.js"></script>
 </body>
 </html>

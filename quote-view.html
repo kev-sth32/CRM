@@ -84,7 +84,7 @@
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
           <div style="width:32px;height:32px;background:var(--blue);border-radius:8px;display:grid;place-items:center;color:white;font-weight:bold;font-size:16px">✦</div>
-          <strong style="font-size:18px;letter-spacing:-0.02em">SalesOS Enterprise Cloud</strong>
+          <strong style="font-size:18px;letter-spacing:-0.02em" id="quoteTenantName">SalesOS Enterprise Cloud</strong>
         </div>
         <h1 style="font-size:24px;font-weight:800;margin:0 0 6px" id="quoteTitle">Loading Proposal...</h1>
         <p style="color:#94a3b8;margin:0;font-size:13px">Official Price Quotation & Service Agreement</p>
@@ -111,7 +111,7 @@
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:0.05em;margin-bottom:8px">PROPOSAL DETAILS</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Date Issued: <strong style="color:var(--text)" id="issueDate">—</strong></div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Valid Until: <strong style="color:var(--text)" id="expiryDate">30 Days from Issue</strong></div>
-          <div style="font-size:13px;color:var(--muted)">Currency: <strong style="color:var(--text)" id="currencyLabel">NPR</strong></div>
+          <div style="font-size:13px;color:var(--muted)">Currency: <strong style="color:var(--text)" id="currencyLabel">—</strong></div>
         </div>
       </div>
 
@@ -143,7 +143,7 @@
             <span style="color:#059669;font-weight:600" id="discountVal">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px">
-            <span>VAT / Tax (13%):</span>
+            <span id="taxLabel">VAT / Tax:</span>
             <span style="font-weight:600;color:var(--text)" id="taxVal">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--text);border-top:1px solid #cbd5e1;padding-top:10px">
@@ -374,6 +374,9 @@
     }
 
     function renderQuoteView(q) {
+      const tenantEl = document.getElementById('quoteTenantName');
+      if (tenantEl) tenantEl.textContent = q.tenant_name || q.tenant?.name || 'SalesOS Workspace';
+
       document.getElementById('quoteTitle').textContent = q.title;
       document.getElementById('quoteNumber').textContent = q.quote_number;
       document.getElementById('customerName').textContent = q.customer_name;
@@ -419,6 +422,11 @@
         document.getElementById('discountVal').textContent = `- ${q.currency} ${Number(q.discount_amount).toLocaleString()} (${q.discount_pct}%)`;
       } else {
         document.getElementById('discountRow').style.display = 'none';
+      }
+      const taxLabelEl = document.getElementById('taxLabel');
+      if (taxLabelEl) {
+        const rate = q.tax_rate !== undefined ? q.tax_rate : (q.subtotal > 0 && q.tax_amount > 0 ? Math.round((q.tax_amount / (q.subtotal - (q.discount_amount || 0))) * 100) : null);
+        taxLabelEl.textContent = rate !== null ? `VAT / Tax (${rate}%):` : 'VAT / Tax:';
       }
       document.getElementById('taxVal').textContent = `${q.currency} ${Number(q.tax_amount).toLocaleString()}`;
       document.getElementById('grandTotalVal').textContent = `${q.currency} ${Number(q.total).toLocaleString()}`;

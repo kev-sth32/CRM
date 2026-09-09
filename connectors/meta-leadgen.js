@@ -75,7 +75,7 @@ class MetaLeadGenConnector {
       },
       stage: 'New lead',
       score: 82, // Qualified inbound intent
-      owner_name: 'Arjun Sharma',
+      owner_name: rawPayload.owner_name || 'Unassigned',
       notes: `Automated inbound lead via Meta Lead Ads form (${formId}). Ad ID: ${adId}.`,
       created_at: new Date().toISOString()
     };

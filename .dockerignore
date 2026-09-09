@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+npm-debug.log*
+.env
+.env.*
+!.env.example
+data.json
+*.tmp.*
+*.log
+test*.js
+*.test.js
+.vscode
+.idea

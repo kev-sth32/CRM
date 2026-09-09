@@ -191,8 +191,11 @@
       <strong style="font-size:16px;letter-spacing:-0.01em">SalesOS · AI Sales Machine Setup</strong>
       <span class="badge badge-blue">PRD Configuration Wizard</span>
     </div>
-    <div>
-      <a href="/index.html" class="btn btn-secondary btn-sm">Skip to CRM →</a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn-icon" title="Toggle Light / Dark Theme" id="btnThemeToggle" onclick="SalesOS.toggleTheme()" style="position:relative;font-size:14px">
+        <span id="themeToggleIcon">🌙</span>
+      </button>
+      <a href="/" class="btn btn-secondary btn-sm">Skip to CRM →</a>
     </div>
   </header>
 
@@ -475,6 +478,7 @@
 
   <script src="/app.js"></script>
   <script>
+    SalesOS.initTheme();
     let currentStep = 1;
     let selectedIndustryKey = 'saas';
     let availableTemplates = [];
@@ -616,7 +620,7 @@
         if (res.ok) {
           SalesOS.showToast('Setup complete! Redirecting to SalesOS Dashboard...');
           setTimeout(() => {
-            window.location.href = '/index.html';
+            window.location.href = '/';
           }, 1000);
         }
       } catch (err) {

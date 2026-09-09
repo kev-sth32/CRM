@@ -22,11 +22,15 @@ const FORECAST_CATEGORIES = {
 
 function getTenantQuotas(tenantId) {
   if (!tenantQuotas.has(tenantId)) {
-    // Seed default annual/quarterly quota for tenant users
-    tenantQuotas.set(tenantId, [
-      { id: 'q-1', user_id: 'usr-1', user_name: 'Arjun Sharma', period: '2026-Q3', target_amount: 150000, currency: 'USD' },
-      { id: 'q-2', user_id: 'usr-2', user_name: 'Roshan Shrestha', period: '2026-Q3', target_amount: 120000, currency: 'USD' }
-    ]);
+    if (tenantId === 'tenant-1') {
+      // Seed default annual/quarterly quota for demo tenant
+      tenantQuotas.set(tenantId, [
+        { id: 'q-1', user_id: 'usr-1', user_name: 'Arjun Sharma', period: '2026-Q3', target_amount: 150000, currency: 'USD' },
+        { id: 'q-2', user_id: 'usr-2', user_name: 'Roshan Shrestha', period: '2026-Q3', target_amount: 120000, currency: 'USD' }
+      ]);
+    } else {
+      tenantQuotas.set(tenantId, []);
+    }
   }
   return tenantQuotas.get(tenantId);
 }

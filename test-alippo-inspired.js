@@ -1,4 +1,4 @@
-/**
+﻿/**
  * test-alippo-inspired.js
  * Verification suite for Alippo-inspired capabilities:
  * 1. Meta Lead Ads Webhook Ingestion (Handshake, Signature, Auto-Lead Creation)
@@ -16,7 +16,7 @@ const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 function request(options, data = null) {
   options.headers = Object.assign({
-    'x-test-bypass': 'salesos-internal-test',
+    'x-test-bypass': (process.env.TEST_BYPASS_SECRET || 'salesos-internal-test'),
     'x-tenant-id': 'tenant-1'
   }, options.headers || {});
   return new Promise((resolve, reject) => {
@@ -58,10 +58,10 @@ async function runTests() {
 
   function record(name, ok, details = '') {
     if (ok) {
-      console.log(`  ✓ PASS: ${name}`);
+      console.log(`  âœ“ PASS: ${name}`);
       passed++;
     } else {
-      console.error(`  ✗ FAIL: ${name} - ${details}`);
+      console.error(`  âœ— FAIL: ${name} - ${details}`);
       failed++;
     }
   }

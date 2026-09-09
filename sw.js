@@ -3,9 +3,17 @@
  * Implements offline application shell caching and network-first data fallback
  */
 
-const CACHE_NAME = 'salesos-pwa-v1';
+const CACHE_NAME = 'salesos-pwa-v3';
+const PREV_CACHE = 'salesos-pwa-v2';
 const STATIC_ASSETS = [
   '/',
+  '/leads',
+  '/deals',
+  '/quotes',
+  '/contacts',
+  '/companies',
+  '/tasks',
+  '/inbox',
   '/index.html',
   '/leads.html',
   '/deals.html',
@@ -20,6 +28,7 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(STATIC_ASSETS).catch(err => {
@@ -27,7 +36,6 @@ self.addEventListener('install', event => {
       });
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -42,35 +50,28 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // For API and dynamic data: Network-first with cache fallback
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // For static assets: Cache-first with network background revalidate
+  // Always network-first: fetch fresh asset, update cache, fallback to cache if offline
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response && response.status === 200) {
+    fetch(event.request)
+      .then(response => {
+        if (response && response.status === 200 && event.request.method === 'GET') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
-      });
-    })
+      })
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return (await caches.match('/index.html')) || (await caches.match('/'));
+        }
+        return new Response('Offline: Content is temporarily unavailable.', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+      })
   );
 });
+
